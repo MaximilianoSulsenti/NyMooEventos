@@ -16,9 +16,17 @@ function Hero({ event, config, appearance, styles }) {
         <p className="uppercase tracking-[0.3em] text-xs mb-4" style={{ color: appearance.primaryColor }}>
           Te invitamos a celebrar
         </p>
-        <h1 className={`${titleSize} md:text-5xl mb-3 ${styles.heading}`}>{title}</h1>
+        <h1
+          className={`${titleSize} md:text-5xl mb-3 ${styles.heading}`}
+          style={{ color: config.textColor || undefined }}
+        >
+          {title}
+        </h1>
         {subtitle && <p className={`text-white/70 mt-2 ${subtitleSize}`}>{subtitle}</p>}
         <div className={`${styles.divider} my-6 mx-auto`} style={{ background: appearance.primaryColor }} />
+        {config.dedication && (
+          <p className="text-white/50 text-sm italic mt-2 max-w-sm mx-auto">{config.dedication}</p>
+        )}
       </motion.div>
     </section>
   )

@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { motion } from 'motion/react'
 import RsvpForm from '../components/RsvpForm'
+import Button from '../components/ui/Button'
 
 function RSVPSection({ event, config, appearance, styles }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -12,18 +12,19 @@ function RSVPSection({ event, config, appearance, styles }) {
       <p className="text-white/70 mb-6">
         {config.title || 'Tu presencia es el mejor regalo. Contanos si nos acompañás.'}
       </p>
-      <motion.button
-        type="button"
-        onClick={() => setIsOpen(true)}
-        whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.97 }}
-        className={`px-8 py-3 font-medium tracking-wide shadow-lg ${styles.card}`}
-        style={{ background: appearance.primaryColor, color: '#0a0a0a' }}
-      >
+      <Button type="button" onClick={() => setIsOpen(true)} primaryColor={appearance.primaryColor}>
         Confirmar asistencia
-      </motion.button>
+      </Button>
 
-      {isOpen && <RsvpForm eventSlug={event.eventSlug} onClose={() => setIsOpen(false)} />}
+      {isOpen && (
+        <RsvpForm
+          eventSlug={event.eventSlug}
+          primaryColor={appearance.primaryColor}
+          dietaryOptions={config.dietaryOptions}
+          extraQuestions={config.extraQuestions}
+          onClose={() => setIsOpen(false)}
+        />
+      )}
     </section>
   )
 }

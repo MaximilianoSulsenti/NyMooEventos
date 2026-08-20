@@ -1,19 +1,8 @@
 import { motion } from 'motion/react'
 import { Heart } from 'lucide-react'
 
-function parseMilestones(raw = '') {
-  return raw
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const [date, ...rest] = line.split('-')
-      return { date: date.trim(), text: rest.join('-').trim() || date.trim() }
-    })
-}
-
 function Story({ config, appearance, styles }) {
-  const milestones = parseMilestones(config.milestones)
+  const milestones = Array.isArray(config.milestones) ? config.milestones : []
   const isHorizontal = config.layout === 'horizontal'
   const titleSize = config.fontSizeTitle || 'text-2xl'
   const bodySize = config.fontSizeBody || 'text-base'
@@ -22,7 +11,11 @@ function Story({ config, appearance, styles }) {
 
   return (
     <section className={`text-center px-6 max-w-2xl mx-auto ${styles.fontClass}`}>
-      {config.title && <h2 className={`${titleSize} mb-4 ${styles.heading}`}>{config.title}</h2>}
+      {config.title && (
+        <h2 className={`${titleSize} mb-4 ${styles.heading}`} style={{ color: config.textColor || undefined }}>
+          {config.title}
+        </h2>
+      )}
       <div className={`${styles.divider} mx-auto mb-4`} style={{ background: appearance.primaryColor }} />
       {config.body && <p className={`text-white/70 whitespace-pre-line mb-8 ${bodySize}`}>{config.body}</p>}
 
@@ -45,10 +38,12 @@ function Story({ config, appearance, styles }) {
                   <Heart className="w-3 h-3 text-black" />
                 </span>
               )}
-              <p className="text-sm font-semibold" style={{ color: appearance.primaryColor }}>
-                {milestone.date}
-              </p>
-              <p className="text-white/70 mt-1">{milestone.text}</p>
+              {milestone.title && (
+                <p className="text-sm font-semibold" style={{ color: appearance.primaryColor }}>
+                  {milestone.title}
+                </p>
+              )}
+              {milestone.subtitle && <p className="text-white/70 mt-1">{milestone.subtitle}</p>}
             </motion.div>
           ))}
         </div>

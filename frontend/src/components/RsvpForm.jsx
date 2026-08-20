@@ -2,18 +2,30 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { X } from 'lucide-react'
 import api from '../services/api'
-import { cn } from '../utils/cn'
+import Button from './ui/Button'
 
 const inputClass =
-  'w-full rounded-lg bg-neutral-800 border border-white/10 px-3 py-2 outline-none transition-colors focus:border-purple-500 focus:ring-2 focus:ring-purple-500/40'
+  'w-full rounded-lg bg-neutral-800 border border-white/10 px-3 py-2 outline-none transition-colors focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30'
 
-function RsvpForm({ eventSlug, onClose }) {
+function parseDietaryOptions(raw = '') {
+  return raw
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+}
+
+function RsvpForm({ eventSlug, primaryColor = '#a855f7', dietaryOptions, extraQuestions, onClose }) {
   const [name, setName] = useState('')
   const [attending, setAttending] = useState('confirmado')
   const [dietaryRestrictions, setDietaryRestrictions] = useState('')
+  const [customDietary, setCustomDietary] = useState('')
   const [companionsCount, setCompanionsCount] = useState(0)
+  const [extraAnswers, setExtraAnswers] = useState({})
   const [status, setStatus] = useState('idle') // idle | sending | success | error
   const [errorMessage, setErrorMessage] = useState('')
+
+  const dietaryPresets = parseDietaryOptions(dietaryOptions)
+  const questions = Array.isArray(extraQuestions) ? extraQuestions.filter((q) => q.label) : []
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -22,13 +34,16 @@ function RsvpForm({ eventSlug, onClose }) {
     setStatus('sending')
     setErrorMessage('')
 
+    const finalDietary = dietaryRestrictions === '__otra__' ? customDietary : dietaryRestrictions
+
     try {
       await api.post('/guests/rsvp', {
         eventSlug,
         name: name.trim(),
         status: attending,
-        dietaryRestrictions,
+        dietaryRestrictions: finalDietary,
         companionsCount: Number(companionsCount) || 0,
+        extraAnswers,
       })
       setStatus('success')
     } catch (err) {
@@ -44,13 +59,14 @@ function RsvpForm({ eventSlug, onClose }) {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+        style={{ '--accent': primaryColor }}
       >
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.25 }}
-          className="bg-neutral-900 text-white rounded-2xl w-full max-w-md p-6 relative shadow-xl border border-white/10"
+          className="bg-neutral-900 text-white rounded-2xl w-full max-w-md p-6 relative shadow-2xl border border-white/10 max-h-[90vh] overflow-y-auto"
         >
           <button
             type="button"
@@ -95,13 +111,40 @@ function RsvpForm({ eventSlug, onClose }) {
 
               <div>
                 <label className="block text-sm text-neutral-400 mb-1">Alergias o restricciones alimentarias</label>
-                <input
-                  type="text"
-                  value={dietaryRestrictions}
-                  onChange={(e) => setDietaryRestrictions(e.target.value)}
-                  placeholder="Opcional"
-                  className={inputClass}
-                />
+                {dietaryPresets.length > 0 ? (
+                  <>
+                    <select
+                      value={dietaryRestrictions}
+                      onChange={(e) => setDietaryRestrictions(e.target.value)}
+                      className={inputClass}
+                    >
+                      <option value="">Ninguna</option>
+                      {dietaryPresets.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                      <option value="__otra__">Otra (especificar)</option>
+                    </select>
+                    {dietaryRestrictions === '__otra__' && (
+                      <input
+                        type="text"
+                        value={customDietary}
+                        onChange={(e) => setCustomDietary(e.target.value)}
+                        placeholder="Especificá tu restricción"
+                        className={`${inputClass} mt-2`}
+                      />
+                    )}
+                  </>
+                ) : (
+                  <input
+                    type="text"
+                    value={dietaryRestrictions}
+                    onChange={(e) => setDietaryRestrictions(e.target.value)}
+                    placeholder="Opcional"
+                    className={inputClass}
+                  />
+                )}
               </div>
 
               <div>
@@ -115,20 +158,28 @@ function RsvpForm({ eventSlug, onClose }) {
                 />
               </div>
 
+              {questions.map((question, index) => (
+                <div key={index}>
+                  <label className="block text-sm text-neutral-400 mb-1">{question.label}</label>
+                  <input
+                    type="text"
+                    value={extraAnswers[question.label] || ''}
+                    onChange={(e) => setExtraAnswers((prev) => ({ ...prev, [question.label]: e.target.value }))}
+                    className={inputClass}
+                  />
+                </div>
+              ))}
+
               {status === 'error' && <p className="text-red-400 text-sm">{errorMessage}</p>}
 
-              <motion.button
+              <Button
                 type="submit"
                 disabled={status === 'sending'}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className={cn(
-                  'w-full py-2.5 rounded-full bg-purple-600 font-medium shadow-lg shadow-purple-600/20 transition-colors',
-                  status === 'sending' && 'opacity-40'
-                )}
+                primaryColor={primaryColor}
+                className="w-full disabled:opacity-40"
               >
                 {status === 'sending' ? 'Enviando...' : 'Enviar confirmación'}
-              </motion.button>
+              </Button>
             </form>
           )}
         </motion.div>

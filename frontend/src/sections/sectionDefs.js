@@ -3,7 +3,8 @@ export const SECTION_LABELS = {
   Countdown: 'Cuenta regresiva',
   EventDetail: 'Detalles del evento',
   Story: 'Nuestra historia',
-  Gallery: 'Galería',
+  Gallery: 'Galería de los novios',
+  LiveGallery: 'Galería en vivo (QR)',
   Location: 'Ubicación',
   RSVP: 'Confirmación de asistencia',
   SalonCarrousel: 'Carrusel del salón',
@@ -30,15 +31,43 @@ export const ALIGNMENT_OPTIONS = [
   { value: 'text-right', label: 'Derecha' },
 ]
 
+export const GRADIENT_PRESETS = [
+  { value: '', label: 'Sin degradado' },
+  { value: 'from-purple-900/50 via-transparent to-black/70', label: 'Púrpura nocturno' },
+  { value: 'from-pink-900/40 via-transparent to-black/70', label: 'Rosa romántico' },
+  { value: 'from-amber-900/40 via-transparent to-black/70', label: 'Dorado cálido' },
+  { value: 'from-slate-800/50 via-transparent to-black/80', label: 'Elegante oscuro' },
+]
+
+export const BG_TYPE_OPTIONS = [
+  { value: 'color', label: 'Color sólido' },
+  { value: 'image', label: 'Imagen' },
+  { value: 'video', label: 'Video' },
+]
+
+export const INFO_ICON_OPTIONS = [
+  { value: 'info', label: 'Información general' },
+  { value: 'dresscode', label: 'Código de vestimenta' },
+  { value: 'hotel', label: 'Alojamiento / hoteles' },
+  { value: 'transport', label: 'Transporte' },
+  { value: 'gift', label: 'Regalos' },
+  { value: 'kids', label: 'Niños' },
+  { value: 'food', label: 'Comida / menú' },
+  { value: 'contact', label: 'Contacto' },
+]
+
 export const COUNTDOWN_SHAPE_OPTIONS = [
-  { value: 'square', label: 'Cuadrado minimalista' },
+  { value: 'square', label: 'Bordes ultra finos minimalistas' },
   { value: 'circle', label: 'Círculo elegante' },
-  { value: 'none', label: 'Sin bordes' },
+  { value: 'glass', label: 'Vidrio esmerilado (glassmorphism)' },
+  { value: 'solid', label: 'Tarjeta sólida con sombra profunda' },
+  { value: 'none', label: 'Sin contenedor' },
 ]
 
 export const GALLERY_LAYOUT_OPTIONS = [
-  { value: 'bento', label: 'Bento grid' },
-  { value: 'carousel', label: 'Carrusel 3D' },
+  { value: 'bento', label: 'Grid animado (Bento)' },
+  { value: 'carousel', label: 'Carrusel clásico' },
+  { value: 'carousel3d', label: 'Carrusel 3D premium' },
 ]
 
 export const STORY_LAYOUT_OPTIONS = [
@@ -60,6 +89,19 @@ export const BACKGROUND_FIELD_DEFS = [
   },
   { key: 'bgImageUrl', label: 'Imagen de fondo', type: 'image', showIf: (config) => config.bgType === 'imagen' },
   {
+    key: 'bgPosition',
+    label: 'Encuadre de la imagen',
+    type: 'select',
+    showIf: (config) => config.bgType === 'imagen',
+    options: [
+      { value: 'center', label: 'Centro' },
+      { value: 'top', label: 'Arriba' },
+      { value: 'bottom', label: 'Abajo' },
+      { value: 'left', label: 'Izquierda' },
+      { value: 'right', label: 'Derecha' },
+    ],
+  },
+  {
     key: 'bgOpacity',
     label: 'Opacidad de la imagen',
     type: 'range',
@@ -70,10 +112,14 @@ export const BACKGROUND_FIELD_DEFS = [
   },
 ]
 
+// Campo compartido para el color del título de cada sección (por defecto blanco).
+export const TEXT_FIELD_DEFS = [{ key: 'textColor', label: 'Color del título', type: 'color' }]
+
 export const SECTION_FIELD_DEFS = {
   Hero: [
     { key: 'title', label: 'Título', type: 'text' },
     { key: 'subtitle', label: 'Subtítulo', type: 'text' },
+    { key: 'dedication', label: 'Dedicatoria o lema (opcional)', type: 'text' },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
     { key: 'fontSizeSubtitle', label: 'Tamaño del subtítulo', type: 'select', options: FONT_SIZE_OPTIONS },
   ],
@@ -92,8 +138,13 @@ export const SECTION_FIELD_DEFS = {
     { key: 'body', label: 'Introducción', type: 'textarea' },
     {
       key: 'milestones',
-      label: 'Hitos (uno por línea: "Fecha - Anécdota")',
-      type: 'textarea',
+      label: 'Hitos de la historia',
+      type: 'repeater',
+      addLabel: 'Agregar hito',
+      itemFields: [
+        { key: 'title', label: 'Título (ej. fecha o hito)' },
+        { key: 'subtitle', label: 'Descripción corta' },
+      ],
     },
     { key: 'layout', label: 'Diseño', type: 'select', options: STORY_LAYOUT_OPTIONS },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
@@ -101,18 +152,44 @@ export const SECTION_FIELD_DEFS = {
   ],
   Gallery: [
     { key: 'title', label: 'Título', type: 'text' },
+    { key: 'images', label: 'Fotos (sin límite)', type: 'imageList' },
     { key: 'layout', label: 'Diseño', type: 'select', options: GALLERY_LAYOUT_OPTIONS },
+    { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
+  ],
+  LiveGallery: [
+    { key: 'title', label: 'Título', type: 'text' },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
   ],
   Location: [
     {
       key: 'locations',
-      label: 'Locaciones (una por línea: "Etiqueta | Dirección | Link de Maps")',
+      label: 'Locaciones',
+      type: 'repeater',
+      addLabel: 'Agregar locación',
+      itemFields: [
+        { key: 'label', label: 'Nombre (ej. Ceremonia, Fiesta)' },
+        { key: 'address', label: 'Dirección' },
+        { key: 'mapUrl', label: 'Link de Google Maps (botón Compartir → Copiar enlace, o el src del iframe de inserción)' },
+        { key: 'fontSize', label: 'Tamaño de fuente', type: 'select', options: FONT_SIZE_OPTIONS },
+      ],
+    },
+    { key: 'fontSizeTitle', label: 'Tamaño del título de la sección', type: 'select', options: FONT_SIZE_OPTIONS },
+  ],
+  RSVP: [
+    { key: 'title', label: 'Título', type: 'text' },
+    {
+      key: 'dietaryOptions',
+      label: 'Opciones de restricciones alimentarias (una por línea, ej. "Vegetariano")',
       type: 'textarea',
     },
-    { key: 'fontSizeTitle', label: 'Tamaño de los títulos', type: 'select', options: FONT_SIZE_OPTIONS },
+    {
+      key: 'extraQuestions',
+      label: 'Preguntas adicionales para el invitado',
+      type: 'repeater',
+      addLabel: 'Agregar pregunta',
+      itemFields: [{ key: 'label', label: 'Pregunta (ej. ¿Necesitás menú infantil?)' }],
+    },
   ],
-  RSVP: [{ key: 'title', label: 'Título', type: 'text' }],
   SalonCarrousel: [
     { key: 'title', label: 'Título', type: 'text' },
     { key: 'subtitle', label: 'Subtítulo', type: 'text' },
@@ -126,19 +203,39 @@ export const SECTION_FIELD_DEFS = {
   Info: [
     {
       key: 'items',
-      label: 'Bloques (uno por línea: "Título | Texto")',
-      type: 'textarea',
+      label: 'Bloques de información',
+      type: 'repeater',
+      addLabel: 'Agregar bloque',
+      itemFields: [
+        {
+          key: 'icon',
+          label: 'Ícono',
+          type: 'select',
+          options: INFO_ICON_OPTIONS,
+        },
+        { key: 'title', label: 'Título (ej. Código de vestimenta)' },
+        { key: 'body', label: 'Texto' },
+      ],
     },
     { key: 'fontSizeTitle', label: 'Tamaño de los títulos', type: 'select', options: FONT_SIZE_OPTIONS },
   ],
   MusicPlaylist: [
     { key: 'title', label: 'Título', type: 'text' },
-    { key: 'spotifyUrl', label: 'Link de playlist (Spotify)', type: 'text' },
+    { key: 'playlistUrl', label: 'Link de playlist (Spotify, YouTube o Apple Music)', type: 'text' },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
   ],
   Timeline: [
     { key: 'title', label: 'Título', type: 'text' },
-    { key: 'items', label: 'Cronograma (una línea por ítem: "20:00 - Ceremonia")', type: 'textarea' },
+    {
+      key: 'items',
+      label: 'Cronograma',
+      type: 'repeater',
+      addLabel: 'Agregar ítem',
+      itemFields: [
+        { key: 'time', label: 'Hora (ej. 20:00)' },
+        { key: 'label', label: 'Actividad (ej. Ceremonia)' },
+      ],
+    },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
   ],
   Footer: [

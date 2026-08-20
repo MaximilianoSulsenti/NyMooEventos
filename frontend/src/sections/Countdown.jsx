@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
+import { cn } from '../utils/cn'
 
 function getTimeLeft(target) {
   const diff = Math.max(0, new Date(target).getTime() - Date.now())
@@ -12,8 +13,10 @@ function getTimeLeft(target) {
 }
 
 const SHAPE_CLASSES = {
-  square: 'rounded-md',
-  circle: 'rounded-full aspect-square',
+  square: 'rounded-md bg-white/5 border border-white/10',
+  circle: 'rounded-full aspect-square bg-white/5 border border-white/10',
+  glass: 'rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-lg',
+  solid: 'rounded-xl bg-neutral-900 border border-white/10 shadow-2xl',
   none: 'rounded-none bg-transparent border-0',
 }
 
@@ -46,7 +49,7 @@ function Countdown({ event, config, appearance, styles }) {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.08, duration: 0.4 }}
-            className={`${shape} bg-white/5 border border-white/10 px-4 py-3 min-w-[64px] flex flex-col items-center justify-center`}
+            className={cn(shape, 'px-4 py-3 min-w-[64px] flex flex-col items-center justify-center')}
           >
             <p className={`${digitSize} font-semibold`} style={{ color: appearance.primaryColor }}>
               {String(unit.value).padStart(2, '0')}

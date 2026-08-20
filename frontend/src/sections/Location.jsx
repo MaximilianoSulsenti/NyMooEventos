@@ -1,17 +1,6 @@
 import { motion } from 'motion/react'
 import { Church, PartyPopper, MapPin } from 'lucide-react'
 
-function parseLocations(raw = '') {
-  return raw
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const [label, address, mapUrl] = line.split('|').map((part) => part?.trim())
-      return { label: label || 'Ubicación', address: address || '', mapUrl: mapUrl || '' }
-    })
-}
-
 function pickIcon(label = '') {
   const normalized = label.toLowerCase()
   if (normalized.includes('ceremonia') || normalized.includes('iglesia') || normalized.includes('civil')) {
@@ -23,18 +12,25 @@ function pickIcon(label = '') {
   return MapPin
 }
 
+function isEmbedUrl(url = '') {
+  return url.includes('google.com/maps/embed')
+}
+
 function Location({ config, styles }) {
-  const locations = parseLocations(config.locations)
+  const locations = Array.isArray(config.locations) ? config.locations : []
   const titleSize = config.fontSizeTitle || 'text-lg'
 
   if (locations.length === 0) return null
 
   return (
     <section className={`text-center px-6 ${styles.fontClass}`}>
-      <h2 className={`${titleSize} mb-6 ${styles.heading}`}>Ubicación</h2>
+      <h2 className={`${titleSize} mb-6 ${styles.heading}`} style={{ color: config.textColor || undefined }}>
+        Ubicación
+      </h2>
       <div className={`grid gap-4 max-w-2xl mx-auto ${locations.length > 1 ? 'md:grid-cols-2' : ''}`}>
         {locations.map((location, index) => {
           const Icon = pickIcon(location.label)
+          const fontSize = location.fontSize || 'text-base'
           return (
             <motion.div
               key={index}
@@ -45,17 +41,30 @@ function Location({ config, styles }) {
               className={`bg-white/5 border border-white/10 shadow-xl p-5 flex flex-col items-center gap-2 ${styles.card}`}
             >
               <Icon className="w-6 h-6 text-white/70" />
-              <p className="font-medium">{location.label}</p>
+              {location.label && <p className={`font-medium ${fontSize}`}>{location.label}</p>}
               {location.address && <p className="text-white/60 text-sm">{location.address}</p>}
-              {location.mapUrl && (
-                <a
-                  href={location.mapUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-sm underline underline-offset-2 text-white/80 hover:text-white transition"
-                >
-                  Ver en Google Maps
-                </a>
+
+              {location.mapUrl && isEmbedUrl(location.mapUrl) ? (
+                <iframe
+                  src={location.mapUrl}
+                  width="100%"
+                  height="200"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  className="rounded-lg mt-2"
+                  title={location.label || `Mapa ${index + 1}`}
+                />
+              ) : (
+                location.mapUrl && (
+                  <a
+                    href={location.mapUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-sm underline underline-offset-2 text-white/80 hover:text-white transition"
+                  >
+                    Ver en Google Maps
+                  </a>
+                )
               )}
             </motion.div>
           )

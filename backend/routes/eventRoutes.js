@@ -6,6 +6,7 @@ const {
   getEventById,
   updateEventModules,
   updateAppearance,
+  updateEnvelopeSettings,
   updateSections,
   signAppearanceUpload,
   updateModerationModeForClient,
@@ -24,6 +25,7 @@ router.post('/', requireAuth, createEvent);
 router.get('/:eventId', requireAuth, requireEventOwnership, getEventById);
 router.patch('/:eventId/modules', requireAuth, requireAdmin, updateEventModules);
 router.patch('/:eventId/appearance', requireAuth, requireEventOwnership, updateAppearance);
+router.patch('/:eventId/envelope', requireAuth, requireEventOwnership, updateEnvelopeSettings);
 router.patch('/:eventId/sections', requireAuth, requireEventOwnership, updateSections);
 router.get('/:eventId/appearance/sign', requireAuth, requireEventOwnership, signAppearanceUpload);
 router.patch('/client/:eventSlug/moderation-mode', requireClientToken, updateModerationModeForClient);

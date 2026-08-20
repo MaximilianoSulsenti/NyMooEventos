@@ -15,25 +15,16 @@ function pickIcon(label = '') {
   return match ? match.icon : Clock
 }
 
-function parseItems(raw = '') {
-  return raw
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const [time, ...rest] = line.split('-')
-      return { time: time.trim(), label: rest.join('-').trim() || time.trim() }
-    })
-}
-
 function Timeline({ config, appearance, styles }) {
-  const items = parseItems(config.items)
+  const items = Array.isArray(config.items) ? config.items : []
   const titleSize = config.fontSizeTitle || 'text-lg'
   if (items.length === 0) return null
 
   return (
     <section className={`text-center px-6 max-w-sm mx-auto ${styles.fontClass}`}>
-      <h2 className={`${titleSize} mb-6 ${styles.heading}`}>{config.title || 'Cronograma'}</h2>
+      <h2 className={`${titleSize} mb-6 ${styles.heading}`} style={{ color: config.textColor || undefined }}>
+        {config.title || 'Cronograma'}
+      </h2>
       <ol className="space-y-4 text-left">
         {items.map((item, index) => {
           const Icon = pickIcon(item.label)

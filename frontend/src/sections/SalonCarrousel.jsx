@@ -17,7 +17,11 @@ function SalonCarrousel({ config, styles }) {
 
   return (
     <section className={`text-center px-6 ${styles.fontClass}`}>
-      {config.title && <h2 className={`${titleSize} mb-1 ${styles.heading}`}>{config.title}</h2>}
+      {config.title && (
+        <h2 className={`${titleSize} mb-1 ${styles.heading}`} style={{ color: config.textColor || undefined }}>
+          {config.title}
+        </h2>
+      )}
       {config.subtitle && <p className="text-white/60 text-sm mb-4">{config.subtitle}</p>}
 
       <div className="relative max-w-md mx-auto h-72 overflow-hidden rounded-2xl">

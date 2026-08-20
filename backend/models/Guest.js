@@ -11,6 +11,7 @@ const guestSchema = new mongoose.Schema(
     },
     dietaryRestrictions: { type: String, default: '' },
     companionsCount: { type: Number, default: 0 },
+    extraAnswers: { type: mongoose.Schema.Types.Mixed, default: {} },
   },
   { timestamps: true }
 );

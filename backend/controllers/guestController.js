@@ -2,7 +2,7 @@ const Event = require('../models/Event');
 const Guest = require('../models/Guest');
 
 async function submitRsvp(req, res) {
-  const { eventSlug, name, status, dietaryRestrictions, companionsCount } = req.body;
+  const { eventSlug, name, status, dietaryRestrictions, companionsCount, extraAnswers } = req.body;
 
   if (!eventSlug || !name) {
     return res.status(400).json({ message: 'eventSlug y name son requeridos' });
@@ -16,12 +16,22 @@ async function submitRsvp(req, res) {
     return res.status(403).json({ message: 'El módulo de control de invitados no está activo para este evento' });
   }
 
+  const cleanExtraAnswers =
+    extraAnswers && typeof extraAnswers === 'object' && !Array.isArray(extraAnswers)
+      ? Object.fromEntries(
+          Object.entries(extraAnswers)
+            .slice(0, 20)
+            .map(([key, value]) => [String(key).slice(0, 100), String(value).slice(0, 300)])
+        )
+      : {};
+
   const guest = await Guest.create({
     eventId: event._id,
     name,
     status: status || 'pendiente',
     dietaryRestrictions: dietaryRestrictions || '',
     companionsCount: companionsCount || 0,
+    extraAnswers: cleanExtraAnswers,
   });
 
   res.status(201).json(guest);

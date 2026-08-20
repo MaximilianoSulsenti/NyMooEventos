@@ -7,6 +7,7 @@ const SECTION_TYPES = [
   'EventDetail',
   'Story',
   'Gallery',
+  'LiveGallery',
   'Location',
   'RSVP',
   'SalonCarrousel',
@@ -18,6 +19,7 @@ const SECTION_TYPES = [
 
 const THEMES = ['minimalista', 'moderno', 'vanguardista', 'romantica'];
 const MODERATION_MODES = ['manual', 'automatica', 'semiautomatica'];
+const BG_TYPES = ['color', 'image', 'video'];
 
 const sectionSchema = new mongoose.Schema(
   {
@@ -50,6 +52,21 @@ const eventSchema = new mongoose.Schema(
       secondaryColor: { type: String, default: '#111827' },
       backgroundColor: { type: String, default: '#0a0a0a' },
       fontFamily: { type: String, default: 'sans' },
+      useGlobalBackground: { type: Boolean, default: false },
+      globalBgType: { type: String, enum: BG_TYPES, default: 'color' },
+      globalBgUrl: { type: String, default: '' },
+      globalBgOpacity: { type: Number, default: 100, min: 0, max: 100 },
+      globalBgGradient: { type: String, default: '' },
+    },
+    envelopeSettings: {
+      enabled: { type: Boolean, default: false },
+      bgType: { type: String, enum: BG_TYPES, default: 'color' },
+      bgColor: { type: String, default: '#0a0a0a' },
+      bgUrl: { type: String, default: '' },
+      bgOpacity: { type: Number, default: 100, min: 0, max: 100 },
+      titleText: { type: String, default: '' },
+      buttonText: { type: String, default: 'Abrir invitación' },
+      fontFamily: { type: String, default: 'sans' },
     },
     sections: { type: [sectionSchema], default: [] },
     clientAccessToken: {
@@ -63,5 +80,6 @@ const eventSchema = new mongoose.Schema(
 eventSchema.statics.SECTION_TYPES = SECTION_TYPES;
 eventSchema.statics.THEMES = THEMES;
 eventSchema.statics.MODERATION_MODES = MODERATION_MODES;
+eventSchema.statics.BG_TYPES = BG_TYPES;
 
 module.exports = mongoose.model('Event', eventSchema);

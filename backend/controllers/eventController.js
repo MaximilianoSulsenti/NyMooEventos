@@ -7,20 +7,21 @@ const DEFAULT_SECTIONS = [
   { id: 'Countdown', enabled: false, order: 3, config: {} },
   { id: 'Story', enabled: false, order: 4, config: {} },
   { id: 'Gallery', enabled: false, order: 5, config: {} },
-  { id: 'Location', enabled: true, order: 6, config: {} },
-  { id: 'RSVP', enabled: true, order: 7, config: {} },
-  { id: 'SalonCarrousel', enabled: false, order: 8, config: {} },
-  { id: 'Info', enabled: false, order: 9, config: {} },
-  { id: 'MusicPlaylist', enabled: false, order: 10, config: {} },
-  { id: 'Timeline', enabled: false, order: 11, config: {} },
-  { id: 'Footer', enabled: true, order: 12, config: {} },
+  { id: 'LiveGallery', enabled: false, order: 6, config: {} },
+  { id: 'Location', enabled: true, order: 7, config: {} },
+  { id: 'RSVP', enabled: true, order: 8, config: {} },
+  { id: 'SalonCarrousel', enabled: false, order: 9, config: {} },
+  { id: 'Info', enabled: false, order: 10, config: {} },
+  { id: 'MusicPlaylist', enabled: false, order: 11, config: {} },
+  { id: 'Timeline', enabled: false, order: 12, config: {} },
+  { id: 'Footer', enabled: true, order: 13, config: {} },
 ];
 
 async function getEventBySlug(req, res) {
   const { eventSlug } = req.params;
 
   const event = await Event.findOne({ eventSlug }).select(
-    'eventName eventSlug date activeModules appearance sections gallerySettings'
+    'eventName eventSlug date activeModules appearance sections gallerySettings envelopeSettings'
   );
 
   if (!event) {
@@ -84,13 +85,46 @@ async function updateEventModules(req, res) {
 
 async function updateAppearance(req, res) {
   const event = req.event;
-  const { theme, primaryColor, secondaryColor, backgroundColor, fontFamily } = req.body;
+  const {
+    theme,
+    primaryColor,
+    secondaryColor,
+    backgroundColor,
+    fontFamily,
+    useGlobalBackground,
+    globalBgType,
+    globalBgUrl,
+    globalBgOpacity,
+    globalBgGradient,
+  } = req.body;
 
   if (theme !== undefined) event.appearance.theme = theme;
   if (primaryColor !== undefined) event.appearance.primaryColor = primaryColor;
   if (secondaryColor !== undefined) event.appearance.secondaryColor = secondaryColor;
   if (backgroundColor !== undefined) event.appearance.backgroundColor = backgroundColor;
   if (fontFamily !== undefined) event.appearance.fontFamily = fontFamily;
+  if (useGlobalBackground !== undefined) event.appearance.useGlobalBackground = useGlobalBackground;
+  if (globalBgType !== undefined) event.appearance.globalBgType = globalBgType;
+  if (globalBgUrl !== undefined) event.appearance.globalBgUrl = globalBgUrl;
+  if (globalBgOpacity !== undefined) event.appearance.globalBgOpacity = globalBgOpacity;
+  if (globalBgGradient !== undefined) event.appearance.globalBgGradient = globalBgGradient;
+
+  await event.save();
+  res.json(event);
+}
+
+async function updateEnvelopeSettings(req, res) {
+  const event = req.event;
+  const { enabled, bgType, bgColor, bgUrl, bgOpacity, titleText, buttonText, fontFamily } = req.body;
+
+  if (enabled !== undefined) event.envelopeSettings.enabled = enabled;
+  if (bgType !== undefined) event.envelopeSettings.bgType = bgType;
+  if (bgColor !== undefined) event.envelopeSettings.bgColor = bgColor;
+  if (bgUrl !== undefined) event.envelopeSettings.bgUrl = bgUrl;
+  if (bgOpacity !== undefined) event.envelopeSettings.bgOpacity = bgOpacity;
+  if (titleText !== undefined) event.envelopeSettings.titleText = titleText;
+  if (buttonText !== undefined) event.envelopeSettings.buttonText = buttonText;
+  if (fontFamily !== undefined) event.envelopeSettings.fontFamily = fontFamily;
 
   await event.save();
   res.json(event);
@@ -163,6 +197,7 @@ module.exports = {
   getEventById,
   updateEventModules,
   updateAppearance,
+  updateEnvelopeSettings,
   updateSections,
   signAppearanceUpload,
   updateModerationModeForClient,

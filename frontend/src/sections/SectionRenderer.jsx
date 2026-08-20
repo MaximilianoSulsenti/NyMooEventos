@@ -1,8 +1,10 @@
+import { motion } from 'motion/react'
 import Hero from './Hero'
 import Countdown from './Countdown'
 import EventDetail from './EventDetail'
 import Story from './Story'
 import Gallery from './Gallery'
+import LiveGallery from './LiveGallery'
 import Location from './Location'
 import RSVPSection from './RSVPSection'
 import SalonCarrousel from './SalonCarrousel'
@@ -18,6 +20,7 @@ const SECTION_COMPONENTS = {
   EventDetail,
   Story,
   Gallery,
+  LiveGallery,
   Location,
   RSVP: RSVPSection,
   SalonCarrousel,
@@ -30,6 +33,7 @@ const SECTION_COMPONENTS = {
 function SectionRenderer({ event }) {
   const appearance = event.appearance || {}
   const styles = getThemeStyles(appearance.theme)
+  const usesGlobalBackground = Boolean(appearance.useGlobalBackground)
 
   const sections = [...(event.sections || [])]
     .filter((section) => section.enabled)
@@ -37,25 +41,36 @@ function SectionRenderer({ event }) {
 
   return (
     <>
-      {sections.map((section) => {
+      {sections.map((section, index) => {
         const Component = SECTION_COMPONENTS[section.id]
         if (!Component) return null
 
         const config = section.config || {}
-        const hasBgImage = config.bgType === 'imagen' && config.bgImageUrl
+        const hasBgImage = !usesGlobalBackground && config.bgType === 'imagen' && config.bgImageUrl
 
         return (
-          <div key={section.id} className={`relative ${styles.sectionWrapper}`}>
+          <motion.div
+            key={section.id}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.6 }}
+            className={`relative ${index > 0 ? 'bg-black/5' : ''} ${styles.sectionWrapper}`}
+          >
             {hasBgImage && (
               <div
-                className="absolute inset-0 bg-cover bg-center pointer-events-none"
-                style={{ backgroundImage: `url(${config.bgImageUrl})`, opacity: (config.bgOpacity ?? 100) / 100 }}
+                className="absolute inset-0 bg-cover pointer-events-none"
+                style={{
+                  backgroundImage: `url(${config.bgImageUrl})`,
+                  backgroundPosition: config.bgPosition || 'center',
+                  opacity: (config.bgOpacity ?? 100) / 100,
+                }}
               />
             )}
             <div className="relative z-10">
               <Component event={event} config={config} appearance={appearance} styles={styles} />
             </div>
-          </div>
+          </motion.div>
         )
       })}
     </>

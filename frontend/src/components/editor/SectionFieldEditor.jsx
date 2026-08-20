@@ -1,5 +1,19 @@
-import { SECTION_FIELD_DEFS, BACKGROUND_FIELD_DEFS } from '../../sections/sectionDefs'
+import { SECTION_FIELD_DEFS, BACKGROUND_FIELD_DEFS, TEXT_FIELD_DEFS } from '../../sections/sectionDefs'
 import ImageUploadField from './ImageUploadField'
+import ImageListField from './ImageListField'
+import RepeaterField from './RepeaterField'
+
+const SECTIONS_WITH_TITLE_COLOR = [
+  'Hero',
+  'Story',
+  'Gallery',
+  'LiveGallery',
+  'Location',
+  'SalonCarrousel',
+  'Info',
+  'MusicPlaylist',
+  'Timeline',
+]
 
 function FieldInput({ eventId, field, config, onChange }) {
   const value = config[field.key]
@@ -12,6 +26,59 @@ function FieldInput({ eventId, field, config, onChange }) {
         value={value || ''}
         onChange={(url) => onChange(field.key, url)}
       />
+    )
+  }
+
+  if (field.type === 'imageList') {
+    return (
+      <ImageListField
+        eventId={eventId}
+        label={field.label}
+        images={value}
+        onChange={(images) => onChange(field.key, images)}
+      />
+    )
+  }
+
+  if (field.type === 'repeater') {
+    return (
+      <RepeaterField
+        label={field.label}
+        items={value}
+        itemFields={field.itemFields}
+        addLabel={field.addLabel}
+        onChange={(items) => onChange(field.key, items)}
+      />
+    )
+  }
+
+  if (field.type === 'color') {
+    const current = value || '#ffffff'
+    return (
+      <div>
+        <label className="block text-sm text-neutral-400 mb-1">{field.label}</label>
+        <div className="flex items-center gap-2">
+          <input
+            type="color"
+            value={current}
+            onChange={(e) => onChange(field.key, e.target.value)}
+            className="w-10 h-10 rounded cursor-pointer bg-transparent"
+          />
+          <input
+            type="text"
+            value={current}
+            onChange={(e) => onChange(field.key, e.target.value)}
+            className="flex-1 rounded-lg bg-neutral-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-500 transition"
+          />
+          <button
+            type="button"
+            onClick={() => onChange(field.key, '')}
+            className="text-xs text-neutral-500 hover:text-white transition shrink-0"
+          >
+            Restaurar
+          </button>
+        </div>
+      </div>
     )
   }
 
@@ -82,6 +149,7 @@ function FieldInput({ eventId, field, config, onChange }) {
 
 function SectionFieldEditor({ eventId, sectionId, config, onChange }) {
   const fields = SECTION_FIELD_DEFS[sectionId] || []
+  const showTextColor = SECTIONS_WITH_TITLE_COLOR.includes(sectionId)
 
   function updateField(key, value) {
     onChange({ ...config, [key]: value })
@@ -89,7 +157,16 @@ function SectionFieldEditor({ eventId, sectionId, config, onChange }) {
 
   return (
     <div className="space-y-5">
-      <div className="space-y-3">
+      {showTextColor && (
+        <div className="space-y-3">
+          <p className="text-xs uppercase tracking-widest text-neutral-500">Texto</p>
+          {TEXT_FIELD_DEFS.map((field) => (
+            <FieldInput key={field.key} eventId={eventId} field={field} config={config} onChange={updateField} />
+          ))}
+        </div>
+      )}
+
+      <div className="space-y-3 pt-3 border-t border-white/10">
         <p className="text-xs uppercase tracking-widest text-neutral-500">Fondo de la sección</p>
         {BACKGROUND_FIELD_DEFS.filter((field) => !field.showIf || field.showIf(config)).map((field) => (
           <FieldInput key={field.key} eventId={eventId} field={field} config={config} onChange={updateField} />

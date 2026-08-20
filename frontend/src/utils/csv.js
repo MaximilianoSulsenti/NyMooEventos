@@ -3,12 +3,15 @@ function escapeCsvValue(value) {
 }
 
 export function guestsToCsv(guests) {
-  const header = ['Nombre', 'Estado', 'Acompañantes', 'Restricciones alimentarias']
+  const extraQuestions = [...new Set(guests.flatMap((guest) => Object.keys(guest.extraAnswers || {})))]
+
+  const header = ['Nombre', 'Estado', 'Acompañantes', 'Restricciones alimentarias', ...extraQuestions]
   const rows = guests.map((guest) => [
     guest.name,
     guest.status,
     guest.companionsCount,
     guest.dietaryRestrictions,
+    ...extraQuestions.map((question) => guest.extraAnswers?.[question] || ''),
   ])
   return [header, ...rows].map((row) => row.map(escapeCsvValue).join(',')).join('\n')
 }
