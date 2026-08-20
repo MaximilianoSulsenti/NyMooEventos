@@ -77,6 +77,11 @@ io.on('connection', (socket) => {
     socket.join(eventSlug);
   });
 
+  socket.on('toggle-party-mode', ({ eventSlug, enabled }) => {
+    if (!eventSlug) return;
+    io.to(eventSlug).emit('party-mode', Boolean(enabled));
+  });
+
   socket.on('disconnect', () => {
     console.log(`[Socket.io] Cliente desconectado: ${socket.id}`);
   });

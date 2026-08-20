@@ -3,9 +3,12 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Login from './pages/Login'
 import EventsList from './pages/EventsList'
 import Dashboard from './pages/Dashboard'
+import EventEditor from './pages/EventEditor'
 import DigitalCard from './pages/DigitalCard'
 import UploadPage from './pages/UploadPage'
-import LiveFeedPage from './pages/LiveFeedPage'
+import LiveScreen from './pages/LiveScreen'
+import StatsDashboard from './pages/StatsDashboard'
+import GalleryControl from './pages/GalleryControl'
 
 function NotFound() {
   return (
@@ -35,9 +38,19 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/dashboard/:eventId/editor"
+        element={
+          <ProtectedRoute>
+            <EventEditor />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/evento/:eventSlug" element={<DigitalCard />} />
       <Route path="/evento/:eventSlug/upload" element={<UploadPage />} />
-      <Route path="/evento/:eventSlug/live-feed" element={<LiveFeedPage />} />
+      <Route path="/evento/:eventSlug/live-feed" element={<LiveScreen />} />
+      <Route path="/evento/:eventSlug/stats-dashboard" element={<StatsDashboard />} />
+      <Route path="/evento/:eventSlug/gallery-control" element={<GalleryControl />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   )

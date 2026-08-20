@@ -126,6 +126,12 @@ function Dashboard() {
             ← Mis eventos
           </Link>
           <h1 className="text-lg font-semibold truncate mt-1">{event.eventName}</h1>
+          <Link
+            to={`/dashboard/${eventId}/editor`}
+            className="inline-block mt-2 text-xs text-purple-400 hover:text-purple-300 transition"
+          >
+            Editar invitación →
+          </Link>
         </div>
         <nav className="flex flex-col gap-1">
           {NAV_SECTIONS.map((section) => (
@@ -180,7 +186,7 @@ function Dashboard() {
 
         {activeSection === 'links' && (
           <section className="max-w-2xl">
-            <QuickAccessLinks eventSlug={event.eventSlug} />
+            <QuickAccessLinks eventSlug={event.eventSlug} clientAccessToken={event.clientAccessToken} />
           </section>
         )}
       </main>

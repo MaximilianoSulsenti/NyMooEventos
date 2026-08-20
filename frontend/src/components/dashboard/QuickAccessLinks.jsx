@@ -36,20 +36,33 @@ function CopyField({ label, url }) {
   )
 }
 
-function QuickAccessLinks({ eventSlug }) {
+function QuickAccessLinks({ eventSlug, clientAccessToken }) {
   const origin = window.location.origin
   const cardUrl = `${origin}/evento/${eventSlug}`
   const liveFeedUrl = `${origin}/evento/${eventSlug}/live-feed`
   const uploadUrl = `${origin}/evento/${eventSlug}/upload`
+  const statsUrl = `${origin}/evento/${eventSlug}/stats-dashboard?token=${clientAccessToken}`
+  const galleryControlUrl = `${origin}/evento/${eventSlug}/gallery-control?token=${clientAccessToken}`
 
   return (
-    <div className="rounded-xl bg-neutral-900 border border-white/10 p-5 flex flex-col md:flex-row gap-6">
-      <div className="flex-1 flex flex-col gap-4">
-        <CopyField label="Tarjeta digital" url={cardUrl} />
-        <CopyField label="Pantalla en vivo" url={liveFeedUrl} />
+    <div className="space-y-6">
+      <div className="rounded-xl bg-neutral-900 border border-white/10 p-5 flex flex-col md:flex-row gap-6">
+        <div className="flex-1 flex flex-col gap-4">
+          <CopyField label="Tarjeta digital" url={cardUrl} />
+          <CopyField label="Pantalla en vivo" url={liveFeedUrl} />
+          <CopyField label="Subir fotos (por si el QR falla)" url={uploadUrl} />
+        </div>
+        <div className="flex justify-center md:justify-end">
+          <QrCode value={uploadUrl} />
+        </div>
       </div>
-      <div className="flex justify-center md:justify-end">
-        <QrCode value={uploadUrl} />
+
+      <div className="rounded-xl bg-neutral-900 border border-white/10 p-5 flex flex-col gap-4">
+        <p className="text-neutral-400 text-sm">
+          Links exclusivos para el cliente (sin necesidad de iniciar sesión):
+        </p>
+        <CopyField label="Panel de estadísticas del cliente" url={statsUrl} />
+        <CopyField label="Panel de moderación de galería" url={galleryControlUrl} />
       </div>
     </div>
   )

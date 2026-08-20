@@ -1,10 +1,26 @@
 const Event = require('../models/Event');
+const cloudinary = require('../config/cloudinary');
+
+const DEFAULT_SECTIONS = [
+  { id: 'Hero', enabled: true, order: 1, config: {} },
+  { id: 'EventDetail', enabled: true, order: 2, config: {} },
+  { id: 'Countdown', enabled: false, order: 3, config: {} },
+  { id: 'Story', enabled: false, order: 4, config: {} },
+  { id: 'Gallery', enabled: false, order: 5, config: {} },
+  { id: 'Location', enabled: true, order: 6, config: {} },
+  { id: 'RSVP', enabled: true, order: 7, config: {} },
+  { id: 'SalonCarrousel', enabled: false, order: 8, config: {} },
+  { id: 'Info', enabled: false, order: 9, config: {} },
+  { id: 'MusicPlaylist', enabled: false, order: 10, config: {} },
+  { id: 'Timeline', enabled: false, order: 11, config: {} },
+  { id: 'Footer', enabled: true, order: 12, config: {} },
+];
 
 async function getEventBySlug(req, res) {
   const { eventSlug } = req.params;
 
   const event = await Event.findOne({ eventSlug }).select(
-    'eventName eventSlug date activeModules'
+    'eventName eventSlug date activeModules appearance sections gallerySettings'
   );
 
   if (!event) {
@@ -37,6 +53,7 @@ async function createEvent(req, res) {
     eventSlug,
     date,
     gallerySettings: { cloudinaryFolder: `eventos/${eventSlug}` },
+    sections: DEFAULT_SECTIONS,
   });
 
   res.status(201).json(event);
@@ -65,10 +82,88 @@ async function updateEventModules(req, res) {
   res.json(event);
 }
 
+async function updateAppearance(req, res) {
+  const event = req.event;
+  const { theme, primaryColor, secondaryColor, backgroundColor, fontFamily } = req.body;
+
+  if (theme !== undefined) event.appearance.theme = theme;
+  if (primaryColor !== undefined) event.appearance.primaryColor = primaryColor;
+  if (secondaryColor !== undefined) event.appearance.secondaryColor = secondaryColor;
+  if (backgroundColor !== undefined) event.appearance.backgroundColor = backgroundColor;
+  if (fontFamily !== undefined) event.appearance.fontFamily = fontFamily;
+
+  await event.save();
+  res.json(event);
+}
+
+async function updateSections(req, res) {
+  const event = req.event;
+  const { sections } = req.body;
+
+  if (!Array.isArray(sections)) {
+    return res.status(400).json({ message: 'sections debe ser un array' });
+  }
+
+  const validIds = Event.SECTION_TYPES;
+  const isValid = sections.every(
+    (section) => section && validIds.includes(section.id) && typeof section.order === 'number'
+  );
+  if (!isValid) {
+    return res.status(400).json({ message: 'Alguna sección tiene un id u order inválido' });
+  }
+
+  event.sections = sections.map((section) => ({
+    id: section.id,
+    enabled: Boolean(section.enabled),
+    order: section.order,
+    config: section.config || {},
+  }));
+
+  await event.save();
+  res.json(event);
+}
+
+async function signAppearanceUpload(req, res) {
+  const event = req.event;
+  const folder = `${event.gallerySettings?.cloudinaryFolder || `eventos/${event.eventSlug}`}/appearance`;
+  const timestamp = Math.round(Date.now() / 1000);
+
+  const signature = cloudinary.utils.api_sign_request(
+    { timestamp, folder },
+    process.env.CLOUDINARY_API_SECRET
+  );
+
+  res.json({
+    signature,
+    timestamp,
+    folder,
+    apiKey: process.env.CLOUDINARY_API_KEY,
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+  });
+}
+
+async function updateModerationModeForClient(req, res) {
+  const { moderationMode } = req.body;
+
+  if (!Event.MODERATION_MODES.includes(moderationMode)) {
+    return res.status(400).json({ message: 'Modo de moderación inválido' });
+  }
+
+  const event = req.event;
+  event.gallerySettings.moderationMode = moderationMode;
+  await event.save();
+
+  res.json(event);
+}
+
 module.exports = {
   getEventBySlug,
   listMyEvents,
   createEvent,
   getEventById,
   updateEventModules,
+  updateAppearance,
+  updateSections,
+  signAppearanceUpload,
+  updateModerationModeForClient,
 };

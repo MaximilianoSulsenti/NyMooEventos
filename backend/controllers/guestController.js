@@ -34,4 +34,9 @@ async function getGuestsByEvent(req, res) {
   res.json(guests);
 }
 
-module.exports = { submitRsvp, getGuestsByEvent };
+async function getGuestsForClient(req, res) {
+  const guests = await Guest.find({ eventId: req.event._id }).sort({ createdAt: -1 });
+  res.json(guests);
+}
+
+module.exports = { submitRsvp, getGuestsByEvent, getGuestsForClient };
