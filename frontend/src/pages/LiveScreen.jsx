@@ -66,7 +66,7 @@ function LiveCommentFeed({ items }) {
   if (items.length === 0) return null
 
   return (
-    <div className="fixed right-3 sm:right-10 bottom-20 sm:bottom-28 z-20 flex flex-col gap-3 sm:gap-3.5 items-end max-w-[80vw] sm:max-w-xs">
+    <div className="fixed right-3 sm:right-10 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-3 sm:gap-3.5 items-end max-w-[80vw] sm:max-w-xs">
       <AnimatePresence initial={false}>
         {items.map((item, index) => {
           const fromNewest = items.length - 1 - index
@@ -90,8 +90,9 @@ function LiveCommentFeed({ items }) {
               className="flex items-end justify-end gap-2.5 origin-bottom-right"
             >
               <div
-                className="relative rounded-2xl rounded-br-md backdrop-blur-md bg-black/55 px-3.5 py-2.5 sm:px-4 sm:py-3 shadow-2xl max-w-[210px] sm:max-w-[260px]"
+                className="relative rounded-2xl rounded-br-md backdrop-blur-md px-3.5 py-2.5 sm:px-4 sm:py-3 shadow-2xl max-w-[210px] sm:max-w-[260px]"
                 style={{
+                  background: color ? `linear-gradient(135deg, ${color}26, rgba(0,0,0,0.62))` : 'rgba(0,0,0,0.55)',
                   border: `1px solid ${borderColor}`,
                   boxShadow: isNewest && color ? `0 10px 28px -10px ${color}90` : undefined,
                 }}
@@ -110,8 +111,13 @@ function LiveCommentFeed({ items }) {
                   <p className="text-white text-sm sm:text-base font-medium drop-shadow-lg break-words">{item.text}</p>
                 )}
                 <div
-                  className="absolute -bottom-1.5 right-6 w-3 h-3 bg-black/55 rotate-45"
-                  style={{ borderRight: `1px solid ${borderColor}`, borderBottom: `1px solid ${borderColor}` }}
+                  className="absolute -bottom-1.5 right-6 w-3 h-3 rotate-45"
+                  style={{
+                    background: color ? color : 'rgba(0,0,0,0.55)',
+                    opacity: color ? 0.5 : 1,
+                    borderRight: `1px solid ${borderColor}`,
+                    borderBottom: `1px solid ${borderColor}`,
+                  }}
                 />
               </div>
 
@@ -325,9 +331,27 @@ function LiveScreen() {
               )}
               {photo.comment && (
                 <div className="absolute inset-x-0 bottom-2 flex justify-center px-2">
-                  <div className="max-w-[95%] rounded-xl backdrop-blur-md bg-black/40 border border-white/10 px-3 py-1.5 shadow-xl">
-                    <p className="text-white text-sm font-medium text-center drop-shadow-lg truncate">{photo.comment}</p>
-                  </div>
+                  {(() => {
+                    const gridColor = photo.guestName ? identityColor(photo.guestName) : null
+                    return (
+                      <div
+                        className="max-w-[95%] rounded-xl backdrop-blur-md px-3 py-1.5 shadow-xl"
+                        style={{
+                          background: gridColor
+                            ? `linear-gradient(135deg, ${gridColor}26, rgba(0,0,0,0.6))`
+                            : 'rgba(0,0,0,0.4)',
+                          border: `1px solid ${gridColor ? `${gridColor}80` : 'rgba(255,255,255,0.1)'}`,
+                        }}
+                      >
+                        {photo.guestName && (
+                          <p className="text-[10px] font-bold text-center truncate" style={{ color: gridColor }}>
+                            {photo.guestName}
+                          </p>
+                        )}
+                        <p className="text-white text-sm font-medium text-center drop-shadow-lg truncate">{photo.comment}</p>
+                      </div>
+                    )
+                  })()}
                 </div>
               )}
             </div>
