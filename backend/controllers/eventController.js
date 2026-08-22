@@ -1,5 +1,6 @@
 const Event = require('../models/Event');
 const cloudinary = require('../config/cloudinary');
+const { isAdminEmail } = require('../middleware/admin');
 
 function slugify(value) {
   return value
@@ -59,7 +60,10 @@ async function getEventBySlug(req, res) {
 }
 
 async function listMyEvents(req, res) {
-  const events = await Event.find({ organizerId: req.user._id }).sort({ createdAt: -1 });
+  // Los admins comparten un mismo espacio de trabajo: ven todos los
+  // eventos, no solo los que ellos mismos crearon.
+  const filter = isAdminEmail(req.user.email) ? {} : { organizerId: req.user._id };
+  const events = await Event.find(filter).sort({ createdAt: -1 });
   res.json(events);
 }
 

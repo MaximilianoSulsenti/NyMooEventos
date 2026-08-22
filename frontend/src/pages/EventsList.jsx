@@ -51,7 +51,12 @@ function EventsList() {
     }
   }
 
-  function handleLogout() {
+  async function handleLogout() {
+    try {
+      await api.post('/auth/logout')
+    } catch {
+      // si falla igual cerramos la sesión localmente
+    }
     clearSession()
     navigate('/')
   }
@@ -65,7 +70,7 @@ function EventsList() {
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div>
               <p className="text-white/50 text-sm">Hola, {user?.name}</p>
-              <h1 className="text-2xl font-semibold">Tus eventos</h1>
+              <h1 className="text-2xl font-semibold">Eventos</h1>
             </div>
             <button
               type="button"
@@ -83,7 +88,7 @@ function EventsList() {
           {loadState === 'ready' && (
             <div className="space-y-3">
               {events.length === 0 && (
-                <p className="text-white/40">Todavía no creaste ningún evento.</p>
+                <p className="text-white/40">Todavía no hay ningún evento creado.</p>
               )}
               {events.map((event, index) => (
                 <motion.div
