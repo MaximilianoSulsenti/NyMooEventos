@@ -10,6 +10,7 @@ import Confetti from '../components/Confetti'
 import LightBeams from '../components/LightBeams'
 import EmojiRain from '../components/EmojiRain'
 import { cloudinaryThumb, cloudinaryLarge } from '../utils/cloudinary'
+import { BRAND } from '../utils/brand'
 
 const ANNOUNCEMENT_POSITION_CLASSES = {
   top: 'top-8',
@@ -18,6 +19,17 @@ const ANNOUNCEMENT_POSITION_CLASSES = {
 }
 
 const MAX_CHAT_ITEMS = 4
+
+// Cada invitado que pone su nombre recibe un color de identidad estable (el
+// mismo nombre siempre da el mismo color), para poder reconocerlo de un
+// comentario a otro sin necesidad de leer el nombre cada vez.
+const IDENTITY_COLORS = [BRAND.blue, BRAND.pink, BRAND.lime, BRAND.orange, BRAND.violet]
+
+function identityColor(name) {
+  let hash = 0
+  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) >>> 0
+  return IDENTITY_COLORS[hash % IDENTITY_COLORS.length]
+}
 
 function PhotoCard({ photo, animationClass, fit }) {
   const mediaClassName = `rounded-lg ${fit === 'contain' ? 'object-contain' : 'w-full h-full object-cover'}`
@@ -44,18 +56,23 @@ function PhotoCard({ photo, animationClass, fit }) {
 }
 
 // Feed tipo "chat en vivo" al costado de la foto: los últimos comentarios
-// quedan apilados (el más nuevo abajo, con su colita apuntando a la foto y
-// efecto de tipeo), y los anteriores se van desvaneciendo y achicando hacia
-// arriba, como un chat de stream, hasta salir de la lista.
+// quedan apilados (el más nuevo abajo, con su colita apuntando a la foto,
+// efecto de tipeo y un anillo "en vivo" pulsando en su avatar), y los
+// anteriores se van desvaneciendo y achicando hacia arriba, como un chat de
+// stream, hasta salir de la lista. Quien pone su nombre recibe un color de
+// identidad propio (nombre + burbuja + avatar a juego); los anónimos quedan
+// en un estilo neutro, más discreto.
 function LiveCommentFeed({ items }) {
   if (items.length === 0) return null
 
   return (
-    <div className="fixed right-3 sm:right-10 bottom-20 sm:bottom-28 z-20 flex flex-col gap-2.5 sm:gap-3 items-end max-w-[78vw] sm:max-w-xs">
+    <div className="fixed right-3 sm:right-10 bottom-20 sm:bottom-28 z-20 flex flex-col gap-3 sm:gap-3.5 items-end max-w-[80vw] sm:max-w-xs">
       <AnimatePresence initial={false}>
         {items.map((item, index) => {
           const fromNewest = items.length - 1 - index
           const isNewest = fromNewest === 0
+          const color = item.guestName ? identityColor(item.guestName) : null
+          const borderColor = color ? `${color}80` : 'rgba(255,255,255,0.15)'
 
           return (
             <motion.div
@@ -70,9 +87,20 @@ function LiveCommentFeed({ items }) {
               }}
               exit={{ opacity: 0, scale: 0.4, x: 30, transition: { duration: 0.2 } }}
               transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-              className="flex items-end justify-end gap-2 origin-bottom-right"
+              className="flex items-end justify-end gap-2.5 origin-bottom-right"
             >
-              <div className="relative rounded-2xl backdrop-blur-md bg-black/55 border border-white/15 px-3.5 py-2.5 sm:px-4 sm:py-3 shadow-2xl max-w-[210px] sm:max-w-[260px]">
+              <div
+                className="relative rounded-2xl rounded-br-md backdrop-blur-md bg-black/55 px-3.5 py-2.5 sm:px-4 sm:py-3 shadow-2xl max-w-[210px] sm:max-w-[260px]"
+                style={{
+                  border: `1px solid ${borderColor}`,
+                  boxShadow: isNewest && color ? `0 10px 28px -10px ${color}90` : undefined,
+                }}
+              >
+                {item.guestName && (
+                  <p className="text-[11px] sm:text-xs font-bold mb-0.5 truncate" style={{ color }}>
+                    {item.guestName}
+                  </p>
+                )}
                 {isNewest ? (
                   <TypewriterText
                     text={item.text}
@@ -81,22 +109,37 @@ function LiveCommentFeed({ items }) {
                 ) : (
                   <p className="text-white text-sm sm:text-base font-medium drop-shadow-lg break-words">{item.text}</p>
                 )}
-                {isNewest && (
-                  <div className="absolute -bottom-1.5 right-6 w-3 h-3 bg-black/55 border-r border-b border-white/15 rotate-45" />
-                )}
+                <div
+                  className="absolute -bottom-1.5 right-6 w-3 h-3 bg-black/55 rotate-45"
+                  style={{ borderRight: `1px solid ${borderColor}`, borderBottom: `1px solid ${borderColor}` }}
+                />
               </div>
 
-              {item.thumbUrl ? (
-                <img
-                  src={cloudinaryThumb(item.thumbUrl, 80)}
-                  alt=""
-                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-white/25 shadow-lg shrink-0"
-                />
-              ) : (
-                <span className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-white/15 border-2 border-white/25 shadow-lg shrink-0">
-                  <Video className="w-4 h-4 text-white" />
-                </span>
-              )}
+              <div className="relative shrink-0">
+                {isNewest && color && (
+                  <motion.span
+                    className="absolute inset-0 rounded-full"
+                    style={{ boxShadow: `0 0 0 2px ${color}` }}
+                    animate={{ opacity: [0.7, 0, 0.7], scale: [1, 1.45, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: 'easeOut' }}
+                  />
+                )}
+                {item.thumbUrl ? (
+                  <img
+                    src={cloudinaryThumb(item.thumbUrl, 80)}
+                    alt=""
+                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover shadow-lg"
+                    style={{ border: `2px solid ${color || 'rgba(255,255,255,0.25)'}` }}
+                  />
+                ) : (
+                  <span
+                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-white/15 shadow-lg"
+                    style={{ border: `2px solid ${color || 'rgba(255,255,255,0.25)'}` }}
+                  >
+                    <Video className="w-4 h-4 text-white" />
+                  </span>
+                )}
+              </div>
             </motion.div>
           )
         })}
@@ -230,6 +273,7 @@ function LiveScreen() {
       const entry = {
         id: currentSingleKey,
         text: currentSinglePhoto.comment,
+        guestName: currentSinglePhoto.guestName || '',
         thumbUrl: currentSinglePhoto.assetType === 'video' ? null : currentSinglePhoto.cloudinaryUrl,
       }
       return [...prev, entry].slice(-MAX_CHAT_ITEMS)

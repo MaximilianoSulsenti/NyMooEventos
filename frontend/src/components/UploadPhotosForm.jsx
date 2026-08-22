@@ -28,6 +28,13 @@ function UploadPhotosForm({ eventSlug, primaryColor = '#a855f7', allowVideos = f
   const fileInputRef = useRef(null)
   const [items, setItems] = useState([]) // { file, type: 'image' | 'video' }
   const [comment, setComment] = useState('')
+  const [guestName, setGuestName] = useState(() => {
+    try {
+      return localStorage.getItem('nymoo_guest_name') || ''
+    } catch {
+      return ''
+    }
+  })
   const [status, setStatus] = useState('idle') // idle | uploading | success | error
   const [progress, setProgress] = useState({ done: 0, total: 0 })
   const [errorMessage, setErrorMessage] = useState('')
@@ -68,6 +75,16 @@ function UploadPhotosForm({ eventSlug, primaryColor = '#a855f7', allowVideos = f
 
   function removeItem(index) {
     setItems((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  function handleGuestNameChange(e) {
+    const value = e.target.value.slice(0, 40)
+    setGuestName(value)
+    try {
+      localStorage.setItem('nymoo_guest_name', value)
+    } catch {
+      // localStorage puede fallar en modo privado; no es crítico
+    }
   }
 
   async function uploadSingleItem(item, signCache) {
@@ -116,6 +133,7 @@ function UploadPhotosForm({ eventSlug, primaryColor = '#a855f7', allowVideos = f
       duration: cloudinaryData.duration,
       bytes: cloudinaryData.bytes,
       comment,
+      guestName,
     })
   }
 
@@ -209,6 +227,15 @@ function UploadPhotosForm({ eventSlug, primaryColor = '#a855f7', allowVideos = f
             : 'Tomar foto o elegir de la galería'}
       </Button>
       {warning && <p className="text-yellow-400 text-xs text-center">{warning}</p>}
+
+      <input
+        type="text"
+        value={guestName}
+        onChange={handleGuestNameChange}
+        placeholder="Tu nombre (opcional)"
+        maxLength={40}
+        className="w-full max-w-sm rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30"
+      />
 
       <textarea
         value={comment}

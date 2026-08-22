@@ -82,6 +82,7 @@ async function registerPhoto(req, res) {
     secure_url: secureUrl,
     public_id: publicId,
     comment,
+    guestName,
     resourceType,
     duration,
     bytes,
@@ -93,6 +94,9 @@ async function registerPhoto(req, res) {
   }
   if (comment && comment.length > 60) {
     return res.status(400).json({ message: 'El comentario no puede superar los 60 caracteres' });
+  }
+  if (guestName && guestName.length > 40) {
+    return res.status(400).json({ message: 'El nombre no puede superar los 40 caracteres' });
   }
 
   const event = await Event.findById(eventId);
@@ -121,12 +125,13 @@ async function registerPhoto(req, res) {
   }
 
   const cleanComment = (comment || '').trim().slice(0, 60);
+  const cleanGuestName = (guestName || '').trim().slice(0, 40);
   const moderationMode = event.gallerySettings?.moderationMode || 'automatica';
 
   let status = 'aprobada';
   if (moderationMode === 'manual') {
     status = 'pendiente';
-  } else if (moderationMode === 'semiautomatica' && containsBannedWord(cleanComment)) {
+  } else if (moderationMode === 'semiautomatica' && (containsBannedWord(cleanComment) || containsBannedWord(cleanGuestName))) {
     status = 'pendiente';
   }
 
@@ -138,6 +143,7 @@ async function registerPhoto(req, res) {
     publicId: safePublicId,
     assetType,
     comment: cleanComment,
+    guestName: cleanGuestName,
     status,
   });
 

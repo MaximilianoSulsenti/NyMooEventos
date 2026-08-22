@@ -7,6 +7,7 @@ const photoSchema = new mongoose.Schema(
     publicId: { type: String, default: '' },
     assetType: { type: String, enum: ['image', 'video'], default: 'image' },
     comment: { type: String, maxlength: 60, default: '' },
+    guestName: { type: String, maxlength: 40, default: '' },
     status: {
       type: String,
       enum: ['pendiente', 'aprobada', 'rechazada'],

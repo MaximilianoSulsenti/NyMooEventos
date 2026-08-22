@@ -570,7 +570,16 @@ function GalleryControl() {
                     <img src={cloudinaryThumb(photo.cloudinaryUrl)} alt="" className="w-full h-full object-cover" />
                   )}
                 </div>
-                {photo.comment && <p className="text-xs text-neutral-400 px-2 pt-2 truncate">{photo.comment}</p>}
+                {(photo.guestName || photo.comment) && (
+                  <div className="px-2 pt-2">
+                    {photo.guestName && (
+                      <p className="text-xs font-semibold truncate" style={{ color: primaryColor }}>
+                        {photo.guestName}
+                      </p>
+                    )}
+                    {photo.comment && <p className="text-xs text-neutral-400 truncate">{photo.comment}</p>}
+                  </div>
+                )}
                 <div className="flex gap-2 p-2">
                   {activeTab !== 'aprobada' && (
                     <button
