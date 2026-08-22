@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ExternalLink } from 'lucide-react'
 import QrCode from './QrCode'
 import { BRAND } from '../../utils/brand'
 import { getContrastTextColor } from '../../utils/color'
@@ -37,6 +38,16 @@ function CopyField({ label, url }) {
         >
           {copied ? 'Copiado' : 'Copiar'}
         </button>
+        <a
+          href={url}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={`Abrir ${label} en una pestaña nueva`}
+          title="Abrir en una pestaña nueva"
+          className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:text-white hover:bg-white/10 transition shrink-0"
+        >
+          <ExternalLink className="w-4 h-4" />
+        </a>
       </div>
     </div>
   )
