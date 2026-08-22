@@ -1,0 +1,23 @@
+name: Backup diario de MongoDB
+
+on:
+  schedule:
+    - cron: '0 4 * * *' # 4am UTC (~1am Argentina), todos los días
+  workflow_dispatch: {} # permite dispararlo a mano desde la pestaña Actions
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disparar backup en el backend
+        run: |
+          status=$(curl -s -o /tmp/backup_response.json -w "%{http_code}" --max-time 90 -X POST \
+            -H "x-backup-secret: ${{ secrets.BACKUP_SECRET }}" \
+            https://nymoo-backend.onrender.com/api/backup/run)
+          echo "Respuesta del backend:"
+          cat /tmp/backup_response.json
+          if [ "$status" != "200" ]; then
+            echo "El backup falló con status $status"
+            exit 1
+          fi
+          echo "Backup generado correctamente"
