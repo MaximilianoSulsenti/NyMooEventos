@@ -225,6 +225,43 @@ async function deletePhoto(req, res) {
   res.json({ message: 'Foto eliminada' });
 }
 
+// Cloudinary arma el ZIP al vuelo firmando una URL con todos los public_ids en
+// la query string. Pasadas ~210-215 fotos esa URL se vuelve tan larga que
+// Cloudinary la rechaza (414 Request-URI Too Large) -- se probó en vivo contra
+// la cuenta real. Por eso se divide en partes de a lo sumo 150 para que un
+// álbum grande nunca falle, solo se descargue en más de un archivo.
+const MAX_PHOTOS_PER_ZIP = 150;
+
+function chunk(array, size) {
+  const chunks = [];
+  for (let i = 0; i < array.length; i += size) {
+    chunks.push(array.slice(i, i + size));
+  }
+  return chunks;
+}
+
+async function getAlbumZipUrl(req, res) {
+  const assetType = req.query.type === 'video' ? 'video' : 'image';
+
+  const photos = await Photo.find({ eventId: req.event._id, status: 'aprobada', assetType });
+
+  const publicIds = photos
+    .map((photo) => photo.publicId || extractPublicIdFromUrl(photo.cloudinaryUrl))
+    .filter(Boolean);
+
+  if (publicIds.length === 0) {
+    return res.status(404).json({
+      message: assetType === 'video' ? 'Todavía no hay videos aprobados para descargar' : 'Todavía no hay fotos aprobadas para descargar',
+    });
+  }
+
+  const parts = chunk(publicIds, MAX_PHOTOS_PER_ZIP).map((ids) =>
+    cloudinary.utils.download_zip_url({ public_ids: ids, resource_type: assetType })
+  );
+
+  res.json({ parts, count: publicIds.length });
+}
+
 module.exports = {
   signUpload,
   registerPhoto,
@@ -232,4 +269,5 @@ module.exports = {
   getPhotosForClient,
   updatePhotoStatus,
   deletePhoto,
+  getAlbumZipUrl,
 };

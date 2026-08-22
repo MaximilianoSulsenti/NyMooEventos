@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { motion } from 'motion/react'
-import { Play, Pause, Megaphone, X, Tv, QrCode as QrCodeIcon, Trash2 } from 'lucide-react'
+import { Play, Pause, Megaphone, X, Tv, QrCode as QrCodeIcon, Trash2, Download } from 'lucide-react'
 import api from '../services/api'
 import socket from '../services/socket'
 import PageBackground from '../components/PageBackground'
@@ -73,6 +73,9 @@ function GalleryControl() {
   const [announcementPosition, setAnnouncementPosition] = useState('bottom')
   const [announcementFontSize, setAnnouncementFontSize] = useState('text-xl')
   const [announcementSent, setAnnouncementSent] = useState(false)
+  const [albumState, setAlbumState] = useState('idle') // idle | 'loading:image' | 'loading:video'
+  const [albumResult, setAlbumResult] = useState(null) // { type, parts, count } | null
+  const [albumError, setAlbumError] = useState('')
 
   useEffect(() => {
     if (!token) {
@@ -219,6 +222,20 @@ function GalleryControl() {
     sendAnnouncement('')
   }
 
+  async function handleGenerateAlbum(type) {
+    setAlbumState(`loading:${type}`)
+    setAlbumError('')
+    setAlbumResult(null)
+    try {
+      const { data } = await api.get(`/photos/client/${eventSlug}/album-zip`, { params: { type, token } })
+      setAlbumResult({ type, ...data })
+    } catch (err) {
+      setAlbumError(err.response?.data?.message || 'No se pudo generar la descarga')
+    } finally {
+      setAlbumState('idle')
+    }
+  }
+
   async function updateStatus(photoId, status) {
     setPhotos((prev) => prev.map((p) => (p._id === photoId ? { ...p, status } : p)))
     try {
@@ -317,6 +334,61 @@ function GalleryControl() {
               Acceso Invitados
             </motion.button>
           </div>
+        </div>
+
+        <div className="rounded-xl bg-neutral-900 border border-white/10 p-4 space-y-3">
+          <div>
+            <p className="text-sm font-medium">Descargar álbum</p>
+            <p className="text-xs text-neutral-500 mt-0.5">
+              Arma un ZIP con las fotos/videos ya aprobados para que los novios se lo lleven antes de que se borre la carpeta del evento.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => handleGenerateAlbum('image')}
+              disabled={albumState === 'loading:image'}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition disabled:opacity-40"
+              style={{ background: primaryColor, color: getContrastTextColor(primaryColor) }}
+            >
+              <Download className="w-4 h-4" />
+              {albumState === 'loading:image' ? 'Generando...' : 'Fotos (ZIP)'}
+            </button>
+            {event?.gallerySettings?.allowVideos && (
+              <button
+                type="button"
+                onClick={() => handleGenerateAlbum('video')}
+                disabled={albumState === 'loading:video'}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-white/10 text-sm font-medium transition disabled:opacity-40"
+              >
+                <Download className="w-4 h-4" />
+                {albumState === 'loading:video' ? 'Generando...' : 'Videos (ZIP)'}
+              </button>
+            )}
+          </div>
+
+          {albumError && <p className="text-xs text-red-400">{albumError}</p>}
+
+          {albumResult && (
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <span className="text-xs text-neutral-400">
+                {albumResult.count} {albumResult.type === 'video' ? 'video(s)' : 'foto(s)'} listas
+                {albumResult.parts.length > 1 ? `, en ${albumResult.parts.length} partes:` : ':'}
+              </span>
+              {albumResult.parts.map((url, index) => (
+                <a
+                  key={url}
+                  href={url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-xs underline underline-offset-2 hover:brightness-125"
+                  style={{ color: primaryColor }}
+                >
+                  {albumResult.parts.length > 1 ? `Descargar parte ${index + 1}` : 'Descargar'}
+                </a>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="rounded-xl bg-gradient-to-br from-pink-950/40 to-neutral-900 border border-pink-500/20 p-4 space-y-4">
