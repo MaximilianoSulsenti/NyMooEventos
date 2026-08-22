@@ -15,7 +15,7 @@ function GlassPanel({ children, className, accentColor, as: Component = 'div', s
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       className={cn(
-        'relative rounded-3xl border border-white/10 bg-neutral-950/75 backdrop-blur-xl shadow-2xl overflow-hidden',
+        'relative z-20 rounded-3xl border border-white/10 bg-neutral-950/75 backdrop-blur-xl shadow-2xl overflow-hidden',
         className
       )}
       style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 25px 50px -12px rgba(0,0,0,0.6)', ...style }}

@@ -4,6 +4,7 @@ import { X, Check } from 'lucide-react'
 import api from '../services/api'
 import Button from './ui/Button'
 import { shadeColor } from '../utils/color'
+import useLockBodyScroll from '../hooks/useLockBodyScroll'
 
 const inputClass =
   'w-full rounded-lg bg-neutral-800 border border-white/10 px-3 py-2 outline-none transition-colors focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30'
@@ -16,6 +17,7 @@ function parseDietaryOptions(raw = '') {
 }
 
 function RsvpForm({ eventSlug, primaryColor = '#a855f7', dietaryOptions, extraQuestions, onClose }) {
+  useLockBodyScroll()
   const [name, setName] = useState('')
   const [attending, setAttending] = useState('confirmado')
   const [dietaryRestrictions, setDietaryRestrictions] = useState('')

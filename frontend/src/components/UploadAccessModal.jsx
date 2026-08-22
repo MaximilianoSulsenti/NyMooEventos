@@ -5,8 +5,10 @@ import QrCode from './dashboard/QrCode'
 import Button from './ui/Button'
 import { BRAND } from '../utils/brand'
 import { shadeColor } from '../utils/color'
+import useLockBodyScroll from '../hooks/useLockBodyScroll'
 
 function UploadAccessModal({ eventSlug, onClose }) {
+  useLockBodyScroll()
   const uploadUrl = `${window.location.origin}/evento/${eventSlug}/upload`
   const [copied, setCopied] = useState(false)
   const light = shadeColor(BRAND.blue, 25)
@@ -38,7 +40,7 @@ function UploadAccessModal({ eventSlug, onClose }) {
           className="rounded-3xl p-px w-full max-w-sm shadow-2xl"
           style={{ background: `linear-gradient(160deg, ${light}90, transparent 45%, ${dark}70)` }}
         >
-        <div className="bg-neutral-900 text-white rounded-[calc(1.5rem-1px)] p-6 relative">
+        <div className="bg-neutral-900 text-white rounded-[calc(1.5rem-1px)] p-6 relative max-h-[90vh] overflow-y-auto">
           <button
             type="button"
             onClick={onClose}

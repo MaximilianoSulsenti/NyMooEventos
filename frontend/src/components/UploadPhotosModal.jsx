@@ -1,8 +1,11 @@
 import { motion, AnimatePresence } from 'motion/react'
 import { X } from 'lucide-react'
 import UploadPhotosForm from './UploadPhotosForm'
+import useLockBodyScroll from '../hooks/useLockBodyScroll'
 
 function UploadPhotosModal({ eventSlug, primaryColor, allowVideos, onClose }) {
+  useLockBodyScroll()
+
   return (
     <AnimatePresence>
       <motion.div
@@ -16,7 +19,7 @@ function UploadPhotosModal({ eventSlug, primaryColor, allowVideos, onClose }) {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.25 }}
-          className="bg-neutral-900 text-white rounded-2xl w-full max-w-md p-6 relative shadow-2xl border border-white/10"
+          className="bg-neutral-900 text-white rounded-2xl w-full max-w-md p-6 relative shadow-2xl border border-white/10 max-h-[90vh] overflow-y-auto"
         >
           <button
             type="button"
