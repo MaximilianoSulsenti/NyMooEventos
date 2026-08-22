@@ -69,6 +69,7 @@ function GalleryControl() {
   const [lightBeamsOn, setLightBeamsOn] = useState(false)
   const [emojiRainOn, setEmojiRainOn] = useState(false)
   const [speedSeconds, setSpeedSeconds] = useState(7)
+  const [maxLivePhotos, setMaxLivePhotos] = useState(60)
   const [isPaused, setIsPaused] = useState(false)
   const [announcementText, setAnnouncementText] = useState('')
   const [announcementPosition, setAnnouncementPosition] = useState('bottom')
@@ -94,6 +95,7 @@ function GalleryControl() {
         setEvent(eventRes.data)
         setModerationMode(gallerySettings.moderationMode || 'automatica')
         setSpeedSeconds(gallerySettings.playbackSpeed || 7)
+        setMaxLivePhotos(gallerySettings.maxLivePhotos || 60)
         setPartyMode(Boolean(gallerySettings.partyMode))
         setPartyLayout(gallerySettings.partyLayout || 'grid')
         setConfettiOn(Boolean(gallerySettings.confetti))
@@ -202,6 +204,19 @@ function GalleryControl() {
     clearTimeout(speedSaveTimeout.current)
     speedSaveTimeout.current = setTimeout(() => {
       api.patch(`/events/client/${eventSlug}/playback-speed`, { seconds: value }, { params: { token } }).catch(() => {})
+    }, 500)
+  }
+
+  const maxLivePhotosSaveTimeout = useRef(null)
+
+  function handleMaxLivePhotosChange(value) {
+    setMaxLivePhotos(value)
+
+    clearTimeout(maxLivePhotosSaveTimeout.current)
+    maxLivePhotosSaveTimeout.current = setTimeout(() => {
+      api
+        .patch(`/events/client/${eventSlug}/max-live-photos`, { maxLivePhotos: value }, { params: { token } })
+        .catch(() => {})
     }, 500)
   }
 
@@ -460,6 +475,24 @@ function GalleryControl() {
                 className="flex-1 accent-[var(--accent)]"
               />
             </div>
+          </div>
+
+          <div className="pt-3 border-t border-white/10">
+            <p className="text-xs text-neutral-400 mb-1">
+              Límite de fotos en pantalla: {maxLivePhotos}
+            </p>
+            <p className="text-xs text-neutral-500 mb-2">
+              Cuántas de las fotos aprobadas más recientes se repiten en bucle. Evita que, con muchas fotos subidas, la pantalla vuelva a arrancar desde la primera.
+            </p>
+            <input
+              type="range"
+              min={10}
+              max={300}
+              step={10}
+              value={maxLivePhotos}
+              onChange={(e) => handleMaxLivePhotosChange(Number(e.target.value))}
+              className="w-full accent-[var(--accent)]"
+            />
           </div>
 
           <div className="pt-3 border-t border-white/10 space-y-2">

@@ -16,6 +16,7 @@ const {
   signAppearanceUpload,
   updateModerationModeForClient,
   updatePlaybackSpeedForClient,
+  updateMaxLivePhotosForClient,
   updateLiveControlsForClient,
 } = require('../controllers/eventController');
 const { requireAuth } = require('../middleware/auth');
@@ -42,6 +43,7 @@ router.patch('/:eventId/sections', requireAuth, requireEventOwnership, updateSec
 router.get('/:eventId/appearance/sign', requireAuth, requireEventOwnership, signAppearanceUpload);
 router.patch('/client/:eventSlug/moderation-mode', requireClientToken, updateModerationModeForClient);
 router.patch('/client/:eventSlug/playback-speed', requireClientToken, updatePlaybackSpeedForClient);
+router.patch('/client/:eventSlug/max-live-photos', requireClientToken, updateMaxLivePhotosForClient);
 router.patch('/client/:eventSlug/live-controls', requireClientToken, updateLiveControlsForClient);
 
 module.exports = router;

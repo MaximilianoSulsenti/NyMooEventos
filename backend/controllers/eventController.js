@@ -340,6 +340,20 @@ async function updatePlaybackSpeedForClient(req, res) {
   res.json(event);
 }
 
+async function updateMaxLivePhotosForClient(req, res) {
+  const maxLivePhotos = Number(req.body.maxLivePhotos);
+
+  if (!Number.isFinite(maxLivePhotos) || maxLivePhotos < 10 || maxLivePhotos > 300) {
+    return res.status(400).json({ message: 'El límite de fotos en vivo debe estar entre 10 y 300' });
+  }
+
+  const event = req.event;
+  event.gallerySettings.maxLivePhotos = maxLivePhotos;
+  await event.save();
+
+  res.json(event);
+}
+
 module.exports = {
   getEventBySlug,
   listMyEvents,
@@ -357,5 +371,6 @@ module.exports = {
   signAppearanceUpload,
   updateModerationModeForClient,
   updatePlaybackSpeedForClient,
+  updateMaxLivePhotosForClient,
   updateLiveControlsForClient,
 };
