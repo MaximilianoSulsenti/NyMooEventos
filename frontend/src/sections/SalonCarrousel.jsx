@@ -3,7 +3,12 @@ import { motion, AnimatePresence } from 'motion/react'
 import CarouselArrows from '../components/ui/CarouselArrows'
 
 function SalonCarrousel({ config, styles }) {
-  const images = [config.image1, config.image2, config.image3].filter(Boolean)
+  const images = [
+    config.image1,
+    config.image2,
+    config.image3,
+    ...(Array.isArray(config.images) ? config.images : []),
+  ].filter(Boolean)
   const speedMs = (config.transitionSpeed || 4) * 1000
   const titleSize = config.fontSizeTitle || 'text-lg'
   const [index, setIndex] = useState(0)

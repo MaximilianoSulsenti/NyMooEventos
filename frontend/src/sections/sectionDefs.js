@@ -130,7 +130,15 @@ export const GLASS_FIELD_DEFS = [
   },
 ]
 
-export const SECTIONS_WITH_GLASS_CARD = ['EventDetail', 'Location', 'Info', 'MusicPlaylist', 'RSVP', 'GiftRegistry']
+export const SECTIONS_WITH_GLASS_CARD = [
+  'EventDetail',
+  'Location',
+  'Info',
+  'MusicPlaylist',
+  'RSVP',
+  'GiftRegistry',
+  'InstagramSection',
+]
 
 export const SECTION_FIELD_DEFS = {
   Hero: [
@@ -251,6 +259,7 @@ export const SECTION_FIELD_DEFS = {
     { key: 'image1', label: 'Imagen 1', type: 'image' },
     { key: 'image2', label: 'Imagen 2', type: 'image' },
     { key: 'image3', label: 'Imagen 3', type: 'image' },
+    { key: 'images', label: 'Fotos adicionales (opcional, para sumar más de 3 al carrusel)', type: 'imageList' },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
     { key: 'transitionSpeed', label: 'Velocidad de transición (segundos)', type: 'range', min: 2, max: 10, step: 1 },
   ],
@@ -281,9 +290,12 @@ export const SECTION_FIELD_DEFS = {
   ],
   InstagramSection: [
     { key: 'title', label: 'Título (opcional)', type: 'text' },
+    { key: 'subtitle', label: 'Subtítulo (opcional)', type: 'text' },
     { key: 'buttonText', label: 'Texto del botón', type: 'text' },
     { key: 'instagramUrl', label: 'Link de Instagram (perfil o publicación del evento)', type: 'text' },
+    { key: 'accentColor', label: 'Color de acento (vacío = degradado clásico de Instagram)', type: 'color' },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
+    { key: 'fontSizeSubtitle', label: 'Tamaño del subtítulo', type: 'select', options: FONT_SIZE_OPTIONS },
   ],
   Timeline: [
     { key: 'title', label: 'Título', type: 'text' },
