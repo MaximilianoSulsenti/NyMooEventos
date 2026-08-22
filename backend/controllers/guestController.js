@@ -2,7 +2,7 @@ const Event = require('../models/Event');
 const Guest = require('../models/Guest');
 
 async function submitRsvp(req, res) {
-  const { eventSlug, name, status, dietaryRestrictions, companionsCount, extraAnswers } = req.body;
+  const { eventSlug, name, status, dietaryRestrictions, songRequest, companionsCount, extraAnswers } = req.body;
 
   if (!eventSlug || !name) {
     return res.status(400).json({ message: 'eventSlug y name son requeridos' });
@@ -30,6 +30,7 @@ async function submitRsvp(req, res) {
     name,
     status: status || 'pendiente',
     dietaryRestrictions: dietaryRestrictions || '',
+    songRequest: (songRequest || '').trim().slice(0, 150),
     companionsCount: companionsCount || 0,
     extraAnswers: cleanExtraAnswers,
   });

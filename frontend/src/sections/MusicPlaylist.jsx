@@ -1,5 +1,7 @@
-import { Music2 } from 'lucide-react'
-import { motion } from 'motion/react'
+import { useState } from 'react'
+import { Music2, Send, CheckCircle2 } from 'lucide-react'
+import { motion, AnimatePresence } from 'motion/react'
+import api from '../services/api'
 import Button from '../components/ui/Button'
 import AnimatedIcon from '../components/AnimatedIcon'
 import { glassStyle, glassBlurClass } from '../utils/glass'
@@ -38,12 +40,99 @@ function toEmbedUrl(url) {
   }
 }
 
-function MusicPlaylist({ config, appearance, styles }) {
+function SongRequestForm({ eventSlug, primaryColor }) {
+  const [name, setName] = useState('')
+  const [song, setSong] = useState('')
+  const [status, setStatus] = useState('idle') // idle | sending | success | error
+  const [errorMessage, setErrorMessage] = useState('')
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    if (!name.trim() || !song.trim()) return
+
+    setStatus('sending')
+    setErrorMessage('')
+    try {
+      await api.post('/guests/rsvp', {
+        eventSlug,
+        name: name.trim(),
+        songRequest: song.trim(),
+      })
+      setStatus('success')
+      setSong('')
+    } catch (err) {
+      setStatus('error')
+      setErrorMessage(err.response?.data?.message || 'No se pudo enviar tu sugerencia')
+    }
+  }
+
+  return (
+    <div className="w-full pt-5 mt-5 border-t border-white/10" style={{ '--accent': primaryColor }}>
+      <p className="text-white/70 text-sm mb-3">¿Qué canción no puede faltar en la fiesta? 🎶</p>
+
+      <AnimatePresence mode="wait">
+        {status === 'success' ? (
+          <motion.p
+            key="success"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center justify-center gap-2 text-green-400 text-sm py-2"
+          >
+            <CheckCircle2 className="w-4 h-4 shrink-0" />
+            ¡Gracias! La sumamos a la lista.
+            <button
+              type="button"
+              onClick={() => setStatus('idle')}
+              className="underline underline-offset-2 hover:brightness-125 ml-1"
+              style={{ color: primaryColor }}
+            >
+              Sugerir otra
+            </button>
+          </motion.p>
+        ) : (
+          <motion.form
+            key="form"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-2.5 w-full"
+          >
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value.slice(0, 40))}
+              placeholder="Tu nombre"
+              required
+              className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30"
+            />
+            <input
+              type="text"
+              value={song}
+              onChange={(e) => setSong(e.target.value.slice(0, 150))}
+              placeholder="Nombre de la canción o link de Spotify/YouTube"
+              required
+              className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30"
+            />
+            {status === 'error' && <p className="text-red-400 text-xs">{errorMessage}</p>}
+            <Button type="submit" disabled={status === 'sending'} primaryColor={primaryColor} className="w-full disabled:opacity-40">
+              <Send className="w-4 h-4" />
+              {status === 'sending' ? 'Enviando...' : 'Sugerir canción'}
+            </Button>
+          </motion.form>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+function MusicPlaylist({ event, config, appearance, styles }) {
   const url = config.playlistUrl
-  if (!url) return null
-  const embed = toEmbedUrl(url)
+  const embed = url ? toEmbedUrl(url) : null
   const titleSize = config.fontSizeTitle || 'text-lg'
   const primaryColor = appearance?.primaryColor
+  const canRequestSongs = Boolean(event?.activeModules?.guestControl)
+
+  if (!url && !canRequestSongs) return null
 
   return (
     <section className={`px-6 ${styles.fontClass}`}>
@@ -88,10 +177,14 @@ function MusicPlaylist({ config, appearance, styles }) {
             />
           </div>
         ) : (
-          <Button as="a" href={url} target="_blank" rel="noreferrer" primaryColor={primaryColor}>
-            Escuchar playlist
-          </Button>
+          url && (
+            <Button as="a" href={url} target="_blank" rel="noreferrer" primaryColor={primaryColor}>
+              Escuchar playlist
+            </Button>
+          )
         )}
+
+        {canRequestSongs && <SongRequestForm eventSlug={event.eventSlug} primaryColor={primaryColor} />}
       </motion.div>
     </section>
   )

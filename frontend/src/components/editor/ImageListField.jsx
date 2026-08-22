@@ -1,8 +1,10 @@
-import { useState } from 'react'
-import { Trash2 } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { Trash2, ImagePlus } from 'lucide-react'
 import api from '../../services/api'
+import { BRAND } from '../../utils/brand'
 
 function ImageListField({ eventId, label, images, onChange }) {
+  const fileInputRef = useRef(null)
   const list = Array.isArray(images) ? images : []
   const [status, setStatus] = useState('idle') // idle | uploading | error
 
@@ -36,6 +38,8 @@ function ImageListField({ eventId, label, images, onChange }) {
       setStatus('idle')
     } catch {
       setStatus('error')
+    } finally {
+      event.target.value = ''
     }
   }
 
@@ -64,14 +68,16 @@ function ImageListField({ eventId, label, images, onChange }) {
         </div>
       )}
 
-      <input
-        type="file"
-        accept="image/*"
-        multiple
-        onChange={handleFileChange}
-        className="text-xs text-neutral-400"
-      />
-      {status === 'uploading' && <p className="text-xs text-neutral-500 mt-1">Subiendo...</p>}
+      <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleFileChange} className="hidden" />
+      <button
+        type="button"
+        onClick={() => fileInputRef.current?.click()}
+        disabled={status === 'uploading'}
+        className="flex items-center gap-2 rounded-lg bg-neutral-800 border border-white/10 px-3 py-2 text-sm text-neutral-300 hover:text-white hover:border-white/20 transition disabled:opacity-50"
+      >
+        <ImagePlus className="w-4 h-4" style={{ color: BRAND.blue }} />
+        {status === 'uploading' ? 'Subiendo...' : 'Agregar imágenes'}
+      </button>
       {status === 'error' && <p className="text-xs text-red-400 mt-1">No se pudo subir alguna imagen</p>}
     </div>
   )

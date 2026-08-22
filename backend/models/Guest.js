@@ -10,6 +10,7 @@ const guestSchema = new mongoose.Schema(
       default: 'pendiente',
     },
     dietaryRestrictions: { type: String, default: '' },
+    songRequest: { type: String, default: '', maxlength: 150 },
     companionsCount: { type: Number, default: 0 },
     extraAnswers: { type: mongoose.Schema.Types.Mixed, default: {} },
   },

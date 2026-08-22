@@ -27,6 +27,7 @@ function GuestsTable({ guests }) {
             <th className="px-4 py-3 font-medium">Estado</th>
             <th className="px-4 py-3 font-medium">Acompañantes</th>
             <th className="px-4 py-3 font-medium">Restricciones</th>
+            <th className="px-4 py-3 font-medium">Canción</th>
             <th className="px-4 py-3 font-medium" />
           </tr>
         </thead>
@@ -46,6 +47,7 @@ function GuestsTable({ guests }) {
                   </td>
                   <td className="px-4 py-3">{guest.companionsCount}</td>
                   <td className="px-4 py-3 text-neutral-400">{guest.dietaryRestrictions || '—'}</td>
+                  <td className="px-4 py-3 text-neutral-400 max-w-[160px] truncate">{guest.songRequest || '—'}</td>
                   <td className="px-4 py-3 text-right">
                     {extraEntries.length > 0 && (
                       <button
@@ -61,7 +63,7 @@ function GuestsTable({ guests }) {
                 </tr>
                 {isExpanded && extraEntries.length > 0 && (
                   <tr className="border-b border-white/5 last:border-0 bg-black/20">
-                    <td colSpan={5} className="px-4 py-3">
+                    <td colSpan={6} className="px-4 py-3">
                       <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-xs">
                         {extraEntries.map(([question, answer]) => (
                           <div key={question} className="flex gap-2">

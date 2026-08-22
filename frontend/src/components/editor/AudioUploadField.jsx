@@ -1,7 +1,10 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { Music2 } from 'lucide-react'
 import api from '../../services/api'
+import { BRAND } from '../../utils/brand'
 
 function AudioUploadField({ eventId, label, value, onChange }) {
+  const fileInputRef = useRef(null)
   const [status, setStatus] = useState('idle') // idle | uploading | error
 
   async function handleFileChange(event) {
@@ -31,6 +34,8 @@ function AudioUploadField({ eventId, label, value, onChange }) {
       setStatus('idle')
     } catch {
       setStatus('error')
+    } finally {
+      event.target.value = ''
     }
   }
 
@@ -38,8 +43,16 @@ function AudioUploadField({ eventId, label, value, onChange }) {
     <div>
       <label className="block text-sm text-neutral-400 mb-1">{label}</label>
       {value && <audio src={value} controls className="w-full h-9 mb-2" />}
-      <input type="file" accept="audio/*" onChange={handleFileChange} className="text-xs text-neutral-400" />
-      {status === 'uploading' && <p className="text-xs text-neutral-500 mt-1">Subiendo...</p>}
+      <input ref={fileInputRef} type="file" accept="audio/*" onChange={handleFileChange} className="hidden" />
+      <button
+        type="button"
+        onClick={() => fileInputRef.current?.click()}
+        disabled={status === 'uploading'}
+        className="flex items-center gap-2 rounded-lg bg-neutral-800 border border-white/10 px-3 py-2 text-sm text-neutral-300 hover:text-white hover:border-white/20 transition disabled:opacity-50"
+      >
+        <Music2 className="w-4 h-4" style={{ color: BRAND.blue }} />
+        {status === 'uploading' ? 'Subiendo...' : value ? 'Cambiar audio' : 'Elegir audio'}
+      </button>
       {status === 'error' && <p className="text-xs text-red-400 mt-1">No se pudo subir el audio</p>}
     </div>
   )
