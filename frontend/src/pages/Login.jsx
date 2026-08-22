@@ -13,8 +13,6 @@ const inputClass =
 
 function Login() {
   const navigate = useNavigate()
-  const [mode, setMode] = useState('login') // login | register
-  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [status, setStatus] = useState('idle') // idle | sending | error
@@ -30,9 +28,7 @@ function Login() {
     setErrorMessage('')
 
     try {
-      const endpoint = mode === 'login' ? '/auth/login' : '/auth/register'
-      const payload = mode === 'login' ? { email, password } : { name, email, password }
-      const { data } = await api.post(endpoint, payload)
+      const { data } = await api.post('/auth/login', { email, password })
       setSession(data.token, data.user)
       navigate('/eventos')
     } catch (err) {
@@ -61,44 +57,9 @@ function Login() {
       </div>
 
       <GlassPanel accentColor={BRAND.blue} className="w-full max-w-sm px-6 py-8 sm:px-8">
-        <div className="flex rounded-full bg-white/5 border border-white/10 p-1 mb-6">
-          <button
-            type="button"
-            onClick={() => setMode('login')}
-            className="flex-1 py-1.5 rounded-full text-sm font-medium transition-colors"
-            style={
-              mode === 'login'
-                ? { background: `linear-gradient(135deg, ${BRAND.blue}, ${BRAND.violet})`, color: '#ffffff' }
-                : { color: 'rgba(255,255,255,0.5)' }
-            }
-          >
-            Iniciar sesión
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode('register')}
-            className="flex-1 py-1.5 rounded-full text-sm font-medium transition-colors"
-            style={
-              mode === 'register'
-                ? { background: `linear-gradient(135deg, ${BRAND.blue}, ${BRAND.violet})`, color: '#ffffff' }
-                : { color: 'rgba(255,255,255,0.5)' }
-            }
-          >
-            Registrarme
-          </button>
-        </div>
+        <h2 className="text-center text-sm text-white/50 mb-6 uppercase tracking-widest">Acceso privado</h2>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3" style={{ '--accent': BRAND.blue }}>
-          {mode === 'register' && (
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Nombre"
-              required
-              className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm outline-none transition-colors focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30"
-            />
-          )}
           <div className="relative">
             <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" />
             <input
@@ -131,7 +92,7 @@ function Login() {
             primaryColor={BRAND.blue}
             className="w-full mt-2 disabled:opacity-40"
           >
-            {status === 'sending' ? 'Enviando...' : mode === 'login' ? 'Entrar' : 'Crear cuenta'}
+            {status === 'sending' ? 'Enviando...' : 'Entrar'}
             {status !== 'sending' && <ArrowRight className="w-4 h-4" />}
           </Button>
         </form>

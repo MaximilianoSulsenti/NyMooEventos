@@ -28,6 +28,13 @@ async function register(req, res) {
     return res.status(400).json({ message: 'La contraseña debe tener al menos 8 caracteres' });
   }
 
+  // Plataforma privada: solo se puede crear cuenta con un email que el
+  // administrador ya haya agregado a ADMIN_EMAILS. Cerrar el acceso público
+  // reutiliza esa misma lista en vez de sumar un mecanismo nuevo.
+  if (!isAdminEmail(email)) {
+    return res.status(403).json({ message: 'El registro está cerrado. Contactá al administrador para que te habilite.' });
+  }
+
   const existing = await User.findOne({ email: email.toLowerCase() });
   if (existing) {
     return res.status(409).json({ message: 'Ya existe una cuenta con ese email' });
