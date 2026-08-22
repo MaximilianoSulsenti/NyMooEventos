@@ -10,7 +10,7 @@ import Confetti from '../components/Confetti'
 import LightBeams from '../components/LightBeams'
 import EmojiRain from '../components/EmojiRain'
 import { cloudinaryThumb, cloudinaryLarge } from '../utils/cloudinary'
-import { BRAND } from '../utils/brand'
+import { identityColor } from '../utils/identityColor'
 
 const ANNOUNCEMENT_POSITION_CLASSES = {
   top: 'top-8',
@@ -23,14 +23,6 @@ const MAX_CHAT_ITEMS = 4
 // Cada invitado que pone su nombre recibe un color de identidad estable (el
 // mismo nombre siempre da el mismo color), para poder reconocerlo de un
 // comentario a otro sin necesidad de leer el nombre cada vez.
-const IDENTITY_COLORS = [BRAND.blue, BRAND.pink, BRAND.lime, BRAND.orange, BRAND.violet]
-
-function identityColor(name) {
-  let hash = 0
-  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) >>> 0
-  return IDENTITY_COLORS[hash % IDENTITY_COLORS.length]
-}
-
 function PhotoCard({ photo, animationClass, fit }) {
   const mediaClassName = `rounded-lg ${fit === 'contain' ? 'object-contain' : 'w-full h-full object-cover'}`
   const mediaStyle =

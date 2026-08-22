@@ -17,6 +17,16 @@ export function guestsToCsv(guests) {
   return [header, ...rows].map((row) => row.map(escapeCsvValue).join(',')).join('\n')
 }
 
+export function messagesToCsv(photos) {
+  const header = ['Nombre', 'Comentario', 'Fecha']
+  const rows = photos.map((photo) => [
+    photo.guestName || 'Anónimo',
+    photo.comment || '',
+    new Date(photo.createdAt).toLocaleString('es-ES'),
+  ])
+  return [header, ...rows].map((row) => row.map(escapeCsvValue).join(',')).join('\n')
+}
+
 export function downloadCsv(csvContent, filename) {
   const blob = new Blob(['﻿' + csvContent], { type: 'text/csv;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
