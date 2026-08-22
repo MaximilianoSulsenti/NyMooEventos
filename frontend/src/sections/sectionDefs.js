@@ -141,6 +141,7 @@ export const SECTION_FIELD_DEFS = {
     { key: 'fontSizeSubtitle', label: 'Tamaño del subtítulo', type: 'select', options: FONT_SIZE_OPTIONS },
   ],
   Countdown: [
+    { key: 'title', label: 'Título de la sección', type: 'text' },
     { key: 'shape', label: 'Forma de los contadores', type: 'select', options: COUNTDOWN_SHAPE_OPTIONS },
     { key: 'fontSizeTitle', label: 'Tamaño de los dígitos', type: 'select', options: FONT_SIZE_OPTIONS },
     { key: 'fontSizeSubtitle', label: 'Tamaño de las etiquetas', type: 'select', options: FONT_SIZE_OPTIONS },
@@ -201,6 +202,7 @@ export const SECTION_FIELD_DEFS = {
     { key: 'fontSizeSubtitle', label: 'Tamaño del subtítulo', type: 'select', options: FONT_SIZE_OPTIONS },
   ],
   Location: [
+    { key: 'title', label: 'Título de la sección', type: 'text' },
     {
       key: 'locations',
       label: 'Locaciones',
@@ -253,6 +255,7 @@ export const SECTION_FIELD_DEFS = {
     { key: 'transitionSpeed', label: 'Velocidad de transición (segundos)', type: 'range', min: 2, max: 10, step: 1 },
   ],
   Info: [
+    { key: 'title', label: 'Título de la sección', type: 'text' },
     {
       key: 'items',
       label: 'Bloques de información',

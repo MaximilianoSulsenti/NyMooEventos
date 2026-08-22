@@ -19,7 +19,7 @@ function Location({ config, appearance, styles }) {
   return (
     <section className={`text-center px-6 ${styles.fontClass}`}>
       <h2 className={`${titleSize} mb-6 ${styles.heading}`} style={{ color: config.textColor || undefined }}>
-        Ubicación
+        {config.title || 'Ubicación'}
       </h2>
       <div className={`grid gap-5 max-w-2xl mx-auto ${locations.length > 1 ? 'md:grid-cols-2' : ''}`}>
         {locations.map((location, index) => {

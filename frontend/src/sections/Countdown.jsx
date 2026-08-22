@@ -40,7 +40,9 @@ function Countdown({ event, config, appearance, styles }) {
 
   return (
     <section className={`text-center px-6 ${styles.fontClass}`}>
-      <h2 className={`text-lg mb-6 ${styles.heading}`}>Cuenta regresiva</h2>
+      <h2 className={`text-lg mb-6 ${styles.heading}`} style={{ color: config.textColor || undefined }}>
+        {config.title || 'Cuenta regresiva'}
+      </h2>
       <div className="flex justify-center gap-4">
         {units.map((unit, index) => (
           <motion.div

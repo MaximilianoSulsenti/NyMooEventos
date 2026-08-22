@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import ThreeDPhotoCarousel from '../components/ui/ThreeDPhotoCarousel'
+import CarouselArrows from '../components/ui/CarouselArrows'
 
 function BentoGrid({ images }) {
   const spanClasses = [
@@ -33,12 +34,18 @@ function BentoGrid({ images }) {
 
 function ClassicCarousel({ images }) {
   const [index, setIndex] = useState(0)
+  const [manualNav, setManualNav] = useState(0)
 
   useEffect(() => {
     if (images.length < 2) return undefined
     const interval = setInterval(() => setIndex((prev) => (prev + 1) % images.length), 4000)
     return () => clearInterval(interval)
-  }, [images.length])
+  }, [images.length, manualNav])
+
+  function goTo(direction) {
+    setIndex((prev) => (prev + direction + images.length) % images.length)
+    setManualNav((n) => n + 1)
+  }
 
   return (
     <div className="relative max-w-md mx-auto h-72 overflow-hidden rounded-2xl">
@@ -54,6 +61,7 @@ function ClassicCarousel({ images }) {
           className="absolute inset-0 w-full h-full object-cover"
         />
       </AnimatePresence>
+      {images.length > 1 && <CarouselArrows onPrev={() => goTo(-1)} onNext={() => goTo(1)} />}
     </div>
   )
 }

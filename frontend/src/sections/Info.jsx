@@ -70,7 +70,7 @@ function Info({ config, appearance, styles }) {
         className={`text-center ${titleSize} mb-6 ${styles.heading}`}
         style={{ color: config.textColor || undefined }}
       >
-        Información adicional
+        {config.title || 'Información adicional'}
       </h2>
       <div className="grid sm:grid-cols-2 gap-3">
         {items.map((item, index) => (

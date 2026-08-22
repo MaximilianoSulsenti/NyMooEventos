@@ -1,17 +1,24 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
+import CarouselArrows from '../components/ui/CarouselArrows'
 
 function SalonCarrousel({ config, styles }) {
   const images = [config.image1, config.image2, config.image3].filter(Boolean)
   const speedMs = (config.transitionSpeed || 4) * 1000
   const titleSize = config.fontSizeTitle || 'text-lg'
   const [index, setIndex] = useState(0)
+  const [manualNav, setManualNav] = useState(0)
 
   useEffect(() => {
     if (images.length < 2) return undefined
     const interval = setInterval(() => setIndex((prev) => (prev + 1) % images.length), speedMs)
     return () => clearInterval(interval)
-  }, [images.length, speedMs])
+  }, [images.length, speedMs, manualNav])
+
+  function goTo(direction) {
+    setIndex((prev) => (prev + direction + images.length) % images.length)
+    setManualNav((n) => n + 1)
+  }
 
   if (images.length === 0) return null
 
@@ -37,6 +44,7 @@ function SalonCarrousel({ config, styles }) {
             className="absolute inset-0 w-full h-full object-cover"
           />
         </AnimatePresence>
+        {images.length > 1 && <CarouselArrows onPrev={() => goTo(-1)} onNext={() => goTo(1)} />}
       </div>
 
       {config.caption && <p className="text-white/50 text-sm mt-3 italic">{config.caption}</p>}
