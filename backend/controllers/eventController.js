@@ -22,11 +22,13 @@ const DEFAULT_SECTIONS = [
   { id: 'DigitalAlbumButton', enabled: false, order: 7, config: {} },
   { id: 'Location', enabled: true, order: 8, config: {} },
   { id: 'RSVP', enabled: true, order: 9, config: {} },
-  { id: 'SalonCarrousel', enabled: false, order: 10, config: {} },
-  { id: 'Info', enabled: false, order: 11, config: {} },
-  { id: 'MusicPlaylist', enabled: false, order: 12, config: {} },
-  { id: 'Timeline', enabled: false, order: 13, config: {} },
-  { id: 'Footer', enabled: true, order: 14, config: {} },
+  { id: 'GiftRegistry', enabled: false, order: 10, config: {} },
+  { id: 'SalonCarrousel', enabled: false, order: 11, config: {} },
+  { id: 'Info', enabled: false, order: 12, config: {} },
+  { id: 'MusicPlaylist', enabled: false, order: 13, config: {} },
+  { id: 'InstagramSection', enabled: false, order: 14, config: {} },
+  { id: 'Timeline', enabled: false, order: 15, config: {} },
+  { id: 'Footer', enabled: true, order: 16, config: {} },
 ];
 
 // Agrega al array `sections` del evento cualquier tipo de sección nueva que se

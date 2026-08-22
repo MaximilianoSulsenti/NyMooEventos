@@ -8,9 +8,11 @@ import LiveGallery from './LiveGallery'
 import DigitalAlbumButton from './DigitalAlbumButton'
 import Location from './Location'
 import RSVPSection from './RSVPSection'
+import GiftRegistry from './GiftRegistry'
 import SalonCarrousel from './SalonCarrousel'
 import Info from './Info'
 import MusicPlaylist from './MusicPlaylist'
+import InstagramSection from './InstagramSection'
 import Timeline from './Timeline'
 import Footer from './Footer'
 import { getThemeStyles } from './theming'
@@ -25,9 +27,11 @@ const SECTION_COMPONENTS = {
   DigitalAlbumButton,
   Location,
   RSVP: RSVPSection,
+  GiftRegistry,
   SalonCarrousel,
   Info,
   MusicPlaylist,
+  InstagramSection,
   Timeline,
   Footer,
 }

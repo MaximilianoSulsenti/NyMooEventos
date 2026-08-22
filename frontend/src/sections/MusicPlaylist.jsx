@@ -6,6 +6,7 @@ import Button from '../components/ui/Button'
 import AnimatedIcon from '../components/AnimatedIcon'
 import { glassStyle, glassBlurClass } from '../utils/glass'
 import { cn } from '../utils/cn'
+import { CARD_REVEAL } from '../utils/motionPresets'
 
 function toEmbedUrl(url) {
   try {
@@ -137,10 +138,7 @@ function MusicPlaylist({ event, config, appearance, styles }) {
   return (
     <section className={`px-6 ${styles.fontClass}`}>
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
+        {...CARD_REVEAL}
         className={cn(
           'relative flex flex-col items-center gap-4 text-center border overflow-hidden mx-auto max-w-md px-6 py-8',
           glassBlurClass(config),

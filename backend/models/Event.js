@@ -11,9 +11,11 @@ const SECTION_TYPES = [
   'DigitalAlbumButton',
   'Location',
   'RSVP',
+  'GiftRegistry',
   'SalonCarrousel',
   'Info',
   'MusicPlaylist',
+  'InstagramSection',
   'Timeline',
   'Footer',
 ];

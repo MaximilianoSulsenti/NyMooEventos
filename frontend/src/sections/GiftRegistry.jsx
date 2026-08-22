@@ -1,18 +1,20 @@
 import { useState } from 'react'
 import { motion } from 'motion/react'
-import { HeartHandshake } from 'lucide-react'
-import RsvpForm from '../components/RsvpForm'
+import { Gift } from 'lucide-react'
 import Button from '../components/ui/Button'
+import GiftModal from '../components/GiftModal'
 import AnimatedIcon from '../components/AnimatedIcon'
 import { glassStyle, glassBlurClass } from '../utils/glass'
 import { cn } from '../utils/cn'
 import { CARD_REVEAL } from '../utils/motionPresets'
 
-function RSVPSection({ event, config, appearance, styles }) {
+function GiftRegistry({ config, appearance, styles }) {
   const [isOpen, setIsOpen] = useState(false)
   const primaryColor = appearance?.primaryColor
+  const titleSize = config.fontSizeTitle || 'text-2xl'
+  const subtitleSize = config.fontSizeSubtitle || 'text-base'
 
-  if (!event.activeModules?.guestControl) return null
+  if (!config.cbuAlias && !config.holderName) return null
 
   return (
     <section className={`px-6 ${styles.fontClass}`}>
@@ -31,32 +33,29 @@ function RSVPSection({ event, config, appearance, styles }) {
         <div className="absolute top-0 inset-x-0 h-[2px]" style={{ background: primaryColor }} />
 
         <AnimatedIcon
-          icon={HeartHandshake}
+          icon={Gift}
           className="w-12 h-12 rounded-full flex items-center justify-center"
           style={{ background: `${primaryColor}22`, color: primaryColor }}
           iconClassName="w-6 h-6"
         />
 
-        <p className="text-white/70 max-w-sm">
-          {config.title || 'Tu presencia es el mejor regalo. Contanos si nos acompañás.'}
+        <h2 className={`${titleSize} ${styles.heading}`} style={{ color: config.textColor || undefined }}>
+          {config.title || 'Lista de regalos'}
+        </h2>
+
+        <p className={`text-white/70 max-w-sm ${subtitleSize}`}>
+          {config.subtitle || 'Tu presencia ya es un regalo, pero si querés sumar un detalle para nuestra nueva etapa, esto te va a servir.'}
         </p>
 
         <Button type="button" onClick={() => setIsOpen(true)} primaryColor={primaryColor}>
-          Confirmar asistencia
+          <Gift className="w-4 h-4" />
+          {config.buttonText || 'Regalar un detalle'}
         </Button>
       </motion.div>
 
-      {isOpen && (
-        <RsvpForm
-          eventSlug={event.eventSlug}
-          primaryColor={primaryColor}
-          dietaryOptions={config.dietaryOptions}
-          extraQuestions={config.extraQuestions}
-          onClose={() => setIsOpen(false)}
-        />
-      )}
+      {isOpen && <GiftModal config={config} primaryColor={primaryColor} onClose={() => setIsOpen(false)} />}
     </section>
   )
 }
 
-export default RSVPSection
+export default GiftRegistry

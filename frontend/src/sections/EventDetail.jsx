@@ -4,6 +4,7 @@ import { cn } from '../utils/cn'
 import { resolveIcon } from './eventIcons'
 import AnimatedIcon from '../components/AnimatedIcon'
 import { glassStyle, glassBlurClass } from '../utils/glass'
+import { CARD_REVEAL } from '../utils/motionPresets'
 
 function EventDetail({ event, config, appearance, styles }) {
   const eventDate = new Date(event.date)
@@ -13,15 +14,24 @@ function EventDetail({ event, config, appearance, styles }) {
   const formattedTime = eventDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
   const bodySize = config.fontSizeBody || 'text-base'
   const alignment = config.alignment || 'text-center'
+  const titleSize = config.fontSizeTitle || 'text-2xl'
+  const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const details = Array.isArray(config.details) ? config.details.filter((d) => d.label || d.text) : []
 
   return (
     <section className={`px-6 ${styles.fontClass} ${alignment}`}>
+      {config.title && (
+        <h2
+          className={`${titleSize} ${config.subtitle ? 'mb-1' : 'mb-5'} ${styles.heading}`}
+          style={{ color: config.textColor || undefined }}
+        >
+          {config.title}
+        </h2>
+      )}
+      {config.subtitle && <p className={`text-white/70 mb-5 ${subtitleSize}`}>{config.subtitle}</p>}
+
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
+        {...CARD_REVEAL}
         className={cn(
           'relative flex flex-col w-full mx-auto max-w-lg border overflow-hidden',
           glassBlurClass(config),

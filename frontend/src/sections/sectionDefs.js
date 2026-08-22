@@ -8,9 +8,11 @@ export const SECTION_LABELS = {
   DigitalAlbumButton: 'Álbum digital por QR',
   Location: 'Ubicación',
   RSVP: 'Confirmación de asistencia',
+  GiftRegistry: 'Lista de regalos / Colecta',
   SalonCarrousel: 'Carrusel del salón',
   Info: 'Información adicional',
   MusicPlaylist: 'Playlist musical',
+  InstagramSection: 'Instagram del evento',
   Timeline: 'Cronograma',
   Footer: 'Pie de página',
 }
@@ -128,7 +130,7 @@ export const GLASS_FIELD_DEFS = [
   },
 ]
 
-export const SECTIONS_WITH_GLASS_CARD = ['EventDetail', 'Location', 'Info', 'MusicPlaylist', 'RSVP']
+export const SECTIONS_WITH_GLASS_CARD = ['EventDetail', 'Location', 'Info', 'MusicPlaylist', 'RSVP', 'GiftRegistry']
 
 export const SECTION_FIELD_DEFS = {
   Hero: [
@@ -144,6 +146,10 @@ export const SECTION_FIELD_DEFS = {
     { key: 'fontSizeSubtitle', label: 'Tamaño de las etiquetas', type: 'select', options: FONT_SIZE_OPTIONS },
   ],
   EventDetail: [
+    { key: 'title', label: 'Título de la sección (opcional)', type: 'text' },
+    { key: 'subtitle', label: 'Subtítulo de la sección (opcional)', type: 'text' },
+    { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
+    { key: 'fontSizeSubtitle', label: 'Tamaño del subtítulo', type: 'select', options: FONT_SIZE_OPTIONS },
     { key: 'description', label: 'Descripción', type: 'textarea' },
     {
       key: 'details',
@@ -225,6 +231,17 @@ export const SECTION_FIELD_DEFS = {
       itemFields: [{ key: 'label', label: 'Pregunta (ej. ¿Necesitás menú infantil?)' }],
     },
   ],
+  GiftRegistry: [
+    { key: 'title', label: 'Título', type: 'text' },
+    { key: 'subtitle', label: 'Subtítulo', type: 'text' },
+    { key: 'buttonText', label: 'Texto del botón', type: 'text' },
+    { key: 'holderName', label: 'Titular de la cuenta', type: 'text' },
+    { key: 'cbuAlias', label: 'Alias / CBU', type: 'text' },
+    { key: 'bankName', label: 'Banco (opcional)', type: 'text' },
+    { key: 'customMessage', label: 'Mensaje de agradecimiento (dentro del modal)', type: 'textarea' },
+    { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
+    { key: 'fontSizeSubtitle', label: 'Tamaño del subtítulo', type: 'select', options: FONT_SIZE_OPTIONS },
+  ],
   SalonCarrousel: [
     { key: 'title', label: 'Título', type: 'text' },
     { key: 'subtitle', label: 'Subtítulo', type: 'text' },
@@ -257,6 +274,12 @@ export const SECTION_FIELD_DEFS = {
   MusicPlaylist: [
     { key: 'title', label: 'Título', type: 'text' },
     { key: 'playlistUrl', label: 'Link de playlist (Spotify, YouTube o Apple Music)', type: 'text' },
+    { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
+  ],
+  InstagramSection: [
+    { key: 'title', label: 'Título (opcional)', type: 'text' },
+    { key: 'buttonText', label: 'Texto del botón', type: 'text' },
+    { key: 'instagramUrl', label: 'Link de Instagram (perfil o publicación del evento)', type: 'text' },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
   ],
   Timeline: [
