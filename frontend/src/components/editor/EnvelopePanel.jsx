@@ -1,5 +1,6 @@
 import { BG_TYPE_OPTIONS } from '../../sections/sectionDefs'
 import ImageUploadField from './ImageUploadField'
+import { BRAND } from '../../utils/brand'
 
 function ColorField({ label, value, onChange }) {
   return (
@@ -16,7 +17,7 @@ function ColorField({ label, value, onChange }) {
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="flex-1 rounded-lg bg-neutral-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-500"
+          className="flex-1 rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
         />
       </div>
     </div>
@@ -29,7 +30,7 @@ function EnvelopePanel({ eventId, settings, onChange }) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" style={{ '--accent': BRAND.blue }}>
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium">Activar sobre de bienvenida</span>
         <button
@@ -37,7 +38,8 @@ function EnvelopePanel({ eventId, settings, onChange }) {
           role="switch"
           aria-checked={settings.enabled}
           onClick={() => update({ enabled: !settings.enabled })}
-          className={`relative w-10 h-6 rounded-full transition-colors ${settings.enabled ? 'bg-purple-600' : 'bg-neutral-700'}`}
+          className="relative w-10 h-6 rounded-full transition-colors"
+          style={{ background: settings.enabled ? BRAND.blue : 'rgba(255,255,255,0.12)' }}
         >
           <span
             className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${settings.enabled ? 'translate-x-4' : ''}`}
@@ -53,7 +55,7 @@ function EnvelopePanel({ eventId, settings, onChange }) {
               value={settings.titleText || ''}
               onChange={(e) => update({ titleText: e.target.value })}
               rows={2}
-              className="w-full rounded-lg bg-neutral-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-500 transition"
+              className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
             />
           </div>
 
@@ -63,7 +65,7 @@ function EnvelopePanel({ eventId, settings, onChange }) {
               type="text"
               value={settings.buttonText || ''}
               onChange={(e) => update({ buttonText: e.target.value })}
-              className="w-full rounded-lg bg-neutral-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-500 transition"
+              className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
             />
           </div>
 
@@ -72,7 +74,7 @@ function EnvelopePanel({ eventId, settings, onChange }) {
             <select
               value={settings.bgType}
               onChange={(e) => update({ bgType: e.target.value })}
-              className="w-full rounded-lg bg-neutral-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-500 transition"
+              className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
             >
               {BG_TYPE_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -105,7 +107,7 @@ function EnvelopePanel({ eventId, settings, onChange }) {
                 value={settings.bgUrl || ''}
                 onChange={(e) => update({ bgUrl: e.target.value })}
                 placeholder="https://..."
-                className="w-full rounded-lg bg-neutral-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-500 transition"
+                className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
               />
             </div>
           )}
@@ -120,7 +122,7 @@ function EnvelopePanel({ eventId, settings, onChange }) {
                 step={5}
                 value={settings.bgOpacity ?? 100}
                 onChange={(e) => update({ bgOpacity: Number(e.target.value) })}
-                className="w-full accent-purple-500"
+                className="w-full accent-[var(--accent)]"
               />
             </div>
           )}
@@ -130,10 +132,13 @@ function EnvelopePanel({ eventId, settings, onChange }) {
             <select
               value={settings.fontFamily || 'sans'}
               onChange={(e) => update({ fontFamily: e.target.value })}
-              className="w-full rounded-lg bg-neutral-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-500 transition"
+              className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
             >
               <option value="sans">Sans-serif</option>
               <option value="serif">Serif</option>
+              <option value="display">Elegante (Playfair Display)</option>
+              <option value="script">Manuscrita (Dancing Script)</option>
+              <option value="modern">Moderna (Poppins)</option>
             </select>
           </div>
         </div>

@@ -1,5 +1,25 @@
 @import "tailwindcss";
 
+/* Toda la plataforma es de tema oscuro: sin esto, el desplegable nativo de
+   los <select> (y otros controles nativos) se renderiza con el chrome claro
+   por defecto del sistema operativo -> texto claro sobre fondo blanco,
+   invisible. Esto le dice al navegador que use su UI nativa oscura. */
+:root {
+  color-scheme: dark;
+}
+
+.font-display {
+  font-family: 'Playfair Display', ui-serif, Georgia, serif;
+}
+
+.font-script {
+  font-family: 'Dancing Script', cursive;
+}
+
+.font-modern {
+  font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -51,4 +71,92 @@
 
 .party-glow {
   animation: party-glow 3s linear infinite;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translate(0, -10vh) rotate(0deg) scaleY(1);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  25% {
+    transform: translate(var(--drift, 20px), 25vh) rotate(120deg) scaleY(0.6);
+  }
+  50% {
+    transform: translate(calc(var(--drift, 20px) * -1), 50vh) rotate(240deg) scaleY(1);
+  }
+  75% {
+    transform: translate(var(--drift, 20px), 75vh) rotate(360deg) scaleY(0.6);
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0, 110vh) rotate(480deg) scaleY(1);
+    opacity: 0;
+  }
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -10vh;
+  animation-name: confetti-fall;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@keyframes light-beam-sweep {
+  0% {
+    transform: translateX(-30%) rotate(0deg);
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateX(130%) rotate(25deg);
+    opacity: 0.15;
+  }
+}
+
+.light-beam {
+  position: absolute;
+  top: -20%;
+  width: 18vw;
+  height: 140%;
+  filter: blur(30px);
+  mix-blend-mode: screen;
+  animation-name: light-beam-sweep;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@keyframes emoji-rise {
+  0% {
+    transform: translate(0, 10vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  50% {
+    transform: translate(var(--drift, 20px), -50vh) rotate(15deg);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0, -110vh) rotate(-15deg);
+    opacity: 0;
+  }
+}
+
+.emoji-piece {
+  position: absolute;
+  bottom: -10vh;
+  animation-name: emoji-rise;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
 }

@@ -5,6 +5,7 @@ import EventDetail from './EventDetail'
 import Story from './Story'
 import Gallery from './Gallery'
 import LiveGallery from './LiveGallery'
+import DigitalAlbumButton from './DigitalAlbumButton'
 import Location from './Location'
 import RSVPSection from './RSVPSection'
 import SalonCarrousel from './SalonCarrousel'
@@ -21,6 +22,7 @@ const SECTION_COMPONENTS = {
   Story,
   Gallery,
   LiveGallery,
+  DigitalAlbumButton,
   Location,
   RSVP: RSVPSection,
   SalonCarrousel,
@@ -32,7 +34,7 @@ const SECTION_COMPONENTS = {
 
 function SectionRenderer({ event }) {
   const appearance = event.appearance || {}
-  const styles = getThemeStyles(appearance.theme)
+  const styles = getThemeStyles(appearance.theme, appearance.fontFamily)
   const usesGlobalBackground = Boolean(appearance.useGlobalBackground)
 
   const sections = [...(event.sections || [])]

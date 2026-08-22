@@ -20,7 +20,19 @@ function Story({ config, appearance, styles }) {
       {config.body && <p className={`text-white/70 whitespace-pre-line mb-8 ${bodySize}`}>{config.body}</p>}
 
       {milestones.length > 0 && (
-        <div className={isHorizontal ? 'flex gap-6 overflow-x-auto pb-4 snap-x' : 'flex flex-col gap-8 text-left max-w-md mx-auto'}>
+        <div
+          className={
+            isHorizontal
+              ? 'flex gap-6 overflow-x-auto pb-4 snap-x'
+              : 'relative flex flex-col gap-8 text-left max-w-md mx-auto'
+          }
+        >
+          {!isHorizontal && (
+            <div
+              className="absolute left-2.5 top-3 bottom-3 w-px"
+              style={{ background: `linear-gradient(to bottom, ${appearance.primaryColor}70, ${appearance.primaryColor}15)` }}
+            />
+          )}
           {milestones.map((milestone, index) => (
             <motion.div
               key={index}
@@ -32,7 +44,7 @@ function Story({ config, appearance, styles }) {
             >
               {!isHorizontal && (
                 <span
-                  className="absolute left-0 top-1 w-5 h-5 rounded-full flex items-center justify-center"
+                  className="absolute left-0 top-1 z-10 w-5 h-5 rounded-full flex items-center justify-center shadow-md"
                   style={{ background: appearance.primaryColor }}
                 >
                   <Heart className="w-3 h-3 text-black" />

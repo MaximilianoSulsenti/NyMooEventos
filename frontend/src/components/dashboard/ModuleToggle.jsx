@@ -1,9 +1,11 @@
+import { BRAND } from '../../utils/brand'
+
 function ModuleToggle({ label, description, checked, onChange, disabled }) {
   return (
-    <div className="flex items-center justify-between rounded-xl bg-neutral-900 border border-white/10 p-4">
+    <div className="flex items-center justify-between rounded-2xl bg-white/5 border border-white/10 p-4">
       <div>
         <p className="font-medium">{label}</p>
-        <p className="text-neutral-400 text-sm">{description}</p>
+        <p className="text-white/40 text-sm">{description}</p>
       </div>
       <button
         type="button"
@@ -11,9 +13,8 @@ function ModuleToggle({ label, description, checked, onChange, disabled }) {
         aria-checked={checked}
         disabled={disabled}
         onClick={() => onChange(!checked)}
-        className={`relative w-12 h-7 rounded-full transition-colors disabled:opacity-40 ${
-          checked ? 'bg-purple-600' : 'bg-neutral-700'
-        }`}
+        className="relative w-12 h-7 rounded-full transition-colors disabled:opacity-40"
+        style={{ background: checked ? BRAND.blue : 'rgba(255,255,255,0.12)' }}
       >
         <span
           className={`absolute top-1 left-1 w-5 h-5 rounded-full bg-white transition-transform ${

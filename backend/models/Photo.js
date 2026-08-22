@@ -4,6 +4,8 @@ const photoSchema = new mongoose.Schema(
   {
     eventId: { type: mongoose.Schema.Types.ObjectId, ref: 'Event', required: true },
     cloudinaryUrl: { type: String, required: true },
+    publicId: { type: String, default: '' },
+    assetType: { type: String, enum: ['image', 'video'], default: 'image' },
     comment: { type: String, maxlength: 60, default: '' },
     status: {
       type: String,

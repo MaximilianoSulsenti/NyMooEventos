@@ -3,30 +3,61 @@ const Event = require('../models/Event');
 const Photo = require('../models/Photo');
 const { containsBannedWord } = require('../utils/moderationFilter');
 
+const MAX_VIDEO_BYTES = 20 * 1024 * 1024;
+const MAX_VIDEO_SECONDS = 15.5; // pequeño margen sobre el límite de 15s del frontend
+
 function escapeRegex(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-function isTrustedCloudinaryUrl(url, folder) {
+// Las imágenes y videos de un evento se separan en subcarpetas propias dentro
+// de Cloudinary (eventos/{slug}/images vs eventos/{slug}/videos).
+function getGalleryFolder(event, assetType) {
+  const base = event.gallerySettings?.cloudinaryFolder || `eventos/${event.eventSlug}`;
+  return `${base}/${assetType === 'video' ? 'videos' : 'images'}`;
+}
+
+function isTrustedCloudinaryUrl(url, folder, resourceType = 'image') {
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  let decodedUrl;
+  try {
+    decodedUrl = decodeURIComponent(url);
+  } catch {
+    return false;
+  }
   const pattern = new RegExp(
-    `^https://res\\.cloudinary\\.com/${escapeRegex(cloudName)}/image/upload/.+/${escapeRegex(folder)}/[^/]+$`
+    `^https://res\\.cloudinary\\.com/${escapeRegex(cloudName)}/${resourceType}/upload/.+/${escapeRegex(folder)}/[^/]+$`
   );
-  return pattern.test(url);
+  return pattern.test(decodedUrl);
+}
+
+// Fallback para fotos viejas que no guardaron publicId: lo deduce de la URL.
+function extractPublicIdFromUrl(url) {
+  try {
+    const decoded = decodeURIComponent(url);
+    const match = decoded.match(/\/upload\/(?:v\d+\/)?(.+)\.[a-zA-Z0-9]+$/);
+    return match ? match[1] : null;
+  } catch {
+    return null;
+  }
 }
 
 async function signUpload(req, res) {
   const { eventSlug } = req.params;
+  const assetType = req.query.type === 'video' ? 'video' : 'image';
 
   const event = await Event.findOne({ eventSlug });
   if (!event) {
     return res.status(404).json({ message: 'Evento no encontrado' });
   }
-  if (!event.activeModules.liveGallery) {
+  if (!event.activeModules.liveGallery && !event.activeModules.photoCollection) {
     return res.status(403).json({ message: 'El módulo de galería no está activo para este evento' });
   }
+  if (assetType === 'video' && !event.gallerySettings?.allowVideos) {
+    return res.status(403).json({ message: 'La subida de videos no está habilitada para este evento' });
+  }
 
-  const folder = event.gallerySettings?.cloudinaryFolder || `eventos/${event.eventSlug}`;
+  const folder = getGalleryFolder(event, assetType);
   const timestamp = Math.round(Date.now() / 1000);
 
   const signature = cloudinary.utils.api_sign_request(
@@ -41,11 +72,21 @@ async function signUpload(req, res) {
     apiKey: process.env.CLOUDINARY_API_KEY,
     cloudName: process.env.CLOUDINARY_CLOUD_NAME,
     eventId: event._id,
+    resourceType: assetType,
   });
 }
 
 async function registerPhoto(req, res) {
-  const { eventId, secure_url: secureUrl, comment } = req.body;
+  const {
+    eventId,
+    secure_url: secureUrl,
+    public_id: publicId,
+    comment,
+    resourceType,
+    duration,
+    bytes,
+  } = req.body;
+  const assetType = resourceType === 'video' ? 'video' : 'image';
 
   if (!eventId || !secureUrl) {
     return res.status(400).json({ message: 'eventId y secure_url son requeridos' });
@@ -58,13 +99,25 @@ async function registerPhoto(req, res) {
   if (!event) {
     return res.status(404).json({ message: 'Evento no encontrado' });
   }
-  if (!event.activeModules.liveGallery) {
+  if (!event.activeModules.liveGallery && !event.activeModules.photoCollection) {
     return res.status(403).json({ message: 'El módulo de galería no está activo para este evento' });
   }
 
-  const folder = event.gallerySettings?.cloudinaryFolder || `eventos/${event.eventSlug}`;
-  if (!isTrustedCloudinaryUrl(secureUrl, folder)) {
-    return res.status(400).json({ message: 'La URL de la imagen no es válida' });
+  if (assetType === 'video') {
+    if (!event.gallerySettings?.allowVideos) {
+      return res.status(403).json({ message: 'La subida de videos no está habilitada para este evento' });
+    }
+    if (typeof bytes === 'number' && bytes > MAX_VIDEO_BYTES) {
+      return res.status(400).json({ message: 'El video supera el tamaño máximo permitido (20 MB)' });
+    }
+    if (typeof duration === 'number' && duration > MAX_VIDEO_SECONDS) {
+      return res.status(400).json({ message: 'El video supera la duración máxima permitida (15 segundos)' });
+    }
+  }
+
+  const folder = getGalleryFolder(event, assetType);
+  if (!isTrustedCloudinaryUrl(secureUrl, folder, assetType)) {
+    return res.status(400).json({ message: 'La URL del archivo no es válida' });
   }
 
   const cleanComment = (comment || '').trim().slice(0, 60);
@@ -77,18 +130,24 @@ async function registerPhoto(req, res) {
     status = 'pendiente';
   }
 
+  const safePublicId = typeof publicId === 'string' && publicId.startsWith(folder) ? publicId : '';
+
   const photo = await Photo.create({
     eventId,
     cloudinaryUrl: secureUrl,
+    publicId: safePublicId,
+    assetType,
     comment: cleanComment,
     status,
   });
 
-  const io = req.app.get('io');
-  if (status === 'aprobada') {
-    io.to(event.eventSlug).emit('new-photo', photo);
-  } else if (status === 'pendiente') {
-    io.to(event.eventSlug).emit('photo-pending', photo);
+  if (event.activeModules.liveGallery) {
+    const io = req.app.get('io');
+    if (status === 'aprobada') {
+      io.to(event.eventSlug).emit('new-photo', photo);
+    } else if (status === 'pendiente') {
+      io.to(event.eventSlug).emit('photo-pending', photo);
+    }
   }
 
   res.status(201).json(photo);
@@ -139,10 +198,38 @@ async function updatePhotoStatus(req, res) {
   res.json(photo);
 }
 
+async function deletePhoto(req, res) {
+  const { photoId } = req.params;
+
+  const photo = await Photo.findOne({ _id: photoId, eventId: req.event._id });
+  if (!photo) {
+    return res.status(404).json({ message: 'Foto no encontrada' });
+  }
+
+  const publicId = photo.publicId || extractPublicIdFromUrl(photo.cloudinaryUrl);
+  if (publicId) {
+    try {
+      await cloudinary.uploader.destroy(publicId, {
+        resource_type: photo.assetType === 'video' ? 'video' : 'image',
+      });
+    } catch (err) {
+      console.error('[Cloudinary] No se pudo borrar el asset:', err.message);
+    }
+  }
+
+  await photo.deleteOne();
+
+  const io = req.app.get('io');
+  io.to(req.event.eventSlug).emit('photo-deleted', { photoId });
+
+  res.json({ message: 'Foto eliminada' });
+}
+
 module.exports = {
   signUpload,
   registerPhoto,
   getApprovedPhotosBySlug,
   getPhotosForClient,
   updatePhotoStatus,
+  deletePhoto,
 };

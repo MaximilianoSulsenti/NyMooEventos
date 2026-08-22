@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'motion/react'
 import { cn } from '../utils/cn'
 import { shadeColor } from '../utils/color'
+import { FONT_FAMILY_CLASSES } from '../sections/theming'
 
 function EnvelopeBackground({ settings }) {
   if (settings.bgType === 'image' && settings.bgUrl) {
@@ -30,7 +31,7 @@ function EnvelopeBackground({ settings }) {
 
 function Envelope({ settings, appearance, onOpen }) {
   const [opening, setOpening] = useState(false)
-  const fontClass = settings.fontFamily === 'serif' ? 'font-serif' : 'font-sans'
+  const fontClass = FONT_FAMILY_CLASSES[settings.fontFamily] || 'font-sans'
   const bgColor = settings.bgColor || '#0a0a0a'
   const flapShade = shadeColor(bgColor, 14)
   const wallShade = shadeColor(bgColor, -12)

@@ -8,6 +8,7 @@ const SECTION_TYPES = [
   'Story',
   'Gallery',
   'LiveGallery',
+  'DigitalAlbumButton',
   'Location',
   'RSVP',
   'SalonCarrousel',
@@ -17,9 +18,21 @@ const SECTION_TYPES = [
   'Footer',
 ];
 
-const THEMES = ['minimalista', 'moderno', 'vanguardista', 'romantica'];
+const THEMES = ['minimalista', 'moderno', 'vanguardista', 'romantica', 'bohemio', 'elegante', 'festivo'];
 const MODERATION_MODES = ['manual', 'automatica', 'semiautomatica'];
 const BG_TYPES = ['color', 'image', 'video'];
+const BRAND_POSITIONS = ['top-left', 'top-right', 'bottom-left', 'bottom-right'];
+
+const brandSchema = new mongoose.Schema(
+  {
+    enabled: { type: Boolean, default: false },
+    logoUrl: { type: String, default: '' },
+    position: { type: String, enum: BRAND_POSITIONS, default: 'bottom-right' },
+    size: { type: Number, default: 64, min: 24, max: 200 },
+    opacity: { type: Number, default: 60, min: 10, max: 100 },
+  },
+  { _id: false }
+);
 
 const sectionSchema = new mongoose.Schema(
   {
@@ -41,10 +54,19 @@ const eventSchema = new mongoose.Schema(
       interactiveCard: { type: Boolean, default: false },
       guestControl: { type: Boolean, default: false },
       liveGallery: { type: Boolean, default: false },
+      photoCollection: { type: Boolean, default: false },
     },
     gallerySettings: {
       cloudinaryFolder: { type: String },
       moderationMode: { type: String, enum: MODERATION_MODES, default: 'automatica' },
+      playbackSpeed: { type: Number, default: 7, min: 2, max: 15 },
+      allowVideos: { type: Boolean, default: false },
+      partyMode: { type: Boolean, default: false },
+      partyLayout: { type: String, enum: ['grid', 'single'], default: 'grid' },
+      confetti: { type: Boolean, default: false },
+      lightBeams: { type: Boolean, default: false },
+      emojiRain: { type: Boolean, default: false },
+      isPaused: { type: Boolean, default: false },
     },
     appearance: {
       theme: { type: String, enum: THEMES, default: 'minimalista' },
@@ -68,6 +90,24 @@ const eventSchema = new mongoose.Schema(
       buttonText: { type: String, default: 'Abrir invitación' },
       fontFamily: { type: String, default: 'sans' },
     },
+    brandingSettings: {
+      myBrand: { type: brandSchema, default: () => ({}) },
+      clientBrand: { type: brandSchema, default: () => ({}) },
+    },
+    musicSettings: {
+      enabled: { type: Boolean, default: false },
+      audioUrl: { type: String, default: '' },
+      title: { type: String, default: '' },
+      position: { type: String, enum: BRAND_POSITIONS, default: 'bottom-right' },
+      volume: { type: Number, default: 70, min: 0, max: 100 },
+    },
+    uploadPageSettings: {
+      theme: { type: String, enum: THEMES, default: 'minimalista' },
+      bgType: { type: String, enum: BG_TYPES, default: 'color' },
+      bgColor: { type: String, default: '#0a0a0a' },
+      bgImageUrl: { type: String, default: '' },
+      bgOpacity: { type: Number, default: 100, min: 0, max: 100 },
+    },
     sections: { type: [sectionSchema], default: [] },
     clientAccessToken: {
       type: String,
@@ -81,5 +121,6 @@ eventSchema.statics.SECTION_TYPES = SECTION_TYPES;
 eventSchema.statics.THEMES = THEMES;
 eventSchema.statics.MODERATION_MODES = MODERATION_MODES;
 eventSchema.statics.BG_TYPES = BG_TYPES;
+eventSchema.statics.BRAND_POSITIONS = BRAND_POSITIONS;
 
 module.exports = mongoose.model('Event', eventSchema);

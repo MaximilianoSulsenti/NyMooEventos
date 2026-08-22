@@ -1,22 +1,35 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import api from '../services/api'
+import { getStoredUser } from '../services/auth'
 import AppearancePanel from '../components/editor/AppearancePanel'
 import EnvelopePanel from '../components/editor/EnvelopePanel'
+import BrandingPanel from '../components/editor/BrandingPanel'
+import UploadPageStylePanel from '../components/editor/UploadPageStylePanel'
+import GallerySettingsPanel from '../components/editor/GallerySettingsPanel'
+import MusicSettingsPanel from '../components/editor/MusicSettingsPanel'
 import SectionsPanel from '../components/editor/SectionsPanel'
 import SectionRenderer from '../sections/SectionRenderer'
 import GlobalBackground from '../sections/GlobalBackground'
 import { getThemeStyles } from '../sections/theming'
+import GlassPanel from '../components/ui/GlassPanel'
+import Button from '../components/ui/Button'
+import { BRAND } from '../utils/brand'
 
-function snapshotOf(appearance, envelopeSettings, sections) {
-  return JSON.stringify({ appearance, envelopeSettings, sections })
+function snapshotOf(state) {
+  return JSON.stringify(state)
 }
 
 function EventEditor() {
   const { eventId } = useParams()
+  const isAdmin = Boolean(getStoredUser()?.isAdmin)
   const [event, setEvent] = useState(null)
   const [appearance, setAppearance] = useState(null)
   const [envelopeSettings, setEnvelopeSettings] = useState(null)
+  const [branding, setBranding] = useState(null)
+  const [uploadPageSettings, setUploadPageSettings] = useState(null)
+  const [gallerySettings, setGallerySettings] = useState(null)
+  const [musicSettings, setMusicSettings] = useState(null)
   const [sections, setSections] = useState(null)
   const [savedSnapshot, setSavedSnapshot] = useState(null)
   const [loadState, setLoadState] = useState('loading') // loading | ready | error
@@ -30,15 +43,31 @@ function EventEditor() {
         setEvent(data)
         setAppearance(data.appearance)
         setEnvelopeSettings(data.envelopeSettings)
+        setBranding(data.brandingSettings)
+        setUploadPageSettings(data.uploadPageSettings)
+        setGallerySettings(data.gallerySettings)
+        setMusicSettings(data.musicSettings)
         setSections(data.sections)
-        setSavedSnapshot(snapshotOf(data.appearance, data.envelopeSettings, data.sections))
+        setSavedSnapshot(
+          snapshotOf({
+            appearance: data.appearance,
+            envelopeSettings: data.envelopeSettings,
+            branding: data.brandingSettings,
+            uploadPageSettings: data.uploadPageSettings,
+            gallerySettings: data.gallerySettings,
+            musicSettings: data.musicSettings,
+            sections: data.sections,
+          })
+        )
         setLoadState('ready')
       })
       .catch(() => setLoadState('error'))
   }, [eventId])
 
   const hasUnsavedChanges =
-    savedSnapshot !== null && snapshotOf(appearance, envelopeSettings, sections) !== savedSnapshot
+    savedSnapshot !== null &&
+    snapshotOf({ appearance, envelopeSettings, branding, uploadPageSettings, gallerySettings, musicSettings, sections }) !==
+      savedSnapshot
 
   useEffect(() => {
     function handleBeforeUnload(event) {
@@ -53,12 +82,22 @@ function EventEditor() {
   async function handleSave() {
     setSaveState('saving')
     try {
-      await Promise.all([
+      const calls = [
         api.patch(`/events/${eventId}/appearance`, appearance),
         api.patch(`/events/${eventId}/envelope`, envelopeSettings),
+        api.patch(`/events/${eventId}/branding/client`, branding.clientBrand),
+        api.patch(`/events/${eventId}/upload-page`, uploadPageSettings),
+        api.patch(`/events/${eventId}/gallery-settings`, gallerySettings),
+        api.patch(`/events/${eventId}/music`, musicSettings),
         api.patch(`/events/${eventId}/sections`, { sections }),
-      ])
-      setSavedSnapshot(snapshotOf(appearance, envelopeSettings, sections))
+      ]
+      if (isAdmin) {
+        calls.push(api.patch(`/events/${eventId}/branding/mine`, branding.myBrand))
+      }
+      await Promise.all(calls)
+      setSavedSnapshot(
+        snapshotOf({ appearance, envelopeSettings, branding, uploadPageSettings, gallerySettings, musicSettings, sections })
+      )
       setSaveState('saved')
       setTimeout(() => setSaveState('idle'), 1500)
     } catch {
@@ -70,7 +109,9 @@ function EventEditor() {
     setSectionSaveState('saving')
     try {
       await api.patch(`/events/${eventId}/sections`, { sections })
-      setSavedSnapshot(snapshotOf(appearance, envelopeSettings, sections))
+      setSavedSnapshot(
+        snapshotOf({ appearance, envelopeSettings, branding, uploadPageSettings, gallerySettings, musicSettings, sections })
+      )
       setSectionSaveState('saved')
       setTimeout(() => setSectionSaveState('idle'), 1500)
     } catch {
@@ -80,7 +121,7 @@ function EventEditor() {
 
   if (loadState === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-950 text-neutral-400">
+      <div className="min-h-screen flex items-center justify-center text-white/50" style={{ background: BRAND.night }}>
         Cargando editor...
       </div>
     )
@@ -88,20 +129,24 @@ function EventEditor() {
 
   if (loadState === 'error') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-950 text-neutral-400">
+      <div className="min-h-screen flex items-center justify-center text-white/50" style={{ background: BRAND.night }}>
         No se pudo cargar el evento.
       </div>
     )
   }
 
   const previewEvent = { ...event, appearance, sections }
-  const previewStyles = getThemeStyles(appearance.theme)
+  const previewStyles = getThemeStyles(appearance.theme, appearance.fontFamily)
 
   return (
-    <div className="min-h-screen flex bg-neutral-950 text-white">
-      <aside className="w-96 shrink-0 border-r border-white/10 p-6 space-y-8 overflow-y-auto">
+    <div className="min-h-screen flex flex-col lg:flex-row gap-4 p-4 text-white" style={{ background: BRAND.night }}>
+      <GlassPanel
+        as="aside"
+        accentColor={BRAND.blue}
+        className="w-full lg:w-96 shrink-0 p-6 space-y-8 overflow-y-auto lg:max-h-[calc(100vh-2rem)]"
+      >
         <div className="flex items-center justify-between">
-          <Link to={`/dashboard/${eventId}`} className="text-neutral-400 text-xs uppercase tracking-widest hover:text-white transition">
+          <Link to={`/dashboard/${eventId}`} className="text-white/40 text-xs uppercase tracking-widest hover:text-white transition">
             ← Volver al panel
           </Link>
         </div>
@@ -124,13 +169,40 @@ function EventEditor() {
         </div>
 
         <div>
+          <h2 className="text-sm uppercase tracking-widest text-neutral-500 mb-3">Marcas de agua (pantalla del salón)</h2>
+          <BrandingPanel
+            eventId={eventId}
+            branding={branding}
+            isAdmin={isAdmin}
+            onChangeMyBrand={(myBrand) => setBranding((prev) => ({ ...prev, myBrand }))}
+            onChangeClientBrand={(clientBrand) => setBranding((prev) => ({ ...prev, clientBrand }))}
+          />
+        </div>
+
+        <div>
+          <h2 className="text-sm uppercase tracking-widest text-neutral-500 mb-3">Estilo de Upload / Moderación</h2>
+          <UploadPageStylePanel eventId={eventId} settings={uploadPageSettings} onChange={setUploadPageSettings} />
+        </div>
+
+        <div>
+          <h2 className="text-sm uppercase tracking-widest text-neutral-500 mb-3">Galería multimedia</h2>
+          <GallerySettingsPanel settings={gallerySettings} onChange={setGallerySettings} />
+        </div>
+
+        <div>
+          <h2 className="text-sm uppercase tracking-widest text-neutral-500 mb-3">Música de fondo</h2>
+          <MusicSettingsPanel eventId={eventId} settings={musicSettings} onChange={setMusicSettings} />
+        </div>
+
+        <div>
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm uppercase tracking-widest text-neutral-500">Secciones</h2>
             <button
               type="button"
               onClick={handleSaveSections}
               disabled={sectionSaveState === 'saving'}
-              className="text-xs text-purple-400 hover:text-purple-300 disabled:opacity-40 transition"
+              className="text-xs hover:brightness-125 disabled:opacity-40 transition"
+              style={{ color: BRAND.blue }}
             >
               {sectionSaveState === 'saving'
                 ? 'Guardando...'
@@ -142,19 +214,20 @@ function EventEditor() {
           <SectionsPanel eventId={eventId} sections={sections} onChange={setSections} />
         </div>
 
-        <button
+        <Button
           type="button"
           onClick={handleSave}
           disabled={saveState === 'saving'}
-          className="w-full py-2 rounded-full bg-purple-600 hover:bg-purple-500 disabled:opacity-40 transition font-medium"
+          primaryColor={BRAND.blue}
+          className="w-full disabled:opacity-40"
         >
           {saveState === 'saving' ? 'Guardando...' : saveState === 'saved' ? 'Guardado ✓' : 'Guardar todo'}
-        </button>
+        </Button>
         {saveState === 'error' && <p className="text-red-400 text-sm text-center">No se pudo guardar</p>}
-      </aside>
+      </GlassPanel>
 
-      <main className="flex-1 overflow-y-auto relative">
-        <div className={`min-h-screen relative ${previewStyles.fontClass}`}>
+      <main className="flex-1 rounded-3xl border border-white/10 overflow-y-auto relative lg:max-h-[calc(100vh-2rem)] shadow-2xl">
+        <div className={`min-h-full relative ${previewStyles.fontClass}`}>
           {appearance.useGlobalBackground ? (
             <GlobalBackground appearance={appearance} fixed={false} />
           ) : (

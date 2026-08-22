@@ -1,7 +1,15 @@
 import { useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
+import { Mail, Lock, ArrowRight } from 'lucide-react'
 import api from '../services/api'
 import { getToken, setSession } from '../services/auth'
+import BrandBackground from '../components/BrandBackground'
+import GlassPanel from '../components/ui/GlassPanel'
+import Button from '../components/ui/Button'
+import { BRAND } from '../utils/brand'
+
+const inputClass =
+  'w-full rounded-xl bg-white/5 border border-white/10 pl-10 pr-3 py-2.5 text-sm outline-none transition-colors focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30'
 
 function Login() {
   const navigate = useNavigate()
@@ -34,61 +42,100 @@ function Login() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-neutral-950 text-white px-6">
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-semibold">Plataforma de Eventos</h1>
-        <p className="text-neutral-400">
-          {mode === 'login' ? 'Iniciá sesión para acceder a tus eventos.' : 'Creá tu cuenta de organizador.'}
-        </p>
+    <div className="relative min-h-screen w-full flex flex-col items-center justify-center gap-6 px-6 py-10 text-white">
+      <BrandBackground />
+
+      <div className="text-center">
+        <h1
+          className="text-4xl font-extrabold tracking-tight"
+          style={{
+            backgroundImage: `linear-gradient(90deg, ${BRAND.blue}, ${BRAND.violet}, ${BRAND.pink})`,
+            WebkitBackgroundClip: 'text',
+            backgroundClip: 'text',
+            color: 'transparent',
+          }}
+        >
+          NyMoo
+        </h1>
+        <p className="text-white/50 mt-1">Plataforma de eventos memorables</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="w-full max-w-sm flex flex-col gap-3">
-        {mode === 'register' && (
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Nombre"
-            required
-            className="w-full rounded-lg bg-neutral-800 px-3 py-2 outline-none focus:ring-2 focus:ring-purple-500"
-          />
-        )}
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
-          required
-          className="w-full rounded-lg bg-neutral-800 px-3 py-2 outline-none focus:ring-2 focus:ring-purple-500"
-        />
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Contraseña"
-          required
-          minLength={8}
-          className="w-full rounded-lg bg-neutral-800 px-3 py-2 outline-none focus:ring-2 focus:ring-purple-500"
-        />
+      <GlassPanel accentColor={BRAND.blue} className="w-full max-w-sm px-6 py-8 sm:px-8">
+        <div className="flex rounded-full bg-white/5 border border-white/10 p-1 mb-6">
+          <button
+            type="button"
+            onClick={() => setMode('login')}
+            className="flex-1 py-1.5 rounded-full text-sm font-medium transition-colors"
+            style={
+              mode === 'login'
+                ? { background: `linear-gradient(135deg, ${BRAND.blue}, ${BRAND.violet})`, color: '#ffffff' }
+                : { color: 'rgba(255,255,255,0.5)' }
+            }
+          >
+            Iniciar sesión
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode('register')}
+            className="flex-1 py-1.5 rounded-full text-sm font-medium transition-colors"
+            style={
+              mode === 'register'
+                ? { background: `linear-gradient(135deg, ${BRAND.blue}, ${BRAND.violet})`, color: '#ffffff' }
+                : { color: 'rgba(255,255,255,0.5)' }
+            }
+          >
+            Registrarme
+          </button>
+        </div>
 
-        {status === 'error' && <p className="text-red-400 text-sm">{errorMessage}</p>}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3" style={{ '--accent': BRAND.blue }}>
+          {mode === 'register' && (
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Nombre"
+              required
+              className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm outline-none transition-colors focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30"
+            />
+          )}
+          <div className="relative">
+            <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              required
+              className={inputClass}
+            />
+          </div>
+          <div className="relative">
+            <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" />
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Contraseña"
+              required
+              minLength={8}
+              className={inputClass}
+            />
+          </div>
 
-        <button
-          type="submit"
-          disabled={status === 'sending'}
-          className="w-full py-2 rounded-full bg-purple-600 hover:bg-purple-500 disabled:opacity-40 transition font-medium"
-        >
-          {status === 'sending' ? 'Enviando...' : mode === 'login' ? 'Entrar' : 'Crear cuenta'}
-        </button>
-      </form>
+          {status === 'error' && <p className="text-red-400 text-sm">{errorMessage}</p>}
 
-      <button
-        type="button"
-        onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
-        className="text-neutral-400 text-sm hover:text-white transition"
-      >
-        {mode === 'login' ? '¿No tenés cuenta? Registrate' : '¿Ya tenés cuenta? Iniciá sesión'}
-      </button>
+          <Button
+            type="submit"
+            disabled={status === 'sending'}
+            primaryColor={BRAND.blue}
+            className="w-full mt-2 disabled:opacity-40"
+          >
+            {status === 'sending' ? 'Enviando...' : mode === 'login' ? 'Entrar' : 'Crear cuenta'}
+            {status !== 'sending' && <ArrowRight className="w-4 h-4" />}
+          </Button>
+        </form>
+      </GlassPanel>
     </div>
   )
 }

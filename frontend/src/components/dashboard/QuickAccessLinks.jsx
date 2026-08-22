@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import QrCode from './QrCode'
+import { BRAND } from '../../utils/brand'
+import { getContrastTextColor } from '../../utils/color'
 
 function CopyField({ label, url }) {
   const [copied, setCopied] = useState(false)
@@ -16,18 +18,22 @@ function CopyField({ label, url }) {
 
   return (
     <div>
-      <p className="text-neutral-400 text-sm mb-1">{label}</p>
+      <p className="text-white/40 text-sm mb-1">{label}</p>
       <div className="flex items-center gap-2">
         <input
           type="text"
           readOnly
           value={url}
-          className="flex-1 rounded-lg bg-neutral-800 px-3 py-2 text-sm text-neutral-300 outline-none"
+          className="flex-1 rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm text-white/70 outline-none"
         />
         <button
           type="button"
           onClick={handleCopy}
-          className="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 transition text-sm font-medium shrink-0"
+          className="px-4 py-2 rounded-xl transition text-sm font-medium shrink-0 hover:brightness-110"
+          style={{
+            background: copied ? BRAND.lime : `linear-gradient(135deg, ${BRAND.blue}, ${BRAND.violet})`,
+            color: copied ? getContrastTextColor(BRAND.lime) : '#ffffff',
+          }}
         >
           {copied ? 'Copiado' : 'Copiar'}
         </button>
@@ -46,7 +52,7 @@ function QuickAccessLinks({ eventSlug, clientAccessToken }) {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl bg-neutral-900 border border-white/10 p-5 flex flex-col md:flex-row gap-6">
+      <div className="rounded-2xl bg-white/5 border border-white/10 p-5 flex flex-col md:flex-row gap-6">
         <div className="flex-1 flex flex-col gap-4">
           <CopyField label="Tarjeta digital" url={cardUrl} />
           <CopyField label="Pantalla en vivo" url={liveFeedUrl} />
@@ -57,8 +63,8 @@ function QuickAccessLinks({ eventSlug, clientAccessToken }) {
         </div>
       </div>
 
-      <div className="rounded-xl bg-neutral-900 border border-white/10 p-5 flex flex-col gap-4">
-        <p className="text-neutral-400 text-sm">
+      <div className="rounded-2xl bg-white/5 border border-white/10 p-5 flex flex-col gap-4">
+        <p className="text-white/40 text-sm">
           Links exclusivos para el cliente (sin necesidad de iniciar sesión):
         </p>
         <CopyField label="Panel de estadísticas del cliente" url={statsUrl} />

@@ -77,9 +77,35 @@ io.on('connection', (socket) => {
     socket.join(eventSlug);
   });
 
-  socket.on('toggle-party-mode', ({ eventSlug, enabled }) => {
+  socket.on('set-party-config', ({ eventSlug, enabled, layout, confetti, lightBeams, emojiRain }) => {
     if (!eventSlug) return;
-    io.to(eventSlug).emit('party-mode', Boolean(enabled));
+    io.to(eventSlug).emit('party-config-changed', {
+      enabled: Boolean(enabled),
+      layout: layout === 'single' ? 'single' : 'grid',
+      confetti: Boolean(confetti),
+      lightBeams: Boolean(lightBeams),
+      emojiRain: Boolean(emojiRain),
+    });
+  });
+
+  socket.on('set-speed', ({ eventSlug, seconds }) => {
+    if (!eventSlug) return;
+    const clamped = Math.min(15, Math.max(2, Number(seconds) || 7));
+    io.to(eventSlug).emit('speed-changed', clamped);
+  });
+
+  socket.on('toggle-pause', ({ eventSlug, paused }) => {
+    if (!eventSlug) return;
+    io.to(eventSlug).emit('pause-changed', Boolean(paused));
+  });
+
+  socket.on('set-announcement', ({ eventSlug, text, position, fontSize }) => {
+    if (!eventSlug) return;
+    io.to(eventSlug).emit('announcement-changed', {
+      text: String(text || '').slice(0, 140),
+      position: ['top', 'center', 'bottom'].includes(position) ? position : 'bottom',
+      fontSize: fontSize || 'text-xl',
+    });
   });
 
   socket.on('disconnect', () => {

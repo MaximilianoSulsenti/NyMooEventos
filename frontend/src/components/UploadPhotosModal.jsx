@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { X } from 'lucide-react'
 import UploadPhotosForm from './UploadPhotosForm'
 
-function UploadPhotosModal({ eventSlug, primaryColor, onClose }) {
+function UploadPhotosModal({ eventSlug, primaryColor, allowVideos, onClose }) {
   return (
     <AnimatePresence>
       <motion.div
@@ -28,7 +28,7 @@ function UploadPhotosModal({ eventSlug, primaryColor, onClose }) {
           </button>
 
           <h2 className="text-xl font-semibold text-center mb-4">Subí tus fotos</h2>
-          <UploadPhotosForm eventSlug={eventSlug} primaryColor={primaryColor} />
+          <UploadPhotosForm eventSlug={eventSlug} primaryColor={primaryColor} allowVideos={allowVideos} />
         </motion.div>
       </motion.div>
     </AnimatePresence>

@@ -12,16 +12,16 @@ function GuestsTable({ guests }) {
 
   if (guests.length === 0) {
     return (
-      <div className="rounded-xl bg-neutral-900 border border-white/10 p-6 text-center text-neutral-400">
+      <div className="rounded-2xl bg-white/5 border border-white/10 p-6 text-center text-white/50">
         Todavía no hay invitados registrados.
       </div>
     )
   }
 
   return (
-    <div className="rounded-xl bg-neutral-900 border border-white/10 overflow-x-auto">
+    <div className="rounded-2xl bg-white/5 border border-white/10 overflow-x-auto">
       <table className="w-full text-sm text-left">
-        <thead className="text-neutral-400 border-b border-white/10">
+        <thead className="text-white/50 border-b border-white/10">
           <tr>
             <th className="px-4 py-3 font-medium">Nombre</th>
             <th className="px-4 py-3 font-medium">Estado</th>
@@ -60,7 +60,7 @@ function GuestsTable({ guests }) {
                   </td>
                 </tr>
                 {isExpanded && extraEntries.length > 0 && (
-                  <tr className="border-b border-white/5 last:border-0 bg-neutral-950/50">
+                  <tr className="border-b border-white/5 last:border-0 bg-black/20">
                     <td colSpan={5} className="px-4 py-3">
                       <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-xs">
                         {extraEntries.map(([question, answer]) => (

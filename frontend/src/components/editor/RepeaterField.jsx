@@ -6,7 +6,7 @@ function ItemInput({ field, value, onChange }) {
       <select
         value={value || field.options[0]?.value || ''}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-lg bg-neutral-900 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-500 transition"
+        className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
       >
         {field.options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -23,7 +23,7 @@ function ItemInput({ field, value, onChange }) {
       placeholder={field.label}
       value={value || ''}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full rounded-lg bg-neutral-900 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-500 transition"
+      className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
     />
   )
 }
@@ -49,7 +49,7 @@ function RepeaterField({ label, items, itemFields, onChange, addLabel = 'Agregar
       <label className="block text-sm text-neutral-400 mb-2">{label}</label>
       <div className="space-y-2">
         {list.map((item, index) => (
-          <div key={index} className="rounded-lg bg-neutral-800 border border-white/10 p-3 space-y-2">
+          <div key={index} className="rounded-xl bg-white/5 border border-white/10 p-3 space-y-2">
             {itemFields.map((field) => (
               <div key={field.key}>
                 {field.label && field.type === 'select' && (
@@ -72,7 +72,8 @@ function RepeaterField({ label, items, itemFields, onChange, addLabel = 'Agregar
       <button
         type="button"
         onClick={addItem}
-        className="mt-2 flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300 transition"
+        className="mt-2 flex items-center gap-1 text-xs transition hover:brightness-125"
+        style={{ color: 'var(--accent)' }}
       >
         <Plus className="w-3.5 h-3.5" />
         {addLabel}

@@ -5,6 +5,7 @@ export const SECTION_LABELS = {
   Story: 'Nuestra historia',
   Gallery: 'Galería de los novios',
   LiveGallery: 'Galería en vivo (QR)',
+  DigitalAlbumButton: 'Álbum digital por QR',
   Location: 'Ubicación',
   RSVP: 'Confirmación de asistencia',
   SalonCarrousel: 'Carrusel del salón',
@@ -45,16 +46,12 @@ export const BG_TYPE_OPTIONS = [
   { value: 'video', label: 'Video' },
 ]
 
-export const INFO_ICON_OPTIONS = [
-  { value: 'info', label: 'Información general' },
-  { value: 'dresscode', label: 'Código de vestimenta' },
-  { value: 'hotel', label: 'Alojamiento / hoteles' },
-  { value: 'transport', label: 'Transporte' },
-  { value: 'gift', label: 'Regalos' },
-  { value: 'kids', label: 'Niños' },
-  { value: 'food', label: 'Comida / menú' },
-  { value: 'contact', label: 'Contacto' },
-]
+export { EVENT_ICON_OPTIONS, EVENT_ICON_OPTIONS as INFO_ICON_OPTIONS } from './eventIcons'
+import { EVENT_ICON_OPTIONS } from './eventIcons'
+
+// Igual que EVENT_ICON_OPTIONS pero con una opción "Automático" primero, para
+// campos donde el ícono se puede detectar solo por palabra clave si no se elige uno.
+const AUTO_ICON_OPTIONS = [{ value: '', label: 'Automático (según el texto)' }, ...EVENT_ICON_OPTIONS]
 
 export const COUNTDOWN_SHAPE_OPTIONS = [
   { value: 'square', label: 'Bordes ultra finos minimalistas' },
@@ -115,6 +112,24 @@ export const BACKGROUND_FIELD_DEFS = [
 // Campo compartido para el color del título de cada sección (por defecto blanco).
 export const TEXT_FIELD_DEFS = [{ key: 'textColor', label: 'Color del título', type: 'color' }]
 
+// Fondo vidriado (glassmorphism) editable, para las secciones con tarjetas de vidrio.
+export const GLASS_FIELD_DEFS = [
+  { key: 'glassOpacity', label: 'Opacidad del vidrio', type: 'range', min: 0, max: 20, step: 1 },
+  {
+    key: 'glassBlur',
+    label: 'Desenfoque del vidrio',
+    type: 'select',
+    options: [
+      { value: 'none', label: 'Ninguno' },
+      { value: 'sm', label: 'Sutil' },
+      { value: 'md', label: 'Medio' },
+      { value: 'lg', label: 'Fuerte' },
+    ],
+  },
+]
+
+export const SECTIONS_WITH_GLASS_CARD = ['EventDetail', 'Location', 'Info', 'MusicPlaylist', 'RSVP']
+
 export const SECTION_FIELD_DEFS = {
   Hero: [
     { key: 'title', label: 'Título', type: 'text' },
@@ -130,6 +145,17 @@ export const SECTION_FIELD_DEFS = {
   ],
   EventDetail: [
     { key: 'description', label: 'Descripción', type: 'textarea' },
+    {
+      key: 'details',
+      label: 'Detalles adicionales (ceremonia, código de vestimenta, etc.)',
+      type: 'repeater',
+      addLabel: 'Agregar detalle',
+      itemFields: [
+        { key: 'icon', label: 'Ícono', type: 'select', options: AUTO_ICON_OPTIONS },
+        { key: 'label', label: 'Título (ej. Ceremonia religiosa)' },
+        { key: 'text', label: 'Descripción (ej. Iglesia San José, 18:00 hs)' },
+      ],
+    },
     { key: 'fontSizeBody', label: 'Tamaño del texto', type: 'select', options: FONT_SIZE_OPTIONS },
     { key: 'alignment', label: 'Alineación', type: 'select', options: ALIGNMENT_OPTIONS },
   ],
@@ -160,6 +186,14 @@ export const SECTION_FIELD_DEFS = {
     { key: 'title', label: 'Título', type: 'text' },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
   ],
+  DigitalAlbumButton: [
+    { key: 'title', label: 'Título', type: 'text' },
+    { key: 'subtitle', label: 'Subtítulo', type: 'text' },
+    { key: 'description', label: 'Texto descriptivo (opcional, más largo)', type: 'textarea' },
+    { key: 'buttonText', label: 'Texto del botón', type: 'text' },
+    { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
+    { key: 'fontSizeSubtitle', label: 'Tamaño del subtítulo', type: 'select', options: FONT_SIZE_OPTIONS },
+  ],
   Location: [
     {
       key: 'locations',
@@ -167,6 +201,7 @@ export const SECTION_FIELD_DEFS = {
       type: 'repeater',
       addLabel: 'Agregar locación',
       itemFields: [
+        { key: 'icon', label: 'Ícono', type: 'select', options: AUTO_ICON_OPTIONS },
         { key: 'label', label: 'Nombre (ej. Ceremonia, Fiesta)' },
         { key: 'address', label: 'Dirección' },
         { key: 'mapUrl', label: 'Link de Google Maps (botón Compartir → Copiar enlace, o el src del iframe de inserción)' },
@@ -211,7 +246,7 @@ export const SECTION_FIELD_DEFS = {
           key: 'icon',
           label: 'Ícono',
           type: 'select',
-          options: INFO_ICON_OPTIONS,
+          options: EVENT_ICON_OPTIONS,
         },
         { key: 'title', label: 'Título (ej. Código de vestimenta)' },
         { key: 'body', label: 'Texto' },
@@ -234,12 +269,14 @@ export const SECTION_FIELD_DEFS = {
       itemFields: [
         { key: 'time', label: 'Hora (ej. 20:00)' },
         { key: 'label', label: 'Actividad (ej. Ceremonia)' },
+        { key: 'icon', label: 'Ícono', type: 'select', options: AUTO_ICON_OPTIONS },
       ],
     },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
   ],
   Footer: [
     { key: 'text', label: 'Frase de cierre', type: 'text' },
+    { key: 'fontSizeTitle', label: 'Tamaño del nombre del evento', type: 'select', options: FONT_SIZE_OPTIONS },
     { key: 'signature', label: 'Firma', type: 'text' },
     {
       key: 'socialLinks',

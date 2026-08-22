@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { QRCodeCanvas } from 'qrcode.react'
+import { BRAND } from '../../utils/brand'
 
 function QrCode({ value, size = 160, filename = 'qr-subir-fotos.png' }) {
   const canvasRef = useRef(null)
@@ -25,7 +26,8 @@ function QrCode({ value, size = 160, filename = 'qr-subir-fotos.png' }) {
       <button
         type="button"
         onClick={handleDownload}
-        className="text-xs text-purple-400 hover:text-purple-300 transition underline underline-offset-2"
+        className="text-xs transition underline underline-offset-2 hover:brightness-125"
+        style={{ color: BRAND.blue }}
       >
         Descargar QR
       </button>

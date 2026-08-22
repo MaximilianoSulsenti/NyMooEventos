@@ -5,6 +5,7 @@ import api from '../services/api'
 import SectionRenderer from '../sections/SectionRenderer'
 import GlobalBackground from '../sections/GlobalBackground'
 import Envelope from '../components/Envelope'
+import MusicPlayerWidget from '../components/MusicPlayerWidget'
 import { getThemeStyles } from '../sections/theming'
 
 function DigitalCard() {
@@ -74,10 +75,10 @@ function DigitalCard() {
   }
 
   const appearance = event.appearance || {}
-  const styles = getThemeStyles(appearance.theme)
+  const styles = getThemeStyles(appearance.theme, appearance.fontFamily)
 
   return (
-    <div className={`relative min-h-screen text-white ${styles.fontClass}`}>
+    <div className={`relative min-h-screen w-full overflow-x-hidden text-white ${styles.fontClass}`}>
       {appearance.useGlobalBackground ? (
         <GlobalBackground appearance={appearance} />
       ) : (
@@ -89,6 +90,14 @@ function DigitalCard() {
           settings={event.envelopeSettings}
           appearance={appearance}
           onOpen={() => setEnvelopeOpen(true)}
+        />
+      )}
+
+      {event.musicSettings?.enabled && (
+        <MusicPlayerWidget
+          settings={event.musicSettings}
+          primaryColor={appearance.primaryColor}
+          autoPlayTrigger={envelopeOpen}
         />
       )}
 

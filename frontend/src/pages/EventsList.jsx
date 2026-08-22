@@ -1,7 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { motion } from 'motion/react'
+import { LogOut, Plus, Calendar } from 'lucide-react'
 import api from '../services/api'
 import { clearSession, getStoredUser } from '../services/auth'
+import BrandBackground from '../components/BrandBackground'
+import GlassPanel from '../components/ui/GlassPanel'
+import Button from '../components/ui/Button'
+import { BRAND } from '../utils/brand'
+
+const CARD_ACCENTS = [BRAND.blue, BRAND.pink, BRAND.violet, BRAND.orange]
 
 function EventsList() {
   const navigate = useNavigate()
@@ -49,78 +57,114 @@ function EventsList() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-white px-6 py-10">
-      <div className="max-w-3xl mx-auto space-y-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-neutral-400 text-sm">Hola, {user?.name}</p>
-            <h1 className="text-2xl font-semibold">Tus eventos</h1>
+    <div className="relative min-h-screen w-full text-white px-4 sm:px-6 py-10">
+      <BrandBackground />
+
+      <div className="max-w-3xl mx-auto space-y-6">
+        <GlassPanel accentColor={BRAND.blue} className="px-5 sm:px-8 py-6 space-y-8">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div>
+              <p className="text-white/50 text-sm">Hola, {user?.name}</p>
+              <h1 className="text-2xl font-semibold">Tus eventos</h1>
+            </div>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="flex items-center gap-1.5 text-sm text-white/50 hover:text-white transition"
+            >
+              <LogOut className="w-4 h-4" />
+              Cerrar sesión
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="text-sm text-neutral-400 hover:text-white transition"
-          >
-            Cerrar sesión
-          </button>
-        </div>
 
-        {loadState === 'loading' && <p className="text-neutral-400">Cargando...</p>}
-        {loadState === 'error' && <p className="text-red-400">No se pudieron cargar tus eventos.</p>}
+          {loadState === 'loading' && <p className="text-white/40">Cargando...</p>}
+          {loadState === 'error' && <p className="text-red-400">No se pudieron cargar tus eventos.</p>}
 
-        {loadState === 'ready' && (
-          <div className="space-y-3">
-            {events.length === 0 && (
-              <p className="text-neutral-400">Todavía no creaste ningún evento.</p>
-            )}
-            {events.map((event) => (
-              <Link
-                key={event._id}
-                to={`/dashboard/${event._id}`}
-                className="block rounded-xl bg-neutral-900 border border-white/10 p-4 hover:border-purple-500/50 transition"
+          {loadState === 'ready' && (
+            <div className="space-y-3">
+              {events.length === 0 && (
+                <p className="text-white/40">Todavía no creaste ningún evento.</p>
+              )}
+              {events.map((event, index) => (
+                <motion.div
+                  key={event._id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <Link
+                    to={`/dashboard/${event._id}`}
+                    className="relative flex items-center gap-4 rounded-2xl bg-white/5 border border-white/10 pl-5 pr-4 py-4 overflow-hidden hover:bg-white/[0.08] hover:border-white/20 transition group"
+                  >
+                    <div
+                      className="absolute left-0 top-0 bottom-0 w-1"
+                      style={{ background: CARD_ACCENTS[index % CARD_ACCENTS.length] }}
+                    />
+                    <span
+                      className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+                      style={{
+                        background: `${CARD_ACCENTS[index % CARD_ACCENTS.length]}22`,
+                        color: CARD_ACCENTS[index % CARD_ACCENTS.length],
+                      }}
+                    >
+                      <Calendar className="w-5 h-5" />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="font-medium truncate">{event.eventName}</p>
+                      <p className="text-white/40 text-sm">
+                        {new Date(event.date).toLocaleDateString('es-ES')} · /{event.eventSlug}
+                      </p>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </GlassPanel>
+
+        <GlassPanel accentColor={BRAND.orange} className="px-5 sm:px-8 py-6">
+          <form onSubmit={handleCreate} className="space-y-3" style={{ '--accent': BRAND.orange }}>
+            <div className="flex items-center gap-2 mb-1">
+              <span
+                className="w-8 h-8 rounded-full flex items-center justify-center"
+                style={{ background: `${BRAND.orange}22`, color: BRAND.orange }}
               >
-                <p className="font-medium">{event.eventName}</p>
-                <p className="text-neutral-400 text-sm">
-                  {new Date(event.date).toLocaleDateString('es-ES')} · /{event.eventSlug}
-                </p>
-              </Link>
-            ))}
-          </div>
-        )}
-
-        <form onSubmit={handleCreate} className="rounded-xl bg-neutral-900 border border-white/10 p-5 space-y-3">
-          <h2 className="font-medium">Crear nuevo evento</h2>
-          <input
-            type="text"
-            value={eventName}
-            onChange={(e) => setEventName(e.target.value)}
-            placeholder="Nombre del evento"
-            required
-            className="w-full rounded-lg bg-neutral-800 px-3 py-2 outline-none focus:ring-2 focus:ring-purple-500"
-          />
-          <input
-            type="text"
-            value={eventSlug}
-            onChange={(e) => setEventSlug(e.target.value)}
-            placeholder="slug-del-evento"
-            required
-            className="w-full rounded-lg bg-neutral-800 px-3 py-2 outline-none focus:ring-2 focus:ring-purple-500"
-          />
-          <input
-            type="datetime-local"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            required
-            className="w-full rounded-lg bg-neutral-800 px-3 py-2 outline-none focus:ring-2 focus:ring-purple-500"
-          />
-          {createError && <p className="text-red-400 text-sm">{createError}</p>}
-          <button
-            type="submit"
-            className="w-full py-2 rounded-full bg-purple-600 hover:bg-purple-500 transition font-medium"
-          >
-            Crear evento
-          </button>
-        </form>
+                <Plus className="w-4 h-4" />
+              </span>
+              <h2 className="font-medium">Crear nuevo evento</h2>
+            </div>
+            <input
+              type="text"
+              value={eventName}
+              onChange={(e) => setEventName(e.target.value)}
+              placeholder="Nombre del evento"
+              required
+              className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm outline-none transition-colors focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30"
+            />
+            <input
+              type="text"
+              value={eventSlug}
+              onChange={(e) => setEventSlug(e.target.value)}
+              placeholder="slug-del-evento"
+              required
+              className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm outline-none transition-colors focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30"
+            />
+            <p className="text-xs text-white/30 -mt-1">
+              Se normaliza automáticamente a minúsculas y guiones (sin espacios ni símbolos), para que el link sea seguro de compartir.
+            </p>
+            <input
+              type="datetime-local"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+              className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm outline-none transition-colors focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30"
+            />
+            {createError && <p className="text-red-400 text-sm">{createError}</p>}
+            <Button type="submit" primaryColor={BRAND.orange} className="w-full mt-1">
+              Crear evento
+            </Button>
+          </form>
+        </GlassPanel>
       </div>
     </div>
   )

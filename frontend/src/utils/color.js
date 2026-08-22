@@ -20,3 +20,25 @@ export function shadeColor(hex, percent) {
     return hex
   }
 }
+
+function relativeLuminance(r, g, b) {
+  const [R, G, B] = [r, g, b].map((c) => {
+    const s = c / 255
+    return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4
+  })
+  return 0.2126 * R + 0.7152 * G + 0.0722 * B
+}
+
+// Elige negro o blanco según cuál da más contraste real (WCAG) contra el color
+// de fondo dado — evita texto "sucio" en colores intermedios como un azul saturado.
+export function getContrastTextColor(hex) {
+  try {
+    const [r, g, b] = hexToRgb(hex)
+    const luminance = relativeLuminance(r, g, b)
+    const contrastWithBlack = (luminance + 0.05) / 0.05
+    const contrastWithWhite = 1.05 / (luminance + 0.05)
+    return contrastWithBlack >= contrastWithWhite ? '#111111' : '#ffffff'
+  } catch {
+    return '#111111'
+  }
+}

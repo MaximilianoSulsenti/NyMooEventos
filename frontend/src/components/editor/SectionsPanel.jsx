@@ -4,6 +4,7 @@ import { ChevronUp, ChevronDown, Settings2 } from 'lucide-react'
 import { SECTION_LABELS } from '../../sections/sectionDefs'
 import SectionFieldEditor from './SectionFieldEditor'
 import { cn } from '../../utils/cn'
+import { BRAND } from '../../utils/brand'
 
 function SectionsPanel({ eventId, sections, onChange }) {
   const [expandedId, setExpandedId] = useState(null)
@@ -30,13 +31,13 @@ function SectionsPanel({ eventId, sections, onChange }) {
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" style={{ '--accent': BRAND.blue }}>
       {sorted.map((section, index) => (
         <div
           key={section.id}
           className={cn(
-            'rounded-xl bg-neutral-900 border overflow-hidden transition-colors shadow-lg shadow-black/20',
-            expandedId === section.id ? 'border-purple-500/50' : 'border-white/10'
+            'rounded-xl bg-white/5 border overflow-hidden transition-colors shadow-lg shadow-black/20',
+            expandedId === section.id ? 'border-[var(--accent)]/50' : 'border-white/10'
           )}
         >
           <div className="flex items-center justify-between p-3">
@@ -66,10 +67,8 @@ function SectionsPanel({ eventId, sections, onChange }) {
               <button
                 type="button"
                 onClick={() => setExpandedId(expandedId === section.id ? null : section.id)}
-                className={cn(
-                  'text-xs flex items-center gap-1 transition-colors',
-                  expandedId === section.id ? 'text-purple-400' : 'text-neutral-400 hover:text-white'
-                )}
+                className="text-xs flex items-center gap-1 transition-colors hover:brightness-125"
+                style={{ color: expandedId === section.id ? BRAND.blue : 'rgba(255,255,255,0.4)' }}
               >
                 <Settings2 className="w-3.5 h-3.5" />
                 {expandedId === section.id ? 'Cerrar' : 'Editar'}
@@ -79,10 +78,8 @@ function SectionsPanel({ eventId, sections, onChange }) {
                 role="switch"
                 aria-checked={section.enabled}
                 onClick={() => updateSection(section.id, { enabled: !section.enabled })}
-                className={cn(
-                  'relative w-10 h-6 rounded-full transition-colors',
-                  section.enabled ? 'bg-purple-600' : 'bg-neutral-700'
-                )}
+                className="relative w-10 h-6 rounded-full transition-colors"
+                style={{ background: section.enabled ? BRAND.blue : 'rgba(255,255,255,0.12)' }}
               >
                 <span
                   className={cn(
@@ -103,7 +100,7 @@ function SectionsPanel({ eventId, sections, onChange }) {
                 transition={{ duration: 0.2 }}
                 className="overflow-hidden"
               >
-                <div className="p-3 border-t border-white/10 bg-neutral-950/50">
+                <div className="p-3 border-t border-white/10 bg-black/20">
                   <SectionFieldEditor
                     eventId={eventId}
                     sectionId={section.id}

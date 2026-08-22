@@ -1,18 +1,27 @@
-import { SECTION_FIELD_DEFS, BACKGROUND_FIELD_DEFS, TEXT_FIELD_DEFS } from '../../sections/sectionDefs'
+import {
+  SECTION_FIELD_DEFS,
+  BACKGROUND_FIELD_DEFS,
+  TEXT_FIELD_DEFS,
+  GLASS_FIELD_DEFS,
+  SECTIONS_WITH_GLASS_CARD,
+} from '../../sections/sectionDefs'
 import ImageUploadField from './ImageUploadField'
 import ImageListField from './ImageListField'
 import RepeaterField from './RepeaterField'
+import { BRAND } from '../../utils/brand'
 
 const SECTIONS_WITH_TITLE_COLOR = [
   'Hero',
   'Story',
   'Gallery',
   'LiveGallery',
+  'DigitalAlbumButton',
   'Location',
   'SalonCarrousel',
   'Info',
   'MusicPlaylist',
   'Timeline',
+  'Footer',
 ]
 
 function FieldInput({ eventId, field, config, onChange }) {
@@ -68,7 +77,7 @@ function FieldInput({ eventId, field, config, onChange }) {
             type="text"
             value={current}
             onChange={(e) => onChange(field.key, e.target.value)}
-            className="flex-1 rounded-lg bg-neutral-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-500 transition"
+            className="flex-1 rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
           />
           <button
             type="button"
@@ -90,7 +99,7 @@ function FieldInput({ eventId, field, config, onChange }) {
           value={value || ''}
           onChange={(e) => onChange(field.key, e.target.value)}
           rows={3}
-          className="w-full rounded-lg bg-neutral-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-500 transition"
+          className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
         />
       </div>
     )
@@ -103,7 +112,7 @@ function FieldInput({ eventId, field, config, onChange }) {
         <select
           value={value || field.options[0]?.value || ''}
           onChange={(e) => onChange(field.key, e.target.value)}
-          className="w-full rounded-lg bg-neutral-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-500 transition"
+          className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
         >
           {field.options.map((option) => (
             <option key={option.value} value={option.value}>
@@ -128,7 +137,7 @@ function FieldInput({ eventId, field, config, onChange }) {
           step={field.step}
           value={value ?? field.min}
           onChange={(e) => onChange(field.key, Number(e.target.value))}
-          className="w-full accent-purple-500"
+          className="w-full accent-[var(--accent)]"
         />
       </div>
     )
@@ -141,7 +150,7 @@ function FieldInput({ eventId, field, config, onChange }) {
         type="text"
         value={value || ''}
         onChange={(e) => onChange(field.key, e.target.value)}
-        className="w-full rounded-lg bg-neutral-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-500 transition"
+        className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
       />
     </div>
   )
@@ -150,13 +159,14 @@ function FieldInput({ eventId, field, config, onChange }) {
 function SectionFieldEditor({ eventId, sectionId, config, onChange }) {
   const fields = SECTION_FIELD_DEFS[sectionId] || []
   const showTextColor = SECTIONS_WITH_TITLE_COLOR.includes(sectionId)
+  const showGlass = SECTIONS_WITH_GLASS_CARD.includes(sectionId)
 
   function updateField(key, value) {
     onChange({ ...config, [key]: value })
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" style={{ '--accent': BRAND.blue }}>
       {showTextColor && (
         <div className="space-y-3">
           <p className="text-xs uppercase tracking-widest text-neutral-500">Texto</p>
@@ -172,6 +182,15 @@ function SectionFieldEditor({ eventId, sectionId, config, onChange }) {
           <FieldInput key={field.key} eventId={eventId} field={field} config={config} onChange={updateField} />
         ))}
       </div>
+
+      {showGlass && (
+        <div className="space-y-3 pt-3 border-t border-white/10">
+          <p className="text-xs uppercase tracking-widest text-neutral-500">Fondo vidriado de las tarjetas</p>
+          {GLASS_FIELD_DEFS.map((field) => (
+            <FieldInput key={field.key} eventId={eventId} field={field} config={config} onChange={updateField} />
+          ))}
+        </div>
+      )}
 
       {fields.length > 0 && (
         <div className="space-y-3 pt-3 border-t border-white/10">

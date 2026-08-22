@@ -1,10 +1,14 @@
 import { BG_TYPE_OPTIONS, GRADIENT_PRESETS } from '../../sections/sectionDefs'
 import ImageUploadField from './ImageUploadField'
+import { BRAND } from '../../utils/brand'
 
-const THEMES = ['minimalista', 'moderno', 'vanguardista', 'romantica']
+const THEMES = ['minimalista', 'moderno', 'vanguardista', 'romantica', 'bohemio', 'elegante', 'festivo']
 const FONTS = [
   { value: 'sans', label: 'Sans-serif' },
   { value: 'serif', label: 'Serif' },
+  { value: 'display', label: 'Elegante (Playfair Display)' },
+  { value: 'script', label: 'Manuscrita (Dancing Script)' },
+  { value: 'modern', label: 'Moderna (Poppins)' },
 ]
 
 function ColorField({ label, value, onChange }) {
@@ -22,7 +26,7 @@ function ColorField({ label, value, onChange }) {
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="flex-1 rounded-lg bg-neutral-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-500"
+          className="flex-1 rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
         />
       </div>
     </div>
@@ -35,13 +39,13 @@ function AppearancePanel({ eventId, appearance, onChange }) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" style={{ '--accent': BRAND.blue }}>
       <div>
         <label className="block text-sm text-neutral-400 mb-1">Tema</label>
         <select
           value={appearance.theme}
           onChange={(e) => update({ theme: e.target.value })}
-          className="w-full rounded-lg bg-neutral-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-500"
+          className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
         >
           {THEMES.map((theme) => (
             <option key={theme} value={theme}>
@@ -56,7 +60,7 @@ function AppearancePanel({ eventId, appearance, onChange }) {
         <select
           value={appearance.fontFamily}
           onChange={(e) => update({ fontFamily: e.target.value })}
-          className="w-full rounded-lg bg-neutral-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-500"
+          className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
         >
           {FONTS.map((font) => (
             <option key={font.value} value={font.value}>
@@ -78,9 +82,8 @@ function AppearancePanel({ eventId, appearance, onChange }) {
             role="switch"
             aria-checked={appearance.useGlobalBackground}
             onClick={() => update({ useGlobalBackground: !appearance.useGlobalBackground })}
-            className={`relative w-10 h-6 rounded-full transition-colors ${
-              appearance.useGlobalBackground ? 'bg-purple-600' : 'bg-neutral-700'
-            }`}
+            className="relative w-10 h-6 rounded-full transition-colors"
+            style={{ background: appearance.useGlobalBackground ? BRAND.blue : 'rgba(255,255,255,0.12)' }}
           >
             <span
               className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
@@ -97,7 +100,7 @@ function AppearancePanel({ eventId, appearance, onChange }) {
               <select
                 value={appearance.globalBgType}
                 onChange={(e) => update({ globalBgType: e.target.value })}
-                className="w-full rounded-lg bg-neutral-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
               >
                 {BG_TYPE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -124,7 +127,7 @@ function AppearancePanel({ eventId, appearance, onChange }) {
                   value={appearance.globalBgUrl || ''}
                   onChange={(e) => update({ globalBgUrl: e.target.value })}
                   placeholder="https://..."
-                  className="w-full rounded-lg bg-neutral-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
                 />
               </div>
             )}
@@ -141,7 +144,7 @@ function AppearancePanel({ eventId, appearance, onChange }) {
                   step={5}
                   value={appearance.globalBgOpacity ?? 100}
                   onChange={(e) => update({ globalBgOpacity: Number(e.target.value) })}
-                  className="w-full accent-purple-500"
+                  className="w-full accent-[var(--accent)]"
                 />
               </div>
             )}
@@ -151,7 +154,7 @@ function AppearancePanel({ eventId, appearance, onChange }) {
               <select
                 value={appearance.globalBgGradient || ''}
                 onChange={(e) => update({ globalBgGradient: e.target.value })}
-                className="w-full rounded-lg bg-neutral-800 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
               >
                 {GRADIENT_PRESETS.map((preset) => (
                   <option key={preset.value} value={preset.value}>

@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { X } from 'lucide-react'
+import { X, Check } from 'lucide-react'
 import api from '../services/api'
 import Button from './ui/Button'
+import { shadeColor } from '../utils/color'
 
 const inputClass =
   'w-full rounded-lg bg-neutral-800 border border-white/10 px-3 py-2 outline-none transition-colors focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30'
@@ -26,6 +27,8 @@ function RsvpForm({ eventSlug, primaryColor = '#a855f7', dietaryOptions, extraQu
 
   const dietaryPresets = parseDietaryOptions(dietaryOptions)
   const questions = Array.isArray(extraQuestions) ? extraQuestions.filter((q) => q.label) : []
+  const light = shadeColor(primaryColor, 25)
+  const dark = shadeColor(primaryColor, -25)
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -66,8 +69,10 @@ function RsvpForm({ eventSlug, primaryColor = '#a855f7', dietaryOptions, extraQu
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.25 }}
-          className="bg-neutral-900 text-white rounded-2xl w-full max-w-md p-6 relative shadow-2xl border border-white/10 max-h-[90vh] overflow-y-auto"
+          className="rounded-3xl p-px w-full max-w-md shadow-2xl"
+          style={{ background: `linear-gradient(160deg, ${light}90, transparent 45%, ${dark}70)` }}
         >
+        <div className="bg-neutral-900 text-white rounded-[calc(1.5rem-1px)] p-6 relative max-h-[90vh] overflow-y-auto">
           <button
             type="button"
             onClick={onClose}
@@ -81,8 +86,17 @@ function RsvpForm({ eventSlug, primaryColor = '#a855f7', dietaryOptions, extraQu
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="py-8 text-center space-y-2"
+              className="py-8 text-center space-y-3"
             >
+              <motion.div
+                initial={{ scale: 0, rotate: -30 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: 'spring', stiffness: 260, damping: 16 }}
+                className="w-14 h-14 rounded-full flex items-center justify-center mx-auto"
+                style={{ background: `${primaryColor}22`, color: primaryColor }}
+              >
+                <Check className="w-7 h-7" />
+              </motion.div>
               <p className="text-xl font-medium">¡Gracias, {name}!</p>
               <p className="text-neutral-400">Tu confirmación fue registrada.</p>
             </motion.div>
@@ -182,6 +196,7 @@ function RsvpForm({ eventSlug, primaryColor = '#a855f7', dietaryOptions, extraQu
               </Button>
             </form>
           )}
+        </div>
         </motion.div>
       </motion.div>
     </AnimatePresence>

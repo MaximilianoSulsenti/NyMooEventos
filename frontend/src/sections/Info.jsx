@@ -1,38 +1,32 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { ChevronDown, Info as InfoIcon, Shirt, Hotel, Car, Gift, Baby, Utensils, Phone } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
 import { cn } from '../utils/cn'
+import { resolveIcon } from './eventIcons'
+import AnimatedIcon from '../components/AnimatedIcon'
+import { glassStyle, glassBlurClass } from '../utils/glass'
 
-const ICONS = {
-  info: InfoIcon,
-  dresscode: Shirt,
-  hotel: Hotel,
-  transport: Car,
-  gift: Gift,
-  kids: Baby,
-  food: Utensils,
-  contact: Phone,
-}
-
-function InfoCard({ item, appearance, styles, isOpen, onToggle }) {
-  const Icon = ICONS[item.icon] || InfoIcon
+function InfoCard({ item, appearance, styles, config, isOpen, onToggle }) {
+  const Icon = resolveIcon(item.icon, `${item.title || ''} ${item.body || ''}`)
 
   return (
     <motion.div
       layout
       className={cn(
         'text-left border shadow-lg overflow-hidden transition-colors',
-        isOpen ? 'border-white/20 bg-white/[0.07]' : 'border-white/10 bg-white/[0.03] hover:bg-white/[0.05]',
+        glassBlurClass(config),
+        isOpen ? 'border-white/20' : 'border-white/10 hover:brightness-125',
         styles.card
       )}
+      style={glassStyle(config, { boost: isOpen ? 3 : 0 })}
     >
       <button type="button" onClick={onToggle} className="w-full flex items-center gap-3 px-4 py-4 text-left">
-        <span
+        <AnimatedIcon
+          icon={Icon}
           className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
           style={{ background: `${appearance.primaryColor}22`, color: appearance.primaryColor }}
-        >
-          <Icon className="w-4 h-4" />
-        </span>
+          iconClassName="w-4 h-4"
+        />
         <span className="font-medium flex-1">{item.title}</span>
         <motion.span animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
           <ChevronDown className="w-4 h-4 text-white/50" />
@@ -44,10 +38,18 @@ function InfoCard({ item, appearance, styles, isOpen, onToggle }) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25 }}
+            transition={{ type: 'spring', stiffness: 210, damping: 24 }}
             className="overflow-hidden"
           >
-            <p className="px-4 pb-4 pl-16 text-white/60 text-sm leading-relaxed whitespace-pre-line">{item.body}</p>
+            <motion.p
+              initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, filter: 'blur(4px)' }}
+              transition={{ duration: 0.3, delay: 0.05 }}
+              className="px-4 pb-4 pl-16 text-white/60 text-sm leading-relaxed whitespace-pre-line"
+            >
+              {item.body}
+            </motion.p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -83,6 +85,7 @@ function Info({ config, appearance, styles }) {
               item={item}
               appearance={appearance}
               styles={styles}
+              config={config}
               isOpen={openIndex === index}
               onToggle={() => setOpenIndex(openIndex === index ? -1 : index)}
             />

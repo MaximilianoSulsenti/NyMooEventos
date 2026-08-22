@@ -27,8 +27,39 @@ const THEME_STYLES = {
     card: 'rounded-3xl',
     divider: 'w-12 h-px',
   },
+  bohemio: {
+    fontClass: 'font-serif',
+    heading: 'font-light italic tracking-wide',
+    sectionWrapper: 'py-16 px-6',
+    card: 'rounded-3xl',
+    divider: 'w-16 h-px',
+  },
+  elegante: {
+    fontClass: 'font-display',
+    heading: 'font-semibold tracking-[0.15em] uppercase',
+    sectionWrapper: 'py-16 px-6',
+    card: 'rounded-none border border-white/20',
+    divider: 'w-24 h-px',
+  },
+  festivo: {
+    fontClass: 'font-modern',
+    heading: 'font-extrabold tracking-tight',
+    sectionWrapper: 'py-14 px-6',
+    card: 'rounded-full',
+    divider: 'w-16 h-2 rounded-full',
+  },
 }
 
-export function getThemeStyles(theme) {
-  return THEME_STYLES[theme] || THEME_STYLES.minimalista
+export const FONT_FAMILY_CLASSES = {
+  sans: 'font-sans',
+  serif: 'font-serif',
+  display: 'font-display',
+  script: 'font-script',
+  modern: 'font-modern',
+}
+
+export function getThemeStyles(theme, fontFamily) {
+  const base = THEME_STYLES[theme] || THEME_STYLES.minimalista
+  const fontOverride = fontFamily && FONT_FAMILY_CLASSES[fontFamily]
+  return fontOverride ? { ...base, fontClass: fontOverride } : base
 }

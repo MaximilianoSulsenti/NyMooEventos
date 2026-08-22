@@ -3,6 +3,7 @@ import { motion } from 'motion/react'
 import api from '../services/api'
 import Button from '../components/ui/Button'
 import UploadPhotosModal from '../components/UploadPhotosModal'
+import { cloudinaryThumb } from '../utils/cloudinary'
 
 function LiveGallery({ event, config, appearance, styles }) {
   const [photos, setPhotos] = useState([])
@@ -28,17 +29,29 @@ function LiveGallery({ event, config, appearance, styles }) {
 
       {photos.length > 0 && (
         <div className="flex gap-2 justify-center flex-wrap max-w-md mx-auto mb-6">
-          {photos.slice(0, 6).map((photo) => (
-            <motion.img
-              key={photo._id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              src={photo.cloudinaryUrl}
-              alt=""
-              className="w-16 h-16 object-cover rounded-lg"
-            />
-          ))}
+          {photos.slice(0, 6).map((photo) =>
+            photo.assetType === 'video' ? (
+              <motion.video
+                key={photo._id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                src={cloudinaryThumb(photo.cloudinaryUrl, 120)}
+                muted
+                className="w-16 h-16 object-cover rounded-lg"
+              />
+            ) : (
+              <motion.img
+                key={photo._id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                src={cloudinaryThumb(photo.cloudinaryUrl, 120)}
+                alt=""
+                className="w-16 h-16 object-cover rounded-lg"
+              />
+            )
+          )}
         </div>
       )}
 
@@ -50,6 +63,7 @@ function LiveGallery({ event, config, appearance, styles }) {
         <UploadPhotosModal
           eventSlug={event.eventSlug}
           primaryColor={appearance.primaryColor}
+          allowVideos={Boolean(event.gallerySettings?.allowVideos)}
           onClose={() => setIsModalOpen(false)}
         />
       )}

@@ -1,19 +1,6 @@
 import { motion } from 'motion/react'
-import { Church, PartyPopper, UtensilsCrossed, Music, Camera, Clock } from 'lucide-react'
-
-const ICON_RULES = [
-  { keywords: ['civil', 'ceremonia', 'iglesia'], icon: Church },
-  { keywords: ['recepcion', 'recepción', 'fiesta', 'salon', 'salón'], icon: PartyPopper },
-  { keywords: ['cena', 'almuerzo', 'brindis'], icon: UtensilsCrossed },
-  { keywords: ['baile', 'musica', 'música', 'dj'], icon: Music },
-  { keywords: ['foto'], icon: Camera },
-]
-
-function pickIcon(label = '') {
-  const normalized = label.toLowerCase()
-  const match = ICON_RULES.find((rule) => rule.keywords.some((k) => normalized.includes(k)))
-  return match ? match.icon : Clock
-}
+import { resolveIcon } from './eventIcons'
+import AnimatedIcon from '../components/AnimatedIcon'
 
 function Timeline({ config, appearance, styles }) {
   const items = Array.isArray(config.items) ? config.items : []
@@ -27,7 +14,7 @@ function Timeline({ config, appearance, styles }) {
       </h2>
       <ol className="space-y-4 text-left">
         {items.map((item, index) => {
-          const Icon = pickIcon(item.label)
+          const Icon = resolveIcon(item.icon, item.label)
           return (
             <motion.li
               key={index}
@@ -37,12 +24,13 @@ function Timeline({ config, appearance, styles }) {
               transition={{ delay: index * 0.06 }}
               className="flex gap-4 items-center"
             >
-              <span
+              <AnimatedIcon
+                icon={Icon}
+                delay={index * 0.06}
                 className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 bg-white/5 border border-white/10"
                 style={{ color: appearance.primaryColor }}
-              >
-                <Icon className="w-4 h-4" />
-              </span>
+                iconClassName="w-4 h-4"
+              />
               <div>
                 <span className="font-semibold text-sm" style={{ color: appearance.primaryColor }}>
                   {item.time}
