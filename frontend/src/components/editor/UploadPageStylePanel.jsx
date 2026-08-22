@@ -4,7 +4,7 @@ import { BRAND } from '../../utils/brand'
 const THEMES = ['minimalista', 'moderno', 'vanguardista', 'romantica', 'bohemio', 'elegante', 'festivo']
 
 const inputClass =
-  'w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]'
+  'w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]'
 
 function ColorField({ label, value, onChange }) {
   return (

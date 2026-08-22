@@ -112,7 +112,7 @@ function FieldInput({ eventId, field, config, onChange }) {
         <select
           value={value || field.options[0]?.value || ''}
           onChange={(e) => onChange(field.key, e.target.value)}
-          className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+          className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
         >
           {field.options.map((option) => (
             <option key={option.value} value={option.value}>

@@ -37,14 +37,21 @@ function PhotoCard({ photo, animationClass, fit }) {
         <img src={cloudinaryLarge(photo.cloudinaryUrl)} alt="" className={mediaClassName} style={mediaStyle} />
       )}
       {photo.comment && (
-        <div className="absolute inset-x-0 bottom-4 flex justify-center px-4">
-          <div className="max-w-[90%] rounded-2xl backdrop-blur-md bg-black/40 border border-white/10 px-5 py-2.5 shadow-2xl">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.3, x: 30, rotate: -8 }}
+          animate={{ opacity: 1, scale: 1, x: 0, rotate: 0 }}
+          transition={{ type: 'spring', stiffness: 260, damping: 18, delay: 0.3 }}
+          className="absolute right-3 sm:-right-4 bottom-10 sm:bottom-16 max-w-[75%] sm:max-w-xs origin-bottom-right z-10"
+        >
+          <div className="relative rounded-2xl backdrop-blur-md bg-black/55 border border-white/15 px-4 py-3 shadow-2xl">
             <TypewriterText
               text={photo.comment}
-              className="text-white text-base md:text-xl font-medium text-center drop-shadow-lg break-words"
+              className="text-white text-sm sm:text-lg font-medium drop-shadow-lg break-words"
             />
+            {/* Colita del globo, apuntando hacia la foto */}
+            <div className="absolute -bottom-1.5 right-7 w-3.5 h-3.5 bg-black/55 border-r border-b border-white/15 rotate-45" />
           </div>
-        </div>
+        </motion.div>
       )}
     </div>
   )

@@ -477,7 +477,7 @@ function GalleryControl() {
               <select
                 value={announcementPosition}
                 onChange={(e) => setAnnouncementPosition(e.target.value)}
-                className="rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
+                className="rounded-lg bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
               >
                 {ANNOUNCEMENT_POSITIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -488,7 +488,7 @@ function GalleryControl() {
               <select
                 value={announcementFontSize}
                 onChange={(e) => setAnnouncementFontSize(e.target.value)}
-                className="rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
+                className="rounded-lg bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
               >
                 {ANNOUNCEMENT_SIZES.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -524,7 +524,7 @@ function GalleryControl() {
           <select
             value={moderationMode}
             onChange={(e) => handleModerationModeChange(e.target.value)}
-            className="rounded-lg bg-white/5 border border-white/10 px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
+            className="rounded-lg bg-neutral-800 border border-white/10 px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
           >
             <option value="automatica">Automática — pasan directo a la pantalla</option>
             <option value="manual">Manual — las apruebo yo una por una</option>

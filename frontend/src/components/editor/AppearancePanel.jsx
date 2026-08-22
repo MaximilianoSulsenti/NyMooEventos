@@ -26,7 +26,7 @@ function ColorField({ label, value, onChange }) {
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="flex-1 rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
+          className="flex-1 rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
         />
       </div>
     </div>
@@ -45,7 +45,7 @@ function AppearancePanel({ eventId, appearance, onChange }) {
         <select
           value={appearance.theme}
           onChange={(e) => update({ theme: e.target.value })}
-          className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
+          className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
         >
           {THEMES.map((theme) => (
             <option key={theme} value={theme}>
@@ -60,7 +60,7 @@ function AppearancePanel({ eventId, appearance, onChange }) {
         <select
           value={appearance.fontFamily}
           onChange={(e) => update({ fontFamily: e.target.value })}
-          className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
+          className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
         >
           {FONTS.map((font) => (
             <option key={font.value} value={font.value}>
@@ -100,7 +100,7 @@ function AppearancePanel({ eventId, appearance, onChange }) {
               <select
                 value={appearance.globalBgType}
                 onChange={(e) => update({ globalBgType: e.target.value })}
-                className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
+                className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
               >
                 {BG_TYPE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -127,7 +127,7 @@ function AppearancePanel({ eventId, appearance, onChange }) {
                   value={appearance.globalBgUrl || ''}
                   onChange={(e) => update({ globalBgUrl: e.target.value })}
                   placeholder="https://..."
-                  className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
+                  className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
                 />
               </div>
             )}
@@ -154,7 +154,7 @@ function AppearancePanel({ eventId, appearance, onChange }) {
               <select
                 value={appearance.globalBgGradient || ''}
                 onChange={(e) => update({ globalBgGradient: e.target.value })}
-                className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
+                className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
               >
                 {GRADIENT_PRESETS.map((preset) => (
                   <option key={preset.value} value={preset.value}>

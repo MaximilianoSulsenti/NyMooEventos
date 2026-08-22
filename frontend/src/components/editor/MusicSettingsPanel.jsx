@@ -54,7 +54,7 @@ function MusicSettingsPanel({ eventId, settings, onChange }) {
               value={settings.title || ''}
               onChange={(e) => update({ title: e.target.value })}
               placeholder="Ej. Perfect - Ed Sheeran"
-              className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+              className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
             />
           </div>
 
@@ -63,7 +63,7 @@ function MusicSettingsPanel({ eventId, settings, onChange }) {
             <select
               value={settings.position || 'bottom-right'}
               onChange={(e) => update({ position: e.target.value })}
-              className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
+              className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
             >
               {POSITIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>

@@ -17,7 +17,7 @@ function ColorField({ label, value, onChange }) {
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="flex-1 rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
+          className="flex-1 rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
         />
       </div>
     </div>
@@ -55,7 +55,7 @@ function EnvelopePanel({ eventId, settings, onChange }) {
               value={settings.titleText || ''}
               onChange={(e) => update({ titleText: e.target.value })}
               rows={2}
-              className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+              className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
             />
           </div>
 
@@ -65,7 +65,7 @@ function EnvelopePanel({ eventId, settings, onChange }) {
               type="text"
               value={settings.buttonText || ''}
               onChange={(e) => update({ buttonText: e.target.value })}
-              className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+              className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
             />
           </div>
 
@@ -74,7 +74,7 @@ function EnvelopePanel({ eventId, settings, onChange }) {
             <select
               value={settings.bgType}
               onChange={(e) => update({ bgType: e.target.value })}
-              className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+              className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
             >
               {BG_TYPE_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -107,7 +107,7 @@ function EnvelopePanel({ eventId, settings, onChange }) {
                 value={settings.bgUrl || ''}
                 onChange={(e) => update({ bgUrl: e.target.value })}
                 placeholder="https://..."
-                className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+                className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
               />
             </div>
           )}
@@ -132,7 +132,7 @@ function EnvelopePanel({ eventId, settings, onChange }) {
             <select
               value={settings.fontFamily || 'sans'}
               onChange={(e) => update({ fontFamily: e.target.value })}
-              className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+              className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
             >
               <option value="sans">Sans-serif</option>
               <option value="serif">Serif</option>
