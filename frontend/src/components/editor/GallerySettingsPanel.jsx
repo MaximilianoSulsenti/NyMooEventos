@@ -29,6 +29,26 @@ function GallerySettingsPanel({ settings, onChange }) {
           />
         </button>
       </div>
+
+      <div className="pt-3 border-t border-white/10">
+        <label className="block text-sm font-medium mb-1">
+          Límite de fotos en pantalla en vivo: {settings.maxLivePhotos ?? 60}
+        </label>
+        <p className="text-xs text-neutral-500 mb-2">
+          Cuántas de las fotos aprobadas más recientes se reproducen en bucle en la pantalla en vivo.
+          Si suben muchas fotos durante el evento, evita que la pantalla vuelva a repetir todo desde la primera.
+        </p>
+        <input
+          type="range"
+          min={10}
+          max={300}
+          step={10}
+          value={settings.maxLivePhotos ?? 60}
+          onChange={(e) => update({ maxLivePhotos: Number(e.target.value) })}
+          className="w-full accent-[var(--accent)]"
+          style={{ '--accent': BRAND.blue }}
+        />
+      </div>
     </div>
   )
 }

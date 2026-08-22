@@ -233,9 +233,16 @@ async function updateUploadPageSettings(req, res) {
 
 async function updateGallerySettings(req, res) {
   const event = req.event;
-  const { allowVideos } = req.body;
+  const { allowVideos, maxLivePhotos } = req.body;
 
   if (allowVideos !== undefined) event.gallerySettings.allowVideos = Boolean(allowVideos);
+  if (maxLivePhotos !== undefined) {
+    const parsed = Number(maxLivePhotos);
+    if (!Number.isFinite(parsed) || parsed < 10 || parsed > 300) {
+      return res.status(400).json({ message: 'El límite de fotos en vivo debe estar entre 10 y 300' });
+    }
+    event.gallerySettings.maxLivePhotos = parsed;
+  }
 
   await event.save();
   res.json(event);

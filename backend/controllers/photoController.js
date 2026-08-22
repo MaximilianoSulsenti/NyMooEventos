@@ -170,7 +170,10 @@ async function getApprovedPhotosBySlug(req, res) {
     return res.status(403).json({ message: 'El módulo de galería no está activo para este evento' });
   }
 
-  const photos = await Photo.find({ eventId: event._id, status: 'aprobada' }).sort({ createdAt: -1 });
+  const maxLivePhotos = event.gallerySettings?.maxLivePhotos || 60;
+  const photos = await Photo.find({ eventId: event._id, status: 'aprobada' })
+    .sort({ createdAt: -1 })
+    .limit(maxLivePhotos);
   res.json(photos);
 }
 

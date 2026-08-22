@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
 import { Video } from 'lucide-react'
@@ -186,12 +186,14 @@ function LiveScreen() {
   const [isPaused, setIsPaused] = useState(false)
   const [announcement, setAnnouncement] = useState(null)
   const [commentFeed, setCommentFeed] = useState([])
+  const maxLivePhotosRef = useRef(60)
 
   useEffect(() => {
     api
       .get(`/events/slug/${eventSlug}`)
       .then(({ data }) => {
         const gallerySettings = data.gallerySettings || {}
+        maxLivePhotosRef.current = gallerySettings.maxLivePhotos || 60
         setEvent(data)
         setSpeedSeconds(gallerySettings.playbackSpeed ?? null)
         setParty({
@@ -215,7 +217,7 @@ function LiveScreen() {
     socket.emit('join-event', eventSlug)
 
     function handleNewPhoto(photo) {
-      setPhotos((prev) => [photo, ...prev])
+      setPhotos((prev) => [photo, ...prev].slice(0, maxLivePhotosRef.current))
     }
     function handlePartyConfig(config) {
       setParty(config)

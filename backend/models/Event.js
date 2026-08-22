@@ -62,6 +62,7 @@ const eventSchema = new mongoose.Schema(
       cloudinaryFolder: { type: String },
       moderationMode: { type: String, enum: MODERATION_MODES, default: 'automatica' },
       playbackSpeed: { type: Number, default: 7, min: 2, max: 15 },
+      maxLivePhotos: { type: Number, default: 60, min: 10, max: 300 },
       allowVideos: { type: Boolean, default: false },
       partyMode: { type: Boolean, default: false },
       partyLayout: { type: String, enum: ['grid', 'single'], default: 'grid' },
