@@ -429,12 +429,12 @@ function GalleryControl() {
 
           {partyMode && (
             <div className="flex flex-wrap items-center gap-4 pt-3 border-t border-white/10">
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-neutral-400">Formato:</span>
+              <div className="flex items-center gap-2 min-w-0 w-full sm:w-auto">
+                <span className="text-xs text-neutral-400 shrink-0">Formato:</span>
                 <select
                   value={partyLayout}
                   onChange={(e) => handlePartyLayoutChange(e.target.value)}
-                  className="rounded-lg bg-neutral-800 px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-pink-500"
+                  className="w-full sm:w-auto rounded-lg bg-neutral-800 px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-pink-500"
                 >
                   <option value="grid">Cuadrícula (varias fotos)</option>
                   <option value="single">Foto única, más rápido</option>
@@ -500,65 +500,71 @@ function GalleryControl() {
               <Megaphone className="w-3.5 h-3.5" />
               Anuncio en pantalla
             </p>
-            <div className="flex gap-2 flex-wrap">
+            <div className="space-y-2">
               <input
                 type="text"
                 value={announcementText}
                 onChange={(e) => setAnnouncementText(e.target.value.slice(0, 140))}
                 placeholder="Ej: ¡En 5 minutos abre la barra!"
-                className="flex-1 min-w-[200px] rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+                className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
               />
-              <select
-                value={announcementPosition}
-                onChange={(e) => setAnnouncementPosition(e.target.value)}
-                className="rounded-lg bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
-              >
-                {ANNOUNCEMENT_POSITIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-              <select
-                value={announcementFontSize}
-                onChange={(e) => setAnnouncementFontSize(e.target.value)}
-                className="rounded-lg bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
-              >
-                {ANNOUNCEMENT_SIZES.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-              <button
-                type="button"
-                onClick={() => sendAnnouncement(announcementText)}
-                disabled={!announcementText.trim()}
-                className="px-4 py-2 rounded-lg hover:brightness-110 disabled:opacity-40 text-sm font-medium transition"
-                style={{ background: primaryColor, color: getContrastTextColor(primaryColor) }}
-              >
-                {announcementSent ? 'Enviado ✓' : 'Enviar'}
-              </button>
-              {announcementText && (
-                <button
-                  type="button"
-                  onClick={handleClearAnnouncement}
-                  className="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-400 transition"
-                  aria-label="Borrar anuncio"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
+              <div className="flex flex-col sm:flex-row gap-2">
+                <div className="flex gap-2">
+                  <select
+                    value={announcementPosition}
+                    onChange={(e) => setAnnouncementPosition(e.target.value)}
+                    className="flex-1 sm:flex-none rounded-lg bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
+                  >
+                    {ANNOUNCEMENT_POSITIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={announcementFontSize}
+                    onChange={(e) => setAnnouncementFontSize(e.target.value)}
+                    className="flex-1 sm:flex-none rounded-lg bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
+                  >
+                    {ANNOUNCEMENT_SIZES.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => sendAnnouncement(announcementText)}
+                    disabled={!announcementText.trim()}
+                    className="flex-1 sm:flex-none px-4 py-2 rounded-lg hover:brightness-110 disabled:opacity-40 text-sm font-medium transition"
+                    style={{ background: primaryColor, color: getContrastTextColor(primaryColor) }}
+                  >
+                    {announcementSent ? 'Enviado ✓' : 'Enviar'}
+                  </button>
+                  {announcementText && (
+                    <button
+                      type="button"
+                      onClick={handleClearAnnouncement}
+                      className="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-400 transition shrink-0"
+                      aria-label="Borrar anuncio"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="rounded-xl bg-neutral-900 border border-white/10 p-4 flex items-center gap-3 flex-wrap">
-          <span className="text-sm text-neutral-400">Modo de moderación:</span>
+        <div className="rounded-xl bg-neutral-900 border border-white/10 p-4 space-y-2">
+          <p className="text-sm font-medium">Modo de moderación</p>
           <select
             value={moderationMode}
             onChange={(e) => handleModerationModeChange(e.target.value)}
-            className="rounded-lg bg-neutral-800 border border-white/10 px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
+            className="w-full sm:w-auto sm:min-w-[280px] rounded-lg bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
           >
             <option value="automatica">Automática — pasan directo a la pantalla</option>
             <option value="manual">Manual — las apruebo yo una por una</option>
