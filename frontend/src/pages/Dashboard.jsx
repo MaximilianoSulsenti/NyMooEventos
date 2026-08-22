@@ -38,6 +38,12 @@ const MODULE_FIELDS = [
     label: 'Álbum digital por QR',
     description: 'Los invitados suben fotos que se guardan organizadas en Cloudinary, sin transmitirse a ninguna pantalla.',
   },
+  {
+    key: 'messageBook',
+    label: 'Libro de mensajes',
+    description:
+      'Junta en el Hub de Galería los nombres y comentarios que dejaron los invitados en sus fotos, con descarga a CSV. Requiere que los invitados puedan subir fotos (Galería en vivo o Álbum digital).',
+  },
 ]
 
 function Dashboard() {

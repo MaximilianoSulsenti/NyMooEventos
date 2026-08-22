@@ -7,7 +7,6 @@ import BrandLogos from '../components/BrandLogos'
 import GlassPanel from '../components/ui/GlassPanel'
 import StatCard from '../components/dashboard/StatCard'
 import GuestsTable from '../components/dashboard/GuestsTable'
-import MessageBook from '../components/dashboard/MessageBook'
 import { getThemeStyles } from '../sections/theming'
 import { guestsToCsv, downloadCsv } from '../utils/csv'
 import { BRAND } from '../utils/brand'
@@ -20,7 +19,6 @@ function StatsDashboard() {
 
   const [event, setEvent] = useState(null)
   const [guests, setGuests] = useState([])
-  const [photos, setPhotos] = useState([])
   const [loadState, setLoadState] = useState('loading') // loading | ready | forbidden | error
 
   useEffect(() => {
@@ -32,12 +30,10 @@ function StatsDashboard() {
     Promise.all([
       api.get(`/events/slug/${eventSlug}`),
       api.get(`/guests/client/${eventSlug}`, { params: { token } }),
-      api.get(`/photos/client/${eventSlug}`, { params: { token } }),
     ])
-      .then(([eventRes, guestsRes, photosRes]) => {
+      .then(([eventRes, guestsRes]) => {
         setEvent(eventRes.data)
         setGuests(guestsRes.data)
-        setPhotos(photosRes.data)
         setLoadState('ready')
       })
       .catch((err) => {
@@ -134,8 +130,6 @@ function StatsDashboard() {
         </div>
 
         <GuestsTable guests={guests} />
-
-        <MessageBook photos={photos} eventSlug={eventSlug} primaryColor={primaryColor} />
       </GlassPanel>
     </div>
   )

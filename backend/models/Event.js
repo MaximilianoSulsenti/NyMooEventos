@@ -57,6 +57,7 @@ const eventSchema = new mongoose.Schema(
       guestControl: { type: Boolean, default: false },
       liveGallery: { type: Boolean, default: false },
       photoCollection: { type: Boolean, default: false },
+      messageBook: { type: Boolean, default: false },
     },
     gallerySettings: {
       cloudinaryFolder: { type: String },

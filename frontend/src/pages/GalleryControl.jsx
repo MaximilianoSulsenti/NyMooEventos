@@ -7,6 +7,7 @@ import socket from '../services/socket'
 import PageBackground from '../components/PageBackground'
 import BrandLogos from '../components/BrandLogos'
 import UploadAccessModal from '../components/UploadAccessModal'
+import MessageBook from '../components/dashboard/MessageBook'
 import GlassPanel from '../components/ui/GlassPanel'
 import { getThemeStyles } from '../sections/theming'
 import { BRAND } from '../utils/brand'
@@ -614,6 +615,12 @@ function GalleryControl() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {event?.activeModules?.messageBook && (
+          <div className="pt-2 border-t border-white/10">
+            <MessageBook photos={photos} eventSlug={eventSlug} primaryColor={primaryColor} />
           </div>
         )}
       </GlassPanel>
