@@ -92,8 +92,8 @@ async function registerPhoto(req, res) {
   if (!eventId || !secureUrl) {
     return res.status(400).json({ message: 'eventId y secure_url son requeridos' });
   }
-  if (comment && comment.length > 60) {
-    return res.status(400).json({ message: 'El comentario no puede superar los 60 caracteres' });
+  if (comment && comment.length > 150) {
+    return res.status(400).json({ message: 'El comentario no puede superar los 150 caracteres' });
   }
   if (guestName && guestName.length > 40) {
     return res.status(400).json({ message: 'El nombre no puede superar los 40 caracteres' });
@@ -124,7 +124,7 @@ async function registerPhoto(req, res) {
     return res.status(400).json({ message: 'La URL del archivo no es válida' });
   }
 
-  const cleanComment = (comment || '').trim().slice(0, 60);
+  const cleanComment = (comment || '').trim().slice(0, 150);
   const cleanGuestName = (guestName || '').trim().slice(0, 40);
   const moderationMode = event.gallerySettings?.moderationMode || 'automatica';
 

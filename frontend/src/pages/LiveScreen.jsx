@@ -19,6 +19,15 @@ const ANNOUNCEMENT_POSITION_CLASSES = {
 }
 
 const MAX_CHAT_ITEMS = 4
+const CHAT_BUBBLE_TEXT_LIMIT = 90
+
+// El comentario puede tener hasta 150 caracteres (para que el libro de
+// mensajes y la moderación tengan el mensaje completo), pero el globito de
+// chat en pantalla es chico -- se recorta ahí nomás, sin tocar el dato real.
+function truncateForBubble(text) {
+  if (text.length <= CHAT_BUBBLE_TEXT_LIMIT) return text
+  return `${text.slice(0, CHAT_BUBBLE_TEXT_LIMIT).trimEnd()}…`
+}
 
 // Cada invitado que pone su nombre recibe un color de identidad estable (el
 // mismo nombre siempre da el mismo color), para poder reconocerlo de un
@@ -272,7 +281,7 @@ function LiveScreen() {
       if (prev.length > 0 && prev[prev.length - 1].id === currentSingleKey) return prev
       const entry = {
         id: currentSingleKey,
-        text: currentSinglePhoto.comment,
+        text: truncateForBubble(currentSinglePhoto.comment),
         guestName: currentSinglePhoto.guestName || '',
         thumbUrl: currentSinglePhoto.assetType === 'video' ? null : currentSinglePhoto.cloudinaryUrl,
       }

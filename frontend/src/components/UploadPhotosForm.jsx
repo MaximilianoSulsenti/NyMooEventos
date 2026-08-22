@@ -239,13 +239,13 @@ function UploadPhotosForm({ eventSlug, primaryColor = '#a855f7', allowVideos = f
 
       <textarea
         value={comment}
-        onChange={(e) => setComment(e.target.value.slice(0, 60))}
-        placeholder="Dedicatoria (opcional, máx. 60 caracteres)"
-        maxLength={60}
-        rows={2}
+        onChange={(e) => setComment(e.target.value.slice(0, 150))}
+        placeholder="Dedicatoria (opcional, máx. 150 caracteres)"
+        maxLength={150}
+        rows={3}
         className="w-full max-w-sm rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30"
       />
-      <p className="text-white/30 text-xs self-end max-w-sm w-full text-right">{comment.length}/60</p>
+      <p className="text-white/30 text-xs self-end max-w-sm w-full text-right">{comment.length}/150</p>
 
       <Button
         type="button"

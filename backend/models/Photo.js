@@ -6,7 +6,7 @@ const photoSchema = new mongoose.Schema(
     cloudinaryUrl: { type: String, required: true },
     publicId: { type: String, default: '' },
     assetType: { type: String, enum: ['image', 'video'], default: 'image' },
-    comment: { type: String, maxlength: 60, default: '' },
+    comment: { type: String, maxlength: 150, default: '' },
     guestName: { type: String, maxlength: 40, default: '' },
     status: {
       type: String,
