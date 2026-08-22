@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
+import { Video } from 'lucide-react'
 import api from '../services/api'
 import socket from '../services/socket'
 import BrandLogos from '../components/BrandLogos'
@@ -15,6 +16,8 @@ const ANNOUNCEMENT_POSITION_CLASSES = {
   center: 'top-1/2 -translate-y-1/2',
   bottom: 'bottom-8',
 }
+
+const MAX_CHAT_ITEMS = 4
 
 function PhotoCard({ photo, animationClass, fit }) {
   const mediaClassName = `rounded-lg ${fit === 'contain' ? 'object-contain' : 'w-full h-full object-cover'}`
@@ -36,23 +39,68 @@ function PhotoCard({ photo, animationClass, fit }) {
       ) : (
         <img src={cloudinaryLarge(photo.cloudinaryUrl)} alt="" className={mediaClassName} style={mediaStyle} />
       )}
-      {photo.comment && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.3, x: 30, rotate: -8 }}
-          animate={{ opacity: 1, scale: 1, x: 0, rotate: 0 }}
-          transition={{ type: 'spring', stiffness: 260, damping: 18, delay: 0.3 }}
-          className="absolute right-3 sm:-right-4 bottom-10 sm:bottom-16 max-w-[75%] sm:max-w-xs origin-bottom-right z-10"
-        >
-          <div className="relative rounded-2xl backdrop-blur-md bg-black/55 border border-white/15 px-4 py-3 shadow-2xl">
-            <TypewriterText
-              text={photo.comment}
-              className="text-white text-sm sm:text-lg font-medium drop-shadow-lg break-words"
-            />
-            {/* Colita del globo, apuntando hacia la foto */}
-            <div className="absolute -bottom-1.5 right-7 w-3.5 h-3.5 bg-black/55 border-r border-b border-white/15 rotate-45" />
-          </div>
-        </motion.div>
-      )}
+    </div>
+  )
+}
+
+// Feed tipo "chat en vivo" al costado de la foto: los últimos comentarios
+// quedan apilados (el más nuevo abajo, con su colita apuntando a la foto y
+// efecto de tipeo), y los anteriores se van desvaneciendo y achicando hacia
+// arriba, como un chat de stream, hasta salir de la lista.
+function LiveCommentFeed({ items }) {
+  if (items.length === 0) return null
+
+  return (
+    <div className="fixed right-3 sm:right-10 bottom-20 sm:bottom-28 z-20 flex flex-col gap-2.5 sm:gap-3 items-end max-w-[78vw] sm:max-w-xs">
+      <AnimatePresence initial={false}>
+        {items.map((item, index) => {
+          const fromNewest = items.length - 1 - index
+          const isNewest = fromNewest === 0
+
+          return (
+            <motion.div
+              key={item.id}
+              layout
+              initial={{ opacity: 0, scale: 0.3, x: 40, rotate: -8 }}
+              animate={{
+                opacity: Math.max(0.32, 1 - fromNewest * 0.26),
+                scale: Math.max(0.78, 1 - fromNewest * 0.09),
+                x: 0,
+                rotate: 0,
+              }}
+              exit={{ opacity: 0, scale: 0.4, x: 30, transition: { duration: 0.2 } }}
+              transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+              className="flex items-end justify-end gap-2 origin-bottom-right"
+            >
+              <div className="relative rounded-2xl backdrop-blur-md bg-black/55 border border-white/15 px-3.5 py-2.5 sm:px-4 sm:py-3 shadow-2xl max-w-[210px] sm:max-w-[260px]">
+                {isNewest ? (
+                  <TypewriterText
+                    text={item.text}
+                    className="text-white text-sm sm:text-base font-medium drop-shadow-lg break-words"
+                  />
+                ) : (
+                  <p className="text-white text-sm sm:text-base font-medium drop-shadow-lg break-words">{item.text}</p>
+                )}
+                {isNewest && (
+                  <div className="absolute -bottom-1.5 right-6 w-3 h-3 bg-black/55 border-r border-b border-white/15 rotate-45" />
+                )}
+              </div>
+
+              {item.thumbUrl ? (
+                <img
+                  src={cloudinaryThumb(item.thumbUrl, 80)}
+                  alt=""
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-white/25 shadow-lg shrink-0"
+                />
+              ) : (
+                <span className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-white/15 border-2 border-white/25 shadow-lg shrink-0">
+                  <Video className="w-4 h-4 text-white" />
+                </span>
+              )}
+            </motion.div>
+          )
+        })}
+      </AnimatePresence>
     </div>
   )
 }
@@ -88,6 +136,7 @@ function LiveScreen() {
   const [speedSeconds, setSpeedSeconds] = useState(null)
   const [isPaused, setIsPaused] = useState(false)
   const [announcement, setAnnouncement] = useState(null)
+  const [commentFeed, setCommentFeed] = useState([])
 
   useEffect(() => {
     api
@@ -122,6 +171,7 @@ function LiveScreen() {
     function handlePartyConfig(config) {
       setParty(config)
       setCursor(0)
+      setCommentFeed([])
     }
     function handleSpeedChanged(seconds) {
       setSpeedSeconds(seconds)
@@ -167,6 +217,26 @@ function LiveScreen() {
     return () => clearInterval(interval)
   }, [photos.length, visibleCount, intervalMs, isPaused])
 
+  // Modo elegante (foto única): cada vez que cambia la foto en pantalla, si
+  // tiene comentario se agrega al feed tipo chat. En modo grilla no se usa
+  // (cada foto ya muestra el suyo abajo, no hay lugar para un feed al costado).
+  const currentSinglePhoto = !isGrid && photos.length > 0 ? photos[cursor % photos.length] : null
+  const currentSingleKey = currentSinglePhoto ? `${currentSinglePhoto._id}-${cursor}` : null
+
+  useEffect(() => {
+    if (!currentSinglePhoto?.comment) return
+    setCommentFeed((prev) => {
+      if (prev.length > 0 && prev[prev.length - 1].id === currentSingleKey) return prev
+      const entry = {
+        id: currentSingleKey,
+        text: currentSinglePhoto.comment,
+        thumbUrl: currentSinglePhoto.assetType === 'video' ? null : currentSinglePhoto.cloudinaryUrl,
+      }
+      return [...prev, entry].slice(-MAX_CHAT_ITEMS)
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentSingleKey])
+
   if (photos.length === 0) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center text-neutral-600">
@@ -188,6 +258,7 @@ function LiveScreen() {
       {party.enabled && party.emojiRain && <EmojiRain />}
       {event && <BrandLogos branding={event.brandingSettings} />}
       <AnimatePresence>{announcement && <AnnouncementBanner announcement={announcement} />}</AnimatePresence>
+      {!isGrid && <LiveCommentFeed items={commentFeed} />}
 
       {isGrid ? (
         <div
