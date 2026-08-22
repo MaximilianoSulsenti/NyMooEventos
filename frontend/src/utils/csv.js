@@ -8,7 +8,7 @@ export function guestsToCsv(guests) {
   const header = ['Nombre', 'Estado', 'Acompañantes', 'Restricciones alimentarias', 'Canción sugerida', ...extraQuestions]
   const rows = guests.map((guest) => [
     guest.name,
-    guest.status,
+    guest.rsvpCompleted === false ? 'Solo canción (sin RSVP)' : guest.status,
     guest.companionsCount,
     guest.dietaryRestrictions,
     guest.songRequest,

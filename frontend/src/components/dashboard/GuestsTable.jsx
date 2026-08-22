@@ -41,9 +41,15 @@ function GuestsTable({ guests }) {
                 <tr className="border-b border-white/5 last:border-0">
                   <td className="px-4 py-3">{guest.name}</td>
                   <td className="px-4 py-3">
-                    <span className={`px-2 py-1 rounded-full text-xs ${STATUS_STYLES[guest.status] || ''}`}>
-                      {guest.status}
-                    </span>
+                    {guest.rsvpCompleted === false ? (
+                      <span className="px-2 py-1 rounded-full text-xs bg-purple-500/15 text-purple-300 whitespace-nowrap">
+                        🎵 Solo canción
+                      </span>
+                    ) : (
+                      <span className={`px-2 py-1 rounded-full text-xs ${STATUS_STYLES[guest.status] || ''}`}>
+                        {guest.status}
+                      </span>
+                    )}
                   </td>
                   <td className="px-4 py-3">{guest.companionsCount}</td>
                   <td className="px-4 py-3 text-neutral-400">{guest.dietaryRestrictions || '—'}</td>

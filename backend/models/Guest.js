@@ -11,6 +11,10 @@ const guestSchema = new mongoose.Schema(
     },
     dietaryRestrictions: { type: String, default: '' },
     songRequest: { type: String, default: '', maxlength: 150 },
+    // true por defecto a propósito: los invitados creados antes de este campo
+    // vienen todos de un RSVP real. Solo se pone en false explícitamente al
+    // crear un invitado nuevo a partir de una sugerencia de canción sin RSVP.
+    rsvpCompleted: { type: Boolean, default: true },
     companionsCount: { type: Number, default: 0 },
     extraAnswers: { type: mongoose.Schema.Types.Mixed, default: {} },
   },

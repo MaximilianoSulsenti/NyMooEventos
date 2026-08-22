@@ -65,10 +65,14 @@ function StatsDashboard() {
     )
   }
 
-  const total = guests.length
-  const confirmados = guests.filter((g) => g.status === 'confirmado').length
-  const declinados = guests.filter((g) => g.status === 'declinado').length
-  const pendientes = guests.filter((g) => g.status === 'pendiente').length
+  // Los que solo dejaron una canción sugerida (sin completar el RSVP) no
+  // cuentan para estas estadísticas de asistencia -- igual aparecen en la
+  // tabla y en el Excel, solo que no ensucian estos números.
+  const rsvpGuests = guests.filter((g) => g.rsvpCompleted !== false)
+  const total = rsvpGuests.length
+  const confirmados = rsvpGuests.filter((g) => g.status === 'confirmado').length
+  const declinados = rsvpGuests.filter((g) => g.status === 'declinado').length
+  const pendientes = rsvpGuests.filter((g) => g.status === 'pendiente').length
 
   const styles = getThemeStyles(event?.uploadPageSettings?.theme)
   const primaryColor = event?.appearance?.primaryColor || '#a855f7'
