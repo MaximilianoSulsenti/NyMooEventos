@@ -1,5 +1,5 @@
 import { Fragment, useState } from 'react'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, Trash2 } from 'lucide-react'
 
 const STATUS_STYLES = {
   confirmado: 'bg-green-500/15 text-green-400',
@@ -7,8 +7,9 @@ const STATUS_STYLES = {
   pendiente: 'bg-yellow-500/15 text-yellow-400',
 }
 
-function GuestsTable({ guests }) {
+function GuestsTable({ guests, onDelete }) {
   const [expandedId, setExpandedId] = useState(null)
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null)
 
   if (guests.length === 0) {
     return (
@@ -16,6 +17,16 @@ function GuestsTable({ guests }) {
         Todavía no hay invitados registrados.
       </div>
     )
+  }
+
+  function handleDeleteClick(guestId) {
+    if (confirmDeleteId !== guestId) {
+      setConfirmDeleteId(guestId)
+      setTimeout(() => setConfirmDeleteId((current) => (current === guestId ? null : current)), 3000)
+      return
+    }
+    setConfirmDeleteId(null)
+    onDelete(guestId)
   }
 
   return (
@@ -55,16 +66,33 @@ function GuestsTable({ guests }) {
                   <td className="px-4 py-3 text-neutral-400">{guest.dietaryRestrictions || '—'}</td>
                   <td className="px-4 py-3 text-neutral-400 max-w-[160px] truncate">{guest.songRequest || '—'}</td>
                   <td className="px-4 py-3 text-right">
-                    {extraEntries.length > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => setExpandedId(isExpanded ? null : guest._id)}
-                        className="text-neutral-500 hover:text-white transition inline-flex items-center gap-1 text-xs"
-                      >
-                        Detalle
-                        <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-                      </button>
-                    )}
+                    <div className="flex items-center justify-end gap-3">
+                      {extraEntries.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => setExpandedId(isExpanded ? null : guest._id)}
+                          className="text-neutral-500 hover:text-white transition inline-flex items-center gap-1 text-xs whitespace-nowrap"
+                        >
+                          Detalle
+                          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                        </button>
+                      )}
+                      {onDelete && (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteClick(guest._id)}
+                          aria-label={`Eliminar a ${guest.name}`}
+                          className={`flex items-center gap-1 text-xs py-1 px-2 rounded-lg transition whitespace-nowrap ${
+                            confirmDeleteId === guest._id
+                              ? 'bg-red-600 text-white'
+                              : 'text-neutral-500 hover:text-red-400 hover:bg-red-500/10'
+                          }`}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          {confirmDeleteId === guest._id ? '¿Seguro?' : ''}
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
                 {isExpanded && extraEntries.length > 0 && (

@@ -49,6 +49,14 @@ function StatsDashboard() {
       .catch(() => {})
   }
 
+  function handleDeleteGuest(guestId) {
+    const previousGuests = guests
+    setGuests((prev) => prev.filter((g) => g._id !== guestId))
+    api.delete(`/guests/client/${eventSlug}/${guestId}`, { params: { token } }).catch(() => {
+      setGuests(previousGuests)
+    })
+  }
+
   if (loadState === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center text-white/40" style={{ background: BRAND.night }}>
@@ -75,7 +83,8 @@ function StatsDashboard() {
 
   // Los que solo dejaron una canción sugerida (sin completar el RSVP) no
   // cuentan para estas estadísticas de asistencia -- igual aparecen en la
-  // tabla y en el Excel, solo que no ensucian estos números.
+  // tabla, solo que no ensucian estos números. Tampoco entran al Excel (ver
+  // handleExport), que solo lleva confirmados.
   const rsvpGuests = guests.filter((g) => g.rsvpCompleted !== false)
   const total = rsvpGuests.length
   const confirmados = rsvpGuests.filter((g) => g.status === 'confirmado').length
@@ -86,8 +95,10 @@ function StatsDashboard() {
   const primaryColor = event?.appearance?.primaryColor || '#a855f7'
 
   function handleExport() {
-    const csv = guestsToCsv(guests)
-    downloadCsv(csv, `invitados-${eventSlug}.csv`)
+    // Solo confirmados: es lo que se usa para el conteo real (catering,
+    // mesas, etc.), no tiene sentido mezclarlo con pendientes/declinados.
+    const csv = guestsToCsv(guests.filter((g) => g.status === 'confirmado'))
+    downloadCsv(csv, `confirmados-${eventSlug}.csv`)
   }
 
   return (
@@ -137,7 +148,7 @@ function StatsDashboard() {
           />
         </div>
 
-        <GuestsTable guests={guests} />
+        <GuestsTable guests={guests} onDelete={handleDeleteGuest} />
 
         {event.activeModules?.vipInvitations && (
           <PremiumGuestsPanel eventSlug={eventSlug} token={token} guests={guests} onGuestsChange={refreshGuests} />

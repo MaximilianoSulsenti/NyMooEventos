@@ -6,7 +6,7 @@ const {
   createPremiumGuest,
   deleteGuest,
   createPremiumGuestForClient,
-  deletePremiumGuestForClient,
+  deleteGuestForClient,
   lookupGuestByPasscode,
   searchGuestByName,
 } = require('../controllers/guestController');
@@ -27,7 +27,9 @@ router.get('/client/:eventSlug', requireClientToken, getGuestsForClient);
 router.post('/event/:eventId/premium', requireAuth, requireAdmin, createPremiumGuest);
 router.delete('/:guestId', requireAuth, requireAdmin, deleteGuest);
 router.post('/client/:eventSlug/premium', requireClientToken, createPremiumGuestForClient);
-router.delete('/client/:eventSlug/:guestId', requireClientToken, deletePremiumGuestForClient);
+// Borra cualquier invitado del evento (VIP o de un RSVP común) vía el
+// panel de estadísticas del cliente.
+router.delete('/client/:eventSlug/:guestId', requireClientToken, deleteGuestForClient);
 
 // Plan premium: acceso público sin login para que el invitado encuentre su
 // propia invitación (por link con código, o buscando su nombre).

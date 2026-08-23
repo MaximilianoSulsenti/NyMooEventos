@@ -173,7 +173,10 @@ async function createPremiumGuestForClient(req, res) {
   res.status(201).json(guest);
 }
 
-async function deletePremiumGuestForClient(req, res) {
+// Borra cualquier invitado del evento (VIP o de un RSVP común) -- el
+// cliente lo usa tanto para sacar a alguien de la lista VIP como para
+// eliminar una confirmación cargada por error o que ya no corresponde.
+async function deleteGuestForClient(req, res) {
   const { guestId } = req.params;
 
   // El token solo prueba que se conoce el evento, no cuál invitado --
@@ -256,7 +259,7 @@ module.exports = {
   createPremiumGuest,
   deleteGuest,
   createPremiumGuestForClient,
-  deletePremiumGuestForClient,
+  deleteGuestForClient,
   lookupGuestByPasscode,
   searchGuestByName,
 };
