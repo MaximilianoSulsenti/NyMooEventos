@@ -34,6 +34,9 @@ function EnvelopeBackground({ settings }) {
 // nunca vuelve a distorsionarse en pantallas angostas y altas.
 const FLAP_HEIGHT_PERCENT = 54
 const FLAP_CLIP_PATH = 'polygon(0 0, 100% 0, 100% 74%, 50% 100%, 0 74%)'
+// Punta de la solapa en coordenadas relativas a toda la tarjeta (no a la
+// solapa) -- ahí es donde se apoyan las costuras y el sello de cera.
+const FLAP_TIP_Y = FLAP_HEIGHT_PERCENT
 
 function Envelope({ settings, appearance, onOpen }) {
   const [opening, setOpening] = useState(false)
@@ -66,17 +69,33 @@ function Envelope({ settings, appearance, onOpen }) {
         animate={{ scale: opening ? 0.96 : 1 }}
         transition={{ duration: 0.45, delay: opening ? 0.7 : 0 }}
       >
-        {/* Cuerpo del sobre: fondo (color/imagen/video) + el mensaje de
-            bienvenida y el botón, siempre visibles en la mitad de abajo. */}
-        <div className="absolute inset-0 rounded-2xl overflow-hidden" style={{ backgroundColor: bgColor }}>
+        {/* Cuerpo del sobre: fondo (color/imagen/video) + las costuras de
+            las solapas laterales/inferior (como un sobre real) + el
+            mensaje de bienvenida centrado en el bolsillo, debajo de la
+            solapa. */}
+        <div
+          className="absolute inset-0 rounded-2xl overflow-hidden border border-white/10"
+          style={{ backgroundColor: bgColor }}
+        >
           <EnvelopeBackground settings={settings} />
           <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
 
+          {/* Costuras del bolsillo: las líneas de las solapas laterales que
+              se doblan por detrás, como en un sobre de papel real -- se
+              calculan en % así quedan perfectas sin importar el tamaño de
+              pantalla. */}
+          <svg
+            className="absolute inset-0 w-full h-full pointer-events-none opacity-40"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+          >
+            <line x1="0" y1="100" x2="50" y2={FLAP_TIP_Y} stroke="rgba(255,255,255,0.35)" strokeWidth="0.5" vectorEffect="non-scaling-stroke" />
+            <line x1="100" y1="100" x2="50" y2={FLAP_TIP_Y} stroke="rgba(255,255,255,0.35)" strokeWidth="0.5" vectorEffect="non-scaling-stroke" />
+          </svg>
+
           <motion.div
-            className={cn(
-              'absolute inset-x-0 bottom-0 z-10 flex flex-col items-center text-center px-6 pb-9 pt-10',
-              fontClass
-            )}
+            className={cn('absolute inset-x-0 z-10 flex flex-col items-center justify-center text-center px-6', fontClass)}
+            style={{ top: `${FLAP_TIP_Y}%`, bottom: 0 }}
             animate={{ opacity: opening ? 0 : 1, y: opening ? 10 : 0 }}
             transition={{ duration: 0.3, delay: opening ? 0 : 0.2 }}
           >
@@ -98,6 +117,22 @@ function Envelope({ settings, appearance, onOpen }) {
             </motion.button>
           </motion.div>
         </div>
+
+        {/* Sello de cera sobre la punta de la solapa -- se "rompe" (achica
+            y se desvanece) apenas se toca el botón. */}
+        <motion.div
+          className="absolute z-20 w-11 h-11 sm:w-12 sm:h-12 rounded-full -translate-x-1/2 -translate-y-1/2 shadow-lg"
+          style={{
+            left: '50%',
+            top: `${FLAP_TIP_Y}%`,
+            background: `radial-gradient(circle at 35% 30%, ${shadeColor(appearance.primaryColor, 25)}, ${appearance.primaryColor} 60%, ${shadeColor(appearance.primaryColor, -25)})`,
+            boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.4), inset 0 -2px 3px rgba(0,0,0,0.35), 0 4px 10px -2px rgba(0,0,0,0.5)',
+          }}
+          animate={opening ? { scale: 0, opacity: 0, rotate: 25 } : { scale: 1, opacity: 1, rotate: 0 }}
+          transition={{ duration: 0.35, ease: 'easeIn' }}
+        >
+          <div className="absolute inset-1.5 rounded-full border border-white/25" />
+        </motion.div>
 
         {/* Sombra que se profundiza a medida que la solapa se levanta, para
             que el papel de abajo se sienta "adentro" del sobre en vez de
