@@ -16,6 +16,26 @@ function parseDietaryOptions(raw = '') {
     .filter(Boolean)
 }
 
+// Plan básico: arma el texto del mensaje con todo lo que completó el
+// invitado (nombre, asistencia, acompañantes, restricciones, preguntas
+// extra) para que llegue prolijo al WhatsApp del cliente -- nada de esto se
+// guarda en la base, es solo texto para el mensaje.
+function buildWhatsappMessage({ eventName, template, name, attending, dietaryRestrictions, companionsCount, extraAnswers }) {
+  const intro = template?.trim() || `¡Hola! Quiero confirmar mi asistencia para el evento ${eventName}.`
+  const lines = [
+    intro,
+    '',
+    `Nombre: ${name}`,
+    `Asistencia: ${attending === 'confirmado' ? 'Sí, voy a asistir' : 'No podré asistir'}`,
+    `Acompañantes: ${companionsCount}`,
+    `Restricciones alimentarias: ${dietaryRestrictions || 'Ninguna'}`,
+  ]
+  Object.entries(extraAnswers || {}).forEach(([question, answer]) => {
+    if (answer) lines.push(`${question}: ${answer}`)
+  })
+  return lines.join('\n')
+}
+
 function RsvpForm({
   eventSlug,
   primaryColor = '#a855f7',
@@ -25,6 +45,10 @@ function RsvpForm({
   guestId,
   lockedName,
   maxCompanions,
+  mode = 'save', // 'save' (plan intermedio/premium) | 'whatsapp' (plan básico)
+  eventName,
+  whatsappNumber,
+  whatsappMessage,
 }) {
   useLockBodyScroll()
   const [name, setName] = useState(lockedName || '')
@@ -45,10 +69,26 @@ function RsvpForm({
     event.preventDefault()
     if (!name.trim()) return
 
+    const finalDietary = dietaryRestrictions === '__otra__' ? customDietary : dietaryRestrictions
+
+    if (mode === 'whatsapp') {
+      const message = buildWhatsappMessage({
+        eventName,
+        template: whatsappMessage,
+        name: name.trim(),
+        attending,
+        dietaryRestrictions: finalDietary,
+        companionsCount: Number(companionsCount) || 0,
+        extraAnswers,
+      })
+      const digits = (whatsappNumber || '').replace(/\D/g, '')
+      window.open(`https://wa.me/${digits}?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer')
+      setStatus('success')
+      return
+    }
+
     setStatus('sending')
     setErrorMessage('')
-
-    const finalDietary = dietaryRestrictions === '__otra__' ? customDietary : dietaryRestrictions
 
     try {
       await api.post('/guests/rsvp', {
@@ -110,7 +150,11 @@ function RsvpForm({
                 <Check className="w-7 h-7" />
               </motion.div>
               <p className="text-xl font-medium">¡Gracias, {name}!</p>
-              <p className="text-neutral-400">Tu confirmación fue registrada.</p>
+              <p className="text-neutral-400">
+                {mode === 'whatsapp'
+                  ? 'Se abrió WhatsApp con tu mensaje listo -- enviálo para confirmar tu asistencia.'
+                  : 'Tu confirmación fue registrada.'}
+              </p>
             </motion.div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -218,7 +262,7 @@ function RsvpForm({
                 primaryColor={primaryColor}
                 className="w-full disabled:opacity-40"
               >
-                {status === 'sending' ? 'Enviando...' : 'Enviar confirmación'}
+                {status === 'sending' ? 'Enviando...' : mode === 'whatsapp' ? 'Enviar por WhatsApp' : 'Enviar confirmación'}
               </Button>
             </form>
           )}
