@@ -159,10 +159,14 @@ function Envelope({ settings, appearance, onOpen }) {
           animate={{ rotateX: opening ? -170 : 0 }}
           transition={{ duration: 0.7, ease: [0.45, 0, 0.2, 1] }}
         >
-          {/* Cara frontal (lo que se ve mientras está cerrada) */}
+          {/* Cara frontal (lo que se ve mientras está cerrada) -- el texto se
+              centra dentro de la franja ancha de la solapa (pb-[26%] reserva
+              justo la punta triangular, donde FLAP_CLIP_PATH empieza a
+              angostarse) para que quede cerca del botón en vez de pegado
+              arriba del todo. */}
           <div
             className={cn(
-              'absolute inset-0 rounded-t-2xl flex flex-col items-center text-center px-8 pt-9 sm:pt-11',
+              'absolute inset-0 rounded-t-2xl flex flex-col items-center justify-center text-center px-8 pb-[26%]',
               fontClass
             )}
             style={{
