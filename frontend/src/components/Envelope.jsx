@@ -92,12 +92,14 @@ function Envelope({ settings, appearance, onOpen }) {
             <line x1="100" y1="100" x2="50" y2={FLAP_TIP_Y} stroke="rgba(255,255,255,0.35)" strokeWidth="0.5" vectorEffect="non-scaling-stroke" />
           </svg>
 
-          {/* El botón queda solo en el bolsillo, más protagonista -- mismo
-              componente Button que se usa en el resto del sitio (borde en
-              degradado, brillo al hover), con un flote suave para que
-              invite a tocarlo. */}
+          {/* El botón queda solo, cerca de la punta de la solapa (no
+              centrado en todo el bolsillo) para que la composición se
+              sienta compacta, como un sobre real -- mismo componente
+              Button que se usa en el resto del sitio (borde en degradado,
+              brillo al hover), con un flote suave para que invite a
+              tocarlo. */}
           <motion.div
-            className="absolute inset-x-0 z-10 flex flex-col items-center justify-center px-6"
+            className="absolute inset-x-0 z-10 flex flex-col items-center px-6 pt-8 sm:pt-9"
             style={{ top: `${FLAP_TIP_Y}%`, bottom: 0 }}
             animate={{ opacity: opening ? 0 : 1, y: opening ? 10 : 0 }}
             transition={{ duration: 0.3, delay: opening ? 0 : 0.2 }}
@@ -118,20 +120,23 @@ function Envelope({ settings, appearance, onOpen }) {
           </motion.div>
         </div>
 
-        {/* Sello de cera sobre la punta de la solapa -- se "rompe" (achica
-            y se desvanece) apenas se toca el botón. */}
+        {/* Sello de cera sobre la punta de la solapa -- discreto, más marca
+            en el papel que botón, para no competirle protagonismo al de
+            "Abrir invitación". Se "rompe" (achica, gira un poco y se
+            desvanece) apenas se toca el botón real. */}
         <motion.div
-          className="absolute z-20 w-11 h-11 sm:w-12 sm:h-12 rounded-full -translate-x-1/2 -translate-y-1/2 shadow-lg"
+          className="absolute z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full -translate-x-1/2 -translate-y-1/2"
           style={{
             left: '50%',
             top: `${FLAP_TIP_Y}%`,
-            background: `radial-gradient(circle at 35% 30%, ${shadeColor(appearance.primaryColor, 25)}, ${appearance.primaryColor} 60%, ${shadeColor(appearance.primaryColor, -25)})`,
-            boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.4), inset 0 -2px 3px rgba(0,0,0,0.35), 0 4px 10px -2px rgba(0,0,0,0.5)',
+            opacity: 0.88,
+            background: `radial-gradient(circle at 35% 30%, ${shadeColor(appearance.primaryColor, 12)}, ${appearance.primaryColor} 65%, ${shadeColor(appearance.primaryColor, -15)})`,
+            boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 6px -2px rgba(0,0,0,0.35)',
           }}
-          animate={opening ? { scale: 0, opacity: 0, rotate: 25 } : { scale: 1, opacity: 1, rotate: 0 }}
+          animate={opening ? { scale: 0, opacity: 0, rotate: 25 } : { scale: 1, opacity: 0.88, rotate: 0 }}
           transition={{ duration: 0.35, ease: 'easeIn' }}
         >
-          <div className="absolute inset-1.5 rounded-full border border-white/25" />
+          <div className="absolute inset-1.5 rounded-full border border-white/15" />
         </motion.div>
 
         {/* Sombra que se profundiza a medida que la solapa se levanta, para
