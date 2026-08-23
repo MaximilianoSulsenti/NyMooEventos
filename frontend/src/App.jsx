@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
+import LandingPage from './pages/LandingPage'
 import Login from './pages/Login'
 import EventsList from './pages/EventsList'
 import Dashboard from './pages/Dashboard'
@@ -21,7 +22,11 @@ function NotFound() {
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
+      <Route path="/" element={<LandingPage />} />
+      {/* Acceso oculto al login del panel interno: sin enlaces públicos desde
+          la landing, navbar ni footer -- solo ingresando esta URL exacta a
+          mano en el navegador. */}
+      <Route path="/nymoo-portal-interno-login" element={<Login />} />
       <Route
         path="/eventos"
         element={
