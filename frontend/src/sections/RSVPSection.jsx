@@ -24,6 +24,10 @@ function RSVPSection({ event, config, appearance, styles }) {
   const [isOpen, setIsOpen] = useState(false)
   const primaryColor = appearance?.primaryColor
   const rsvpType = event.rsvpSettings?.rsvpType || 'intermedio_db'
+  // Las invitaciones VIP son un módulo aparte (se vende y se activa por su
+  // cuenta), no una opción más del selector de plan -- cuando está prendido
+  // manda por encima de básico/intermedio.
+  const vipEnabled = Boolean(event.activeModules?.vipInvitations)
 
   if (!event.activeModules?.guestControl) return null
 
@@ -40,7 +44,7 @@ function RSVPSection({ event, config, appearance, styles }) {
   // Plan básico: no hay formulario ni datos guardados, solo un redirect a
   // WhatsApp con el mensaje pre-armado. Sin número cargado no hay nada que
   // mostrar, así que la sección directamente no aparece.
-  if (rsvpType === 'basico_whatsapp') {
+  if (!vipEnabled && rsvpType === 'basico_whatsapp') {
     if (!event.rsvpSettings?.whatsappNumber) return null
 
     return (
@@ -68,8 +72,8 @@ function RSVPSection({ event, config, appearance, styles }) {
     )
   }
 
-  // Planes intermedio y premium comparten la misma tarjeta de entrada; lo
-  // único que cambia es qué se abre al tocar el botón.
+  // El formulario normal y el gate VIP comparten la misma tarjeta de
+  // entrada; lo único que cambia es qué se abre al tocar el botón.
   return (
     <section className={`px-6 ${styles.fontClass}`}>
       <motion.div {...CARD_REVEAL} className={cardClassName} style={cardStyle}>
@@ -91,7 +95,7 @@ function RSVPSection({ event, config, appearance, styles }) {
         </Button>
       </motion.div>
 
-      {isOpen && rsvpType === 'premium_personalizado' && (
+      {isOpen && vipEnabled && (
         <PremiumRsvpGate
           event={event}
           primaryColor={primaryColor}
@@ -101,7 +105,7 @@ function RSVPSection({ event, config, appearance, styles }) {
         />
       )}
 
-      {isOpen && rsvpType !== 'premium_personalizado' && (
+      {isOpen && !vipEnabled && (
         <RsvpForm
           eventSlug={event.eventSlug}
           primaryColor={primaryColor}

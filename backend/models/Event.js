@@ -59,6 +59,7 @@ const eventSchema = new mongoose.Schema(
       liveGallery: { type: Boolean, default: false },
       photoCollection: { type: Boolean, default: false },
       messageBook: { type: Boolean, default: false },
+      vipInvitations: { type: Boolean, default: false },
     },
     gallerySettings: {
       cloudinaryFolder: { type: String },

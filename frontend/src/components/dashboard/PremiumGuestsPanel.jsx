@@ -39,7 +39,7 @@ function CopyLinkButton({ url }) {
   )
 }
 
-function PremiumGuestsPanel({ eventId, eventSlug, guests, onGuestsChange }) {
+function PremiumGuestsPanel({ eventSlug, token, guests, onGuestsChange }) {
   const [name, setName] = useState('')
   const [maxCompanions, setMaxCompanions] = useState(0)
   const [status, setStatus] = useState('idle') // idle | sending | error
@@ -56,10 +56,11 @@ function PremiumGuestsPanel({ eventId, eventSlug, guests, onGuestsChange }) {
     setStatus('sending')
     setErrorMessage('')
     try {
-      await api.post(`/guests/event/${eventId}/premium`, {
-        name: name.trim(),
-        maxCompanionsAllowed: Number(maxCompanions) || 0,
-      })
+      await api.post(
+        `/guests/client/${eventSlug}/premium`,
+        { name: name.trim(), maxCompanionsAllowed: Number(maxCompanions) || 0 },
+        { params: { token } }
+      )
       setName('')
       setMaxCompanions(0)
       setStatus('idle')
@@ -78,7 +79,7 @@ function PremiumGuestsPanel({ eventId, eventSlug, guests, onGuestsChange }) {
     }
     setConfirmDeleteId(null)
     try {
-      await api.delete(`/guests/${guestId}`)
+      await api.delete(`/guests/client/${eventSlug}/${guestId}`, { params: { token } })
       onGuestsChange()
     } catch {
       // si falla, el invitado sigue en la lista y se puede reintentar

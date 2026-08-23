@@ -7,6 +7,7 @@ import BrandLogos from '../components/BrandLogos'
 import GlassPanel from '../components/ui/GlassPanel'
 import StatCard from '../components/dashboard/StatCard'
 import GuestsTable from '../components/dashboard/GuestsTable'
+import PremiumGuestsPanel from '../components/dashboard/PremiumGuestsPanel'
 import { getThemeStyles } from '../sections/theming'
 import { guestsToCsv, downloadCsv } from '../utils/csv'
 import { BRAND } from '../utils/brand'
@@ -40,6 +41,13 @@ function StatsDashboard() {
         setLoadState(err.response?.status === 403 ? 'forbidden' : 'error')
       })
   }, [eventSlug, token])
+
+  function refreshGuests() {
+    api
+      .get(`/guests/client/${eventSlug}`, { params: { token } })
+      .then(({ data }) => setGuests(data))
+      .catch(() => {})
+  }
 
   if (loadState === 'loading') {
     return (
@@ -130,6 +138,10 @@ function StatsDashboard() {
         </div>
 
         <GuestsTable guests={guests} />
+
+        {event.activeModules?.vipInvitations && (
+          <PremiumGuestsPanel eventSlug={eventSlug} token={token} guests={guests} onGuestsChange={refreshGuests} />
+        )}
       </GlassPanel>
     </div>
   )

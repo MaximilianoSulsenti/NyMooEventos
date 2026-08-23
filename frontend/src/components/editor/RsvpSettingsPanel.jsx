@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { MessageCircle, Database, Crown, Check } from 'lucide-react'
+import { MessageCircle, Database, Check, Crown } from 'lucide-react'
 import api from '../../services/api'
 import { BRAND } from '../../utils/brand'
 
@@ -16,12 +16,6 @@ const RSVP_TYPE_OPTIONS = [
     description: 'Los invitados confirman en la web, se guarda todo en la base y se exporta a Excel/CSV.',
     icon: Database,
   },
-  {
-    value: 'premium_personalizado',
-    label: 'Premium · Invitación personalizada',
-    description: 'Link único por familia con cupo de acompañantes fijo. También exporta a Excel/CSV.',
-    icon: Crown,
-  },
 ]
 
 function RsvpSettingsPanel({ eventId, settings, onChange }) {
@@ -33,10 +27,9 @@ function RsvpSettingsPanel({ eventId, settings, onChange }) {
   }
 
   // El plan se guarda al toque (no espera al "Guardar todo" general) porque
-  // es lo que decide si aparece o no la pestaña "Invitados VIP" en el
-  // dashboard -- si quedara solo en el estado local del editor, era muy
-  // fácil elegir un plan, no acordarse de guardar, e irse pensando que ya
-  // había quedado activo.
+  // es lo que decide qué se muestra en la invitación pública -- si quedara
+  // solo en el estado local del editor, era muy fácil elegir uno, no
+  // acordarse de guardar, e irse pensando que ya había quedado activo.
   async function handleTypeChange(value) {
     update({ rsvpType: value })
     setSaveState('saving')
@@ -120,12 +113,13 @@ function RsvpSettingsPanel({ eventId, settings, onChange }) {
         </div>
       )}
 
-      {rsvpType === 'premium_personalizado' && (
-        <p className="text-xs text-neutral-500 bg-white/5 border border-white/10 rounded-xl p-3">
-          Cargá la lista de invitados VIP (nombre + cupo de acompañantes) desde la pestaña "Invitados VIP" en el panel
-          del evento. Ahí también vas a poder copiar el link personalizado de cada uno.
-        </p>
-      )}
+      <p className="text-xs text-neutral-500 bg-white/5 border border-white/10 rounded-xl p-3 flex items-start gap-2">
+        <Crown className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+        <span>
+          ¿Invitaciones VIP con link personalizado por familia? Se activa aparte, como módulo, desde "Módulos" en el
+          panel del evento.
+        </span>
+      </p>
     </div>
   )
 }

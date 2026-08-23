@@ -121,34 +121,35 @@ async function getGuestsForClient(req, res) {
 
 // --- Plan premium: invitados pre-cargados con cupo propio ---
 
-async function createPremiumGuest(req, res) {
-  const { eventId } = req.params;
-  const { name, maxCompanionsAllowed } = req.body;
+async function buildPremiumGuest(eventId, body) {
+  const { name, maxCompanionsAllowed } = body;
 
   if (!name || !name.trim()) {
-    return res.status(400).json({ message: 'El nombre es requerido' });
+    return { error: { status: 400, message: 'El nombre es requerido' } };
   }
 
   const parsedMax = Number(maxCompanionsAllowed);
   if (!Number.isFinite(parsedMax) || parsedMax < 0 || parsedMax > 50) {
-    return res.status(400).json({ message: 'El cupo de acompañantes debe ser un número entre 0 y 50' });
+    return { error: { status: 400, message: 'El cupo de acompañantes debe ser un número entre 0 y 50' } };
   }
+
+  const trimmedName = name.trim();
+  const passcode = await generateUniquePasscode(eventId, trimmedName);
+
+  const guest = await Guest.create({ eventId, name: trimmedName, maxCompanionsAllowed: parsedMax, passcode });
+  return { guest };
+}
+
+async function createPremiumGuest(req, res) {
+  const { eventId } = req.params;
 
   const event = await Event.findById(eventId);
   if (!event) {
     return res.status(404).json({ message: 'Evento no encontrado' });
   }
 
-  const trimmedName = name.trim();
-  const passcode = await generateUniquePasscode(event._id, trimmedName);
-
-  const guest = await Guest.create({
-    eventId: event._id,
-    name: trimmedName,
-    maxCompanionsAllowed: parsedMax,
-    passcode,
-  });
-
+  const { guest, error } = await buildPremiumGuest(event._id, req.body);
+  if (error) return res.status(error.status).json({ message: error.message });
   res.status(201).json(guest);
 }
 
@@ -156,6 +157,29 @@ async function deleteGuest(req, res) {
   const { guestId } = req.params;
 
   const guest = await Guest.findByIdAndDelete(guestId);
+  if (!guest) {
+    return res.status(404).json({ message: 'Invitado no encontrado' });
+  }
+
+  res.json({ message: 'Invitado eliminado' });
+}
+
+// Mismo par de acciones que arriba, pero para cuando quien administra la
+// lista VIP es el cliente (novios) desde su panel de estadísticas sin
+// login, autenticado con el clientAccessToken en vez de un JWT de admin.
+async function createPremiumGuestForClient(req, res) {
+  const { guest, error } = await buildPremiumGuest(req.event._id, req.body);
+  if (error) return res.status(error.status).json({ message: error.message });
+  res.status(201).json(guest);
+}
+
+async function deletePremiumGuestForClient(req, res) {
+  const { guestId } = req.params;
+
+  // El token solo prueba que se conoce el evento, no cuál invitado --
+  // filtrar también por eventId evita que alguien borre invitados de otro
+  // evento adivinando/probando IDs.
+  const guest = await Guest.findOneAndDelete({ _id: guestId, eventId: req.event._id });
   if (!guest) {
     return res.status(404).json({ message: 'Invitado no encontrado' });
   }
@@ -231,6 +255,8 @@ module.exports = {
   getGuestsForClient,
   createPremiumGuest,
   deleteGuest,
+  createPremiumGuestForClient,
+  deletePremiumGuestForClient,
   lookupGuestByPasscode,
   searchGuestByName,
 };

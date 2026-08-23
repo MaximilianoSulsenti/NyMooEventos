@@ -110,7 +110,7 @@ async function getEventById(req, res) {
 
 async function updateEventModules(req, res) {
   const { eventId } = req.params;
-  const { interactiveCard, liveGallery, guestControl, photoCollection, messageBook } = req.body;
+  const { interactiveCard, liveGallery, guestControl, photoCollection, messageBook, vipInvitations } = req.body;
 
   const event = await Event.findById(eventId);
   if (!event) {
@@ -122,6 +122,7 @@ async function updateEventModules(req, res) {
   if (guestControl !== undefined) event.activeModules.guestControl = guestControl;
   if (photoCollection !== undefined) event.activeModules.photoCollection = photoCollection;
   if (messageBook !== undefined) event.activeModules.messageBook = messageBook;
+  if (vipInvitations !== undefined) event.activeModules.vipInvitations = vipInvitations;
 
   await event.save();
 
