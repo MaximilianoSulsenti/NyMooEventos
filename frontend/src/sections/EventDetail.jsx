@@ -17,6 +17,12 @@ function EventDetail({ event, config, appearance, styles }) {
   const titleSize = config.fontSizeTitle || 'text-2xl'
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const details = Array.isArray(config.details) ? config.details.filter((d) => d.label || d.text) : []
+  // El resto del contenido (fecha, hora, detalles) tiene su propia
+  // alineación fija con flex/grid, así que "Alineación" no tiene nada de
+  // texto suelto para alinear -- lo que sí hace algo visible es mover la
+  // tarjeta entera hacia un lado, que es el efecto real que se espera.
+  const cardPosition =
+    { 'text-left': 'mr-auto ml-0', 'text-right': 'ml-auto mr-0' }[alignment] || 'mx-auto'
 
   return (
     <section className={`px-6 ${styles.fontClass} ${alignment}`}>
@@ -33,7 +39,8 @@ function EventDetail({ event, config, appearance, styles }) {
       <motion.div
         {...CARD_REVEAL}
         className={cn(
-          'relative flex flex-col w-full mx-auto max-w-lg border overflow-hidden',
+          'relative flex flex-col w-full max-w-lg border overflow-hidden',
+          cardPosition,
           glassBlurClass(config),
           styles.card
         )}

@@ -3,6 +3,7 @@ import { motion } from 'motion/react'
 import { cn } from '../utils/cn'
 import { shadeColor } from '../utils/color'
 import { FONT_FAMILY_CLASSES } from '../sections/theming'
+import Button from './ui/Button'
 
 function EnvelopeBackground({ settings }) {
   if (settings.bgType === 'image' && settings.bgUrl) {
@@ -69,10 +70,8 @@ function Envelope({ settings, appearance, onOpen }) {
         animate={{ scale: opening ? 0.96 : 1 }}
         transition={{ duration: 0.45, delay: opening ? 0.7 : 0 }}
       >
-        {/* Cuerpo del sobre: fondo (color/imagen/video) + las costuras de
-            las solapas laterales/inferior (como un sobre real) + el
-            mensaje de bienvenida centrado en el bolsillo, debajo de la
-            solapa. */}
+        {/* Cuerpo del sobre: fondo (color/imagen/video) + las costuras +
+            el botón, solo y centrado en el bolsillo debajo de la solapa. */}
         <div
           className="absolute inset-0 rounded-2xl overflow-hidden border border-white/10"
           style={{ backgroundColor: bgColor }}
@@ -93,28 +92,29 @@ function Envelope({ settings, appearance, onOpen }) {
             <line x1="100" y1="100" x2="50" y2={FLAP_TIP_Y} stroke="rgba(255,255,255,0.35)" strokeWidth="0.5" vectorEffect="non-scaling-stroke" />
           </svg>
 
+          {/* El botón queda solo en el bolsillo, más protagonista -- mismo
+              componente Button que se usa en el resto del sitio (borde en
+              degradado, brillo al hover), con un flote suave para que
+              invite a tocarlo. */}
           <motion.div
-            className={cn('absolute inset-x-0 z-10 flex flex-col items-center justify-center text-center px-6', fontClass)}
+            className="absolute inset-x-0 z-10 flex flex-col items-center justify-center px-6"
             style={{ top: `${FLAP_TIP_Y}%`, bottom: 0 }}
             animate={{ opacity: opening ? 0 : 1, y: opening ? 10 : 0 }}
             transition={{ duration: 0.3, delay: opening ? 0 : 0.2 }}
           >
-            {settings.titleText && (
-              <p className="text-white text-xl sm:text-2xl mb-6 leading-relaxed drop-shadow-lg">
-                {settings.titleText}
-              </p>
-            )}
-
-            <motion.button
-              type="button"
-              onClick={handleOpen}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
-              className="px-8 sm:px-10 py-3.5 sm:py-4 rounded-full font-medium tracking-wide shadow-2xl border border-white/10"
-              style={{ background: appearance.primaryColor, color: '#0a0a0a' }}
+            <motion.div
+              animate={{ y: [0, -5, 0] }}
+              transition={{ repeat: Infinity, duration: 2.6, ease: 'easeInOut' }}
             >
-              {settings.buttonText || 'Abrir invitación'}
-            </motion.button>
+              <Button
+                type="button"
+                onClick={handleOpen}
+                primaryColor={appearance.primaryColor}
+                className={cn('px-9 sm:px-11 py-3.5 sm:py-4 tracking-wide', fontClass)}
+              >
+                {settings.buttonText || 'Abrir invitación'}
+              </Button>
+            </motion.div>
           </motion.div>
         </div>
 
@@ -145,7 +145,9 @@ function Envelope({ settings, appearance, onOpen }) {
         />
 
         {/* Solapa: bisagra real en 3D (rotateX), no un slide -- se pliega
-            hacia atrás como una solapa de papel de verdad. */}
+            hacia atrás como una solapa de papel de verdad. El texto de
+            bienvenida vive acá, sutil, como una etiqueta escrita en el
+            papel -- se va con la solapa al abrir. */}
         <motion.div
           className="absolute inset-x-0 top-0 origin-top"
           style={{ height: `${FLAP_HEIGHT_PERCENT}%`, transformStyle: 'preserve-3d' }}
@@ -154,14 +156,26 @@ function Envelope({ settings, appearance, onOpen }) {
         >
           {/* Cara frontal (lo que se ve mientras está cerrada) */}
           <div
-            className="absolute inset-0 rounded-t-2xl"
+            className={cn(
+              'absolute inset-0 rounded-t-2xl flex flex-col items-center text-center px-8 pt-9 sm:pt-11',
+              fontClass
+            )}
             style={{
               clipPath: FLAP_CLIP_PATH,
               backfaceVisibility: 'hidden',
               background: `linear-gradient(160deg, ${flapFrontShade}, ${bgColor})`,
               boxShadow: 'inset 0 -1px 0 rgba(255,255,255,0.15)',
             }}
-          />
+          >
+            {settings.titleText && (
+              <p className="text-white/90 text-sm sm:text-base tracking-wide leading-snug drop-shadow">
+                {settings.titleText}
+              </p>
+            )}
+            {settings.subtitleText && (
+              <p className="text-white/55 text-xs sm:text-sm mt-1.5 tracking-wide">{settings.subtitleText}</p>
+            )}
+          </div>
           {/* Cara trasera (lo que se ve cuando termina de girar hacia atrás) */}
           <div
             className="absolute inset-0"

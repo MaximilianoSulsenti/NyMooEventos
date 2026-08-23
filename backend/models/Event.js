@@ -93,6 +93,7 @@ const eventSchema = new mongoose.Schema(
       bgUrl: { type: String, default: '' },
       bgOpacity: { type: Number, default: 100, min: 0, max: 100 },
       titleText: { type: String, default: '' },
+      subtitleText: { type: String, default: '' },
       buttonText: { type: String, default: 'Abrir invitación' },
       fontFamily: { type: String, default: 'sans' },
     },

@@ -161,7 +161,7 @@ async function updateAppearance(req, res) {
 
 async function updateEnvelopeSettings(req, res) {
   const event = req.event;
-  const { enabled, bgType, bgColor, bgUrl, bgOpacity, titleText, buttonText, fontFamily } = req.body;
+  const { enabled, bgType, bgColor, bgUrl, bgOpacity, titleText, subtitleText, buttonText, fontFamily } = req.body;
 
   if (enabled !== undefined) event.envelopeSettings.enabled = enabled;
   if (bgType !== undefined) event.envelopeSettings.bgType = bgType;
@@ -169,6 +169,7 @@ async function updateEnvelopeSettings(req, res) {
   if (bgUrl !== undefined) event.envelopeSettings.bgUrl = bgUrl;
   if (bgOpacity !== undefined) event.envelopeSettings.bgOpacity = bgOpacity;
   if (titleText !== undefined) event.envelopeSettings.titleText = titleText;
+  if (subtitleText !== undefined) event.envelopeSettings.subtitleText = subtitleText;
   if (buttonText !== undefined) event.envelopeSettings.buttonText = buttonText;
   if (fontFamily !== undefined) event.envelopeSettings.fontFamily = fontFamily;
 
