@@ -6,6 +6,7 @@ import FeaturesSection from '../components/landing/FeaturesSection'
 import BenefitsSection from '../components/landing/BenefitsSection'
 import FaqSection from '../components/landing/FaqSection'
 import LandingFooter from '../components/landing/LandingFooter'
+import FloatingWhatsappButton from '../components/landing/FloatingWhatsappButton'
 
 // Landing de ventas pública -- vive en "/", sin ningún link visible hacia el
 // login del panel interno (ver App.jsx: esa ruta quedó movida y sin enlaces).
@@ -22,6 +23,7 @@ function LandingPage() {
         <FaqSection />
       </main>
       <LandingFooter />
+      <FloatingWhatsappButton />
     </div>
   )
 }
