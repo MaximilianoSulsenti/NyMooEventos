@@ -23,6 +23,7 @@ const SECTION_TYPES = [
 const THEMES = ['minimalista', 'moderno', 'vanguardista', 'romantica', 'bohemio', 'elegante', 'festivo'];
 const MODERATION_MODES = ['manual', 'automatica', 'semiautomatica'];
 const BG_TYPES = ['color', 'image', 'video'];
+const RSVP_TYPES = ['basico_whatsapp', 'intermedio_db', 'premium_personalizado'];
 const BRAND_POSITIONS = ['top-left', 'top-right', 'bottom-left', 'bottom-right'];
 
 const brandSchema = new mongoose.Schema(
@@ -98,6 +99,13 @@ const eventSchema = new mongoose.Schema(
       myBrand: { type: brandSchema, default: () => ({}) },
       clientBrand: { type: brandSchema, default: () => ({}) },
     },
+    rsvpSettings: {
+      // intermedio_db es el default para no cambiarle el comportamiento a
+      // ningún evento ya creado antes de este campo.
+      rsvpType: { type: String, enum: RSVP_TYPES, default: 'intermedio_db' },
+      whatsappNumber: { type: String, default: '' },
+      whatsappMessage: { type: String, default: '' },
+    },
     musicSettings: {
       enabled: { type: Boolean, default: false },
       audioUrl: { type: String, default: '' },
@@ -126,5 +134,6 @@ eventSchema.statics.THEMES = THEMES;
 eventSchema.statics.MODERATION_MODES = MODERATION_MODES;
 eventSchema.statics.BG_TYPES = BG_TYPES;
 eventSchema.statics.BRAND_POSITIONS = BRAND_POSITIONS;
+eventSchema.statics.RSVP_TYPES = RSVP_TYPES;
 
 module.exports = mongoose.model('Event', eventSchema);

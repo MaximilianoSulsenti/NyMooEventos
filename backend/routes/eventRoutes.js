@@ -12,6 +12,7 @@ const {
   updateUploadPageSettings,
   updateGallerySettings,
   updateMusicSettings,
+  updateRsvpSettings,
   updateSections,
   signAppearanceUpload,
   updateModerationModeForClient,
@@ -39,6 +40,7 @@ router.patch('/:eventId/branding/client', requireAuth, requireEventOwnership, up
 router.patch('/:eventId/upload-page', requireAuth, requireEventOwnership, updateUploadPageSettings);
 router.patch('/:eventId/gallery-settings', requireAuth, requireEventOwnership, updateGallerySettings);
 router.patch('/:eventId/music', requireAuth, requireEventOwnership, updateMusicSettings);
+router.patch('/:eventId/rsvp-settings', requireAuth, requireEventOwnership, updateRsvpSettings);
 router.patch('/:eventId/sections', requireAuth, requireEventOwnership, updateSections);
 router.get('/:eventId/appearance/sign', requireAuth, requireEventOwnership, signAppearanceUpload);
 router.patch('/client/:eventSlug/moderation-mode', requireClientToken, updateModerationModeForClient);

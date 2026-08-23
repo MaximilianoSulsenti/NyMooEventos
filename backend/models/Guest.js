@@ -17,6 +17,12 @@ const guestSchema = new mongoose.Schema(
     rsvpCompleted: { type: Boolean, default: true },
     companionsCount: { type: Number, default: 0 },
     extraAnswers: { type: mongoose.Schema.Types.Mixed, default: {} },
+    // Plan premium (invitaciones personalizadas): cupo de acompañantes que
+    // el organizador le asignó a esta familia/invitado, y el código que
+    // identifica su link único. Vacío/null para invitados de los otros
+    // planes -- no se usan y no rompen nada de lo existente.
+    maxCompanionsAllowed: { type: Number, default: null },
+    passcode: { type: String, default: '' },
   },
   { timestamps: true }
 );

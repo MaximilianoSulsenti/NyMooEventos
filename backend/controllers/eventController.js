@@ -189,6 +189,23 @@ async function updateMusicSettings(req, res) {
   res.json(event);
 }
 
+async function updateRsvpSettings(req, res) {
+  const event = req.event;
+  const { rsvpType, whatsappNumber, whatsappMessage } = req.body;
+
+  if (rsvpType !== undefined) {
+    if (!Event.RSVP_TYPES.includes(rsvpType)) {
+      return res.status(400).json({ message: 'Tipo de RSVP inválido' });
+    }
+    event.rsvpSettings.rsvpType = rsvpType;
+  }
+  if (whatsappNumber !== undefined) event.rsvpSettings.whatsappNumber = whatsappNumber;
+  if (whatsappMessage !== undefined) event.rsvpSettings.whatsappMessage = whatsappMessage;
+
+  await event.save();
+  res.json(event);
+}
+
 function applyBrandFields(brand, body) {
   const { enabled, logoUrl, position, size, opacity } = body;
   if (enabled !== undefined) brand.enabled = enabled;
@@ -367,6 +384,7 @@ module.exports = {
   updateUploadPageSettings,
   updateGallerySettings,
   updateMusicSettings,
+  updateRsvpSettings,
   updateSections,
   signAppearanceUpload,
   updateModerationModeForClient,
