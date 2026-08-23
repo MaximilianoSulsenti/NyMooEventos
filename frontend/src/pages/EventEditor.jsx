@@ -227,7 +227,7 @@ function EventEditor() {
 
         <div>
           <h2 className="text-sm uppercase tracking-widest text-neutral-500 mb-3">Plan de confirmación (RSVP)</h2>
-          <RsvpSettingsPanel settings={rsvpSettings} onChange={setRsvpSettings} />
+          <RsvpSettingsPanel eventId={eventId} settings={rsvpSettings} onChange={setRsvpSettings} />
         </div>
 
         <div>
