@@ -18,7 +18,6 @@ const {
   updateModerationModeForClient,
   updatePlaybackSpeedForClient,
   updateMaxLivePhotosForClient,
-  updateVipMessageTemplateForClient,
   updateLiveControlsForClient,
 } = require('../controllers/eventController');
 const { requireAuth } = require('../middleware/auth');
@@ -47,7 +46,6 @@ router.get('/:eventId/appearance/sign', requireAuth, requireEventOwnership, sign
 router.patch('/client/:eventSlug/moderation-mode', requireClientToken, updateModerationModeForClient);
 router.patch('/client/:eventSlug/playback-speed', requireClientToken, updatePlaybackSpeedForClient);
 router.patch('/client/:eventSlug/max-live-photos', requireClientToken, updateMaxLivePhotosForClient);
-router.patch('/client/:eventSlug/vip-message-template', requireClientToken, updateVipMessageTemplateForClient);
 router.patch('/client/:eventSlug/live-controls', requireClientToken, updateLiveControlsForClient);
 
 module.exports = router;

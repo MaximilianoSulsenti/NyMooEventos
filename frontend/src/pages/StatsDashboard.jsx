@@ -156,7 +156,6 @@ function StatsDashboard() {
             eventName={event.eventName}
             token={token}
             guests={guests}
-            vipMessageTemplate={event.rsvpSettings?.vipMessageTemplate}
             onGuestsChange={refreshGuests}
           />
         )}

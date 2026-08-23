@@ -106,10 +106,6 @@ const eventSchema = new mongoose.Schema(
       rsvpType: { type: String, enum: RSVP_TYPES, default: 'intermedio_db' },
       whatsappNumber: { type: String, default: '' },
       whatsappMessage: { type: String, default: '' },
-      // Plantilla del mensaje que se copia para cada invitado VIP (con
-      // {nombre}/{evento}/{cupo}/{link}). Vacía = se usa el default
-      // armado en el frontend.
-      vipMessageTemplate: { type: String, default: '', maxlength: 500 },
     },
     musicSettings: {
       enabled: { type: Boolean, default: false },

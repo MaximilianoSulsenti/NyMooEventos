@@ -372,16 +372,6 @@ async function updateMaxLivePhotosForClient(req, res) {
   res.json(event);
 }
 
-async function updateVipMessageTemplateForClient(req, res) {
-  const { vipMessageTemplate } = req.body;
-
-  const event = req.event;
-  event.rsvpSettings.vipMessageTemplate = typeof vipMessageTemplate === 'string' ? vipMessageTemplate.slice(0, 500) : '';
-  await event.save();
-
-  res.json(event);
-}
-
 module.exports = {
   getEventBySlug,
   listMyEvents,
@@ -401,6 +391,5 @@ module.exports = {
   updateModerationModeForClient,
   updatePlaybackSpeedForClient,
   updateMaxLivePhotosForClient,
-  updateVipMessageTemplateForClient,
   updateLiveControlsForClient,
 };

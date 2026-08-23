@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { UserPlus, Copy, Check, Trash2, MessageSquareText } from 'lucide-react'
 import api from '../../services/api'
 import { BRAND } from '../../utils/brand'
@@ -8,17 +8,6 @@ const STATUS_STYLES = {
   confirmado: 'bg-green-500/15 text-green-400',
   declinado: 'bg-red-500/15 text-red-400',
   pendiente: 'bg-yellow-500/15 text-yellow-400',
-}
-
-const DEFAULT_MESSAGE_TEMPLATE =
-  '¡Hola {nombre}! 🎉 Los invitamos con mucho cariño a acompañarnos en {evento}. Esta es tu invitación personalizada (con lugar para hasta {cupo} acompañante(s)), confirmá tu asistencia acá:\n{link}'
-
-function fillTemplate(template, { nombre, evento, cupo, link }) {
-  return template
-    .replaceAll('{nombre}', nombre)
-    .replaceAll('{evento}', evento)
-    .replaceAll('{cupo}', String(cupo))
-    .replaceAll('{link}', link)
 }
 
 function CopyButton({ text, label, icon: Icon }) {
@@ -50,37 +39,15 @@ function CopyButton({ text, label, icon: Icon }) {
   )
 }
 
-function PremiumGuestsPanel({ eventSlug, eventName, token, guests, vipMessageTemplate, onGuestsChange }) {
+function PremiumGuestsPanel({ eventSlug, eventName, token, guests, onGuestsChange }) {
   const [name, setName] = useState('')
   const [maxCompanions, setMaxCompanions] = useState(0)
   const [status, setStatus] = useState('idle') // idle | sending | error
   const [errorMessage, setErrorMessage] = useState('')
   const [confirmDeleteId, setConfirmDeleteId] = useState(null)
-  const [template, setTemplate] = useState(vipMessageTemplate || DEFAULT_MESSAGE_TEMPLATE)
-  const [templateSaveState, setTemplateSaveState] = useState('idle') // idle | saving | saved | error
-  const templateSaveTimeout = useRef(null)
 
   const premiumGuests = guests.filter((g) => g.passcode)
   const origin = window.location.origin
-
-  function handleTemplateChange(value) {
-    setTemplate(value)
-    setTemplateSaveState('saving')
-    clearTimeout(templateSaveTimeout.current)
-    templateSaveTimeout.current = setTimeout(async () => {
-      try {
-        await api.patch(
-          `/events/client/${eventSlug}/vip-message-template`,
-          { vipMessageTemplate: value },
-          { params: { token } }
-        )
-        setTemplateSaveState('saved')
-        setTimeout(() => setTemplateSaveState('idle'), 1500)
-      } catch {
-        setTemplateSaveState('error')
-      }
-    }, 700)
-  }
 
   async function handleCreate(event) {
     event.preventDefault()
@@ -120,39 +87,12 @@ function PremiumGuestsPanel({ eventSlug, eventName, token, guests, vipMessageTem
   }
 
   return (
-    <div className="space-y-6 max-w-2xl" style={{ '--accent': BRAND.blue }}>
+    <div className="space-y-6 max-w-2xl">
       <div>
         <h2 className="font-medium mb-1">Invitados VIP</h2>
         <p className="text-white/40 text-sm">
           Precargá cada familia o invitado con su cupo de acompañantes. Cada uno recibe un link personalizado con su
           nombre bloqueado y el cupo ya limitado en el formulario de confirmación.
-        </p>
-      </div>
-
-      <div className="rounded-2xl bg-white/5 border border-white/10 p-4 space-y-2">
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-sm font-medium flex items-center gap-1.5">
-            <MessageSquareText className="w-3.5 h-3.5 text-white/40" />
-            Mensaje que se copia para cada invitado
-          </p>
-          {templateSaveState === 'saving' && <span className="text-xs text-white/40 shrink-0">Guardando...</span>}
-          {templateSaveState === 'saved' && (
-            <span className="text-xs text-green-400 flex items-center gap-1 shrink-0">
-              <Check className="w-3 h-3" />
-              Guardado
-            </span>
-          )}
-        </div>
-        <textarea
-          value={template}
-          onChange={(e) => handleTemplateChange(e.target.value)}
-          rows={4}
-          className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30 transition"
-        />
-        <p className="text-xs text-white/30">
-          Variables: <code className="text-white/50">{'{nombre}'}</code> <code className="text-white/50">{'{evento}'}</code>{' '}
-          <code className="text-white/50">{'{cupo}'}</code> <code className="text-white/50">{'{link}'}</code> -- se
-          reemplazan solas por cada invitado.
         </p>
       </div>
 
@@ -166,6 +106,7 @@ function PremiumGuestsPanel({ eventSlug, eventName, token, guests, vipMessageTem
               onChange={(e) => setName(e.target.value)}
               required
               className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30 transition"
+              style={{ '--accent': BRAND.blue }}
             />
           </div>
           <div className="w-full sm:w-40">
@@ -177,6 +118,7 @@ function PremiumGuestsPanel({ eventSlug, eventName, token, guests, vipMessageTem
               value={maxCompanions}
               onChange={(e) => setMaxCompanions(e.target.value)}
               className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30 transition"
+              style={{ '--accent': BRAND.blue }}
             />
           </div>
         </div>
@@ -204,12 +146,11 @@ function PremiumGuestsPanel({ eventSlug, eventName, token, guests, vipMessageTem
             // el link en WhatsApp el mensaje se corta ahí mismo y el link
             // queda roto (404 al abrirlo).
             const link = `${origin}/evento/${encodeURIComponent(eventSlug)}?guest=${encodeURIComponent(guest.passcode)}`
-            const message = fillTemplate(template, {
-              nombre: guest.name,
-              evento: eventName,
-              cupo: guest.maxCompanionsAllowed,
-              link,
-            })
+            const companionsText =
+              guest.maxCompanionsAllowed > 0
+                ? ` (con lugar para hasta ${guest.maxCompanionsAllowed} acompañante${guest.maxCompanionsAllowed === 1 ? '' : 's'})`
+                : ''
+            const message = `¡Hola ${guest.name}! 🎉 Los invitamos con mucho cariño a acompañarnos en ${eventName}. Esta es tu invitación personalizada${companionsText}, confirmá tu asistencia acá:\n${link}`
 
             return (
               <div key={guest._id} className="rounded-2xl bg-white/5 border border-white/10 p-4 space-y-2">
