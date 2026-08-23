@@ -310,7 +310,7 @@ function GalleryControl() {
   const styles = getThemeStyles(event?.uploadPageSettings?.theme)
   const primaryColor = event?.appearance?.primaryColor || '#a855f7'
 
-  const liveFeedUrl = `${window.location.origin}/evento/${eventSlug}/live-feed`
+  const liveFeedUrl = `${window.location.origin}/evento/${encodeURIComponent(eventSlug)}/live-feed`
 
   return (
     <div className={`relative min-h-screen w-full overflow-x-hidden text-white px-4 sm:px-6 py-6 sm:py-10 ${styles.fontClass}`}>

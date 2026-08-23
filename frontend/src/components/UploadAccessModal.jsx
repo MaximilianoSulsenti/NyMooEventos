@@ -9,7 +9,7 @@ import useLockBodyScroll from '../hooks/useLockBodyScroll'
 
 function UploadAccessModal({ eventSlug, onClose }) {
   useLockBodyScroll()
-  const uploadUrl = `${window.location.origin}/evento/${eventSlug}/upload`
+  const uploadUrl = `${window.location.origin}/evento/${encodeURIComponent(eventSlug)}/upload`
   const [copied, setCopied] = useState(false)
   const light = shadeColor(BRAND.blue, 25)
   const dark = shadeColor(BRAND.blue, -25)

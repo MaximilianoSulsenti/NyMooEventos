@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { UserPlus, Copy, Check, Trash2 } from 'lucide-react'
+import { UserPlus, Copy, Check, Trash2, MessageSquareText } from 'lucide-react'
 import api from '../../services/api'
 import { BRAND } from '../../utils/brand'
 import { getContrastTextColor } from '../../utils/color'
@@ -10,12 +10,12 @@ const STATUS_STYLES = {
   pendiente: 'bg-yellow-500/15 text-yellow-400',
 }
 
-function CopyLinkButton({ url }) {
+function CopyButton({ text, label, icon: Icon }) {
   const [copied, setCopied] = useState(false)
 
   async function handleCopy() {
     try {
-      await navigator.clipboard.writeText(url)
+      await navigator.clipboard.writeText(text)
       setCopied(true)
       setTimeout(() => setCopied(false), 1500)
     } catch {
@@ -33,13 +33,13 @@ function CopyLinkButton({ url }) {
         color: copied ? getContrastTextColor(BRAND.lime) : 'rgba(255,255,255,0.7)',
       }}
     >
-      {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-      {copied ? 'Copiado' : 'Copiar link'}
+      {copied ? <Check className="w-3.5 h-3.5" /> : <Icon className="w-3.5 h-3.5" />}
+      {copied ? 'Copiado' : label}
     </button>
   )
 }
 
-function PremiumGuestsPanel({ eventSlug, token, guests, onGuestsChange }) {
+function PremiumGuestsPanel({ eventSlug, eventName, token, guests, onGuestsChange }) {
   const [name, setName] = useState('')
   const [maxCompanions, setMaxCompanions] = useState(0)
   const [status, setStatus] = useState('idle') // idle | sending | error
@@ -141,7 +141,17 @@ function PremiumGuestsPanel({ eventSlug, token, guests, onGuestsChange }) {
       ) : (
         <div className="space-y-2">
           {premiumGuests.map((guest) => {
-            const link = `${origin}/evento/${eventSlug}?guest=${guest.passcode}`
+            // encodeURIComponent es clave acá: el slug de un evento puede
+            // tener espacios u otros caracteres, y sin encodear, al pegar
+            // el link en WhatsApp el mensaje se corta ahí mismo y el link
+            // queda roto (404 al abrirlo).
+            const link = `${origin}/evento/${encodeURIComponent(eventSlug)}?guest=${encodeURIComponent(guest.passcode)}`
+            const companionsText =
+              guest.maxCompanionsAllowed > 0
+                ? ` (con lugar para hasta ${guest.maxCompanionsAllowed} acompañante${guest.maxCompanionsAllowed === 1 ? '' : 's'})`
+                : ''
+            const message = `¡Hola ${guest.name}! 🎉 Los invitamos con mucho cariño a acompañarnos en ${eventName}. Esta es tu invitación personalizada${companionsText}, confirmá tu asistencia acá:\n${link}`
+
             return (
               <div key={guest._id} className="rounded-2xl bg-white/5 border border-white/10 p-4 space-y-2">
                 <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -173,7 +183,10 @@ function PremiumGuestsPanel({ eventSlug, token, guests, onGuestsChange }) {
                   <p className="w-full min-w-0 truncate rounded-lg bg-neutral-800 border border-white/10 px-3 py-1.5 text-xs text-white/60">
                     {link}
                   </p>
-                  <CopyLinkButton url={link} />
+                  <div className="flex gap-2">
+                    <CopyButton text={message} label="Copiar mensaje" icon={MessageSquareText} />
+                    <CopyButton text={link} label="Copiar link" icon={Copy} />
+                  </div>
                 </div>
               </div>
             )

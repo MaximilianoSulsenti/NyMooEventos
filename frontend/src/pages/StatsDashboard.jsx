@@ -151,7 +151,13 @@ function StatsDashboard() {
         <GuestsTable guests={guests} onDelete={handleDeleteGuest} />
 
         {event.activeModules?.vipInvitations && (
-          <PremiumGuestsPanel eventSlug={eventSlug} token={token} guests={guests} onGuestsChange={refreshGuests} />
+          <PremiumGuestsPanel
+            eventSlug={eventSlug}
+            eventName={event.eventName}
+            token={token}
+            guests={guests}
+            onGuestsChange={refreshGuests}
+          />
         )}
       </GlassPanel>
     </div>

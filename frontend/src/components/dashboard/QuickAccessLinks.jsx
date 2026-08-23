@@ -57,11 +57,16 @@ function CopyField({ label, url }) {
 
 function QuickAccessLinks({ eventSlug, clientAccessToken }) {
   const origin = window.location.origin
-  const cardUrl = `${origin}/evento/${eventSlug}`
-  const liveFeedUrl = `${origin}/evento/${eventSlug}/live-feed`
-  const uploadUrl = `${origin}/evento/${eventSlug}/upload`
-  const statsUrl = `${origin}/evento/${eventSlug}/stats-dashboard?token=${clientAccessToken}`
-  const galleryControlUrl = `${origin}/evento/${eventSlug}/gallery-control?token=${clientAccessToken}`
+  // encodeURIComponent es necesario porque hay eventos viejos con espacios
+  // u otros caracteres en el slug -- sin esto, al pegar el link en WhatsApp
+  // el mensaje se corta justo ahí y el link queda roto (404).
+  const slug = encodeURIComponent(eventSlug)
+  const token = encodeURIComponent(clientAccessToken)
+  const cardUrl = `${origin}/evento/${slug}`
+  const liveFeedUrl = `${origin}/evento/${slug}/live-feed`
+  const uploadUrl = `${origin}/evento/${slug}/upload`
+  const statsUrl = `${origin}/evento/${slug}/stats-dashboard?token=${token}`
+  const galleryControlUrl = `${origin}/evento/${slug}/gallery-control?token=${token}`
 
   return (
     <div className="space-y-6">
