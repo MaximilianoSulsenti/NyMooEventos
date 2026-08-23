@@ -168,12 +168,20 @@ function Envelope({ settings, appearance, onOpen }) {
             }}
           >
             {settings.titleText && (
-              <p className="text-white/90 text-sm sm:text-base tracking-wide leading-snug drop-shadow">
+              <p
+                className={cn(settings.fontSizeTitle || 'text-base', 'text-white/90 tracking-wide leading-snug drop-shadow')}
+                style={settings.textColor ? { color: `${settings.textColor}e6` } : undefined}
+              >
                 {settings.titleText}
               </p>
             )}
             {settings.subtitleText && (
-              <p className="text-white/55 text-xs sm:text-sm mt-1.5 tracking-wide">{settings.subtitleText}</p>
+              <p
+                className={cn(settings.fontSizeSubtitle || 'text-sm', 'text-white/55 mt-1.5 tracking-wide')}
+                style={settings.textColor ? { color: `${settings.textColor}8c` } : undefined}
+              >
+                {settings.subtitleText}
+              </p>
             )}
           </div>
           {/* Cara trasera (lo que se ve cuando termina de girar hacia atrás) */}

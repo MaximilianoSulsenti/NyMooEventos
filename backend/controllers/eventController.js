@@ -161,7 +161,20 @@ async function updateAppearance(req, res) {
 
 async function updateEnvelopeSettings(req, res) {
   const event = req.event;
-  const { enabled, bgType, bgColor, bgUrl, bgOpacity, titleText, subtitleText, buttonText, fontFamily } = req.body;
+  const {
+    enabled,
+    bgType,
+    bgColor,
+    bgUrl,
+    bgOpacity,
+    titleText,
+    subtitleText,
+    buttonText,
+    fontFamily,
+    fontSizeTitle,
+    fontSizeSubtitle,
+    textColor,
+  } = req.body;
 
   if (enabled !== undefined) event.envelopeSettings.enabled = enabled;
   if (bgType !== undefined) event.envelopeSettings.bgType = bgType;
@@ -172,6 +185,9 @@ async function updateEnvelopeSettings(req, res) {
   if (subtitleText !== undefined) event.envelopeSettings.subtitleText = subtitleText;
   if (buttonText !== undefined) event.envelopeSettings.buttonText = buttonText;
   if (fontFamily !== undefined) event.envelopeSettings.fontFamily = fontFamily;
+  if (fontSizeTitle !== undefined) event.envelopeSettings.fontSizeTitle = fontSizeTitle;
+  if (fontSizeSubtitle !== undefined) event.envelopeSettings.fontSizeSubtitle = fontSizeSubtitle;
+  if (textColor !== undefined) event.envelopeSettings.textColor = textColor;
 
   await event.save();
   res.json(event);

@@ -1,4 +1,4 @@
-import { BG_TYPE_OPTIONS } from '../../sections/sectionDefs'
+import { BG_TYPE_OPTIONS, FONT_SIZE_OPTIONS } from '../../sections/sectionDefs'
 import ImageUploadField from './ImageUploadField'
 import { BRAND } from '../../utils/brand'
 
@@ -78,6 +78,54 @@ function EnvelopePanel({ eventId, settings, onChange }) {
               onChange={(e) => update({ buttonText: e.target.value })}
               className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm text-neutral-400 mb-1">Tamaño del texto</label>
+              <select
+                value={settings.fontSizeTitle || 'text-base'}
+                onChange={(e) => update({ fontSizeTitle: e.target.value })}
+                className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+              >
+                {FONT_SIZE_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm text-neutral-400 mb-1">Tamaño del subtítulo</label>
+              <select
+                value={settings.fontSizeSubtitle || 'text-sm'}
+                onChange={(e) => update({ fontSizeSubtitle: e.target.value })}
+                className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+              >
+                {FONT_SIZE_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <ColorField
+              label="Color del texto en la solapa"
+              value={settings.textColor || '#ffffff'}
+              onChange={(v) => update({ textColor: v })}
+            />
+            {settings.textColor && (
+              <button
+                type="button"
+                onClick={() => update({ textColor: '' })}
+                className="text-xs text-neutral-500 hover:text-white transition mt-1"
+              >
+                Restaurar color automático
+              </button>
+            )}
           </div>
 
           <div>

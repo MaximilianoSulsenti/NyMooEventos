@@ -96,6 +96,9 @@ const eventSchema = new mongoose.Schema(
       subtitleText: { type: String, default: '' },
       buttonText: { type: String, default: 'Abrir invitación' },
       fontFamily: { type: String, default: 'sans' },
+      fontSizeTitle: { type: String, default: 'text-base' },
+      fontSizeSubtitle: { type: String, default: 'text-sm' },
+      textColor: { type: String, default: '' },
     },
     brandingSettings: {
       myBrand: { type: brandSchema, default: () => ({}) },
