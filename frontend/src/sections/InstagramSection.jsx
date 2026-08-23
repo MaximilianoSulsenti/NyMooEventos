@@ -1,6 +1,7 @@
 import { motion } from 'motion/react'
 import Button from '../components/ui/Button'
 import AnimatedIcon from '../components/AnimatedIcon'
+import { InstagramIcon } from '../components/icons/BrandIcons'
 import { glassStyle, glassBlurClass } from '../utils/glass'
 import { cn } from '../utils/cn'
 import { CARD_REVEAL } from '../utils/motionPresets'
@@ -9,18 +10,6 @@ import { CARD_REVEAL } from '../utils/motionPresets'
 // de acento propio en el editor.
 const INSTAGRAM_GRADIENT = 'linear-gradient(135deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5)'
 const INSTAGRAM_PINK = '#d62976'
-
-// lucide-react sacó los íconos de marcas (Instagram incluido) de su catálogo;
-// se dibuja el glifo a mano para no depender de un ícono genérico fuera de tema.
-function InstagramGlyph({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-    </svg>
-  )
-}
 
 function InstagramSection({ config, styles }) {
   if (!config.instagramUrl) return null
@@ -48,7 +37,7 @@ function InstagramSection({ config, styles }) {
         <div className="absolute top-0 inset-x-0 h-[2px]" style={{ background: gradient }} />
 
         <AnimatedIcon
-          icon={InstagramGlyph}
+          icon={InstagramIcon}
           className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg"
           style={{ background: gradient }}
           iconClassName="w-7 h-7 text-white"
@@ -71,7 +60,7 @@ function InstagramSection({ config, styles }) {
           rel="noopener noreferrer"
           primaryColor={config.accentColor || INSTAGRAM_PINK}
         >
-          <InstagramGlyph className="w-4 h-4" />
+          <InstagramIcon className="w-4 h-4" />
           {config.buttonText || 'Ver Instagram del evento'}
         </Button>
       </motion.div>

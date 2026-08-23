@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { motion } from 'motion/react'
-import { HeartHandshake, MessageCircle } from 'lucide-react'
+import { HeartHandshake } from 'lucide-react'
 import RsvpForm from '../components/RsvpForm'
 import PremiumRsvpGate from '../components/PremiumRsvpGate'
 import Button from '../components/ui/Button'
 import AnimatedIcon from '../components/AnimatedIcon'
+import { WhatsappIcon } from '../components/icons/BrandIcons'
 import { glassStyle, glassBlurClass } from '../utils/glass'
 import { cn } from '../utils/cn'
 import { CARD_REVEAL } from '../utils/motionPresets'
@@ -45,7 +46,7 @@ function RSVPSection({ event, config, appearance, styles }) {
         <div className="absolute top-0 inset-x-0 h-[2px]" style={{ background: accentColor }} />
 
         <AnimatedIcon
-          icon={isWhatsapp ? MessageCircle : HeartHandshake}
+          icon={isWhatsapp ? WhatsappIcon : HeartHandshake}
           className="w-12 h-12 rounded-full flex items-center justify-center"
           style={{ background: `${accentColor}22`, color: accentColor }}
           iconClassName="w-6 h-6"
@@ -59,7 +60,7 @@ function RSVPSection({ event, config, appearance, styles }) {
         </p>
 
         <Button type="button" onClick={() => setIsOpen(true)} primaryColor={accentColor}>
-          {isWhatsapp && <MessageCircle className="w-4 h-4" />}
+          {isWhatsapp && <WhatsappIcon className="w-4 h-4" />}
           {isWhatsapp ? 'Confirmar por WhatsApp' : 'Confirmar asistencia'}
         </Button>
       </motion.div>

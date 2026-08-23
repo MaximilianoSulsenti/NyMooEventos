@@ -1,11 +1,17 @@
 import { motion } from 'motion/react'
-import { MessageCircle, Mail, Phone, Music2, Globe } from 'lucide-react'
+import { Mail, Phone, Music2, Globe } from 'lucide-react'
+import { InstagramIcon, WhatsappIcon, FacebookIcon, TiktokIcon, SpotifyIcon, YoutubeIcon } from '../components/icons/BrandIcons'
 
 const ICON_RULES = [
-  { keywords: ['whatsapp', 'wsp'], icon: MessageCircle },
+  { keywords: ['whatsapp', 'wsp'], icon: WhatsappIcon },
+  { keywords: ['instagram', 'insta'], icon: InstagramIcon },
+  { keywords: ['facebook', 'fb'], icon: FacebookIcon },
+  { keywords: ['tiktok'], icon: TiktokIcon },
+  { keywords: ['spotify'], icon: SpotifyIcon },
+  { keywords: ['youtube'], icon: YoutubeIcon },
   { keywords: ['mail', 'correo', 'email'], icon: Mail },
   { keywords: ['tel', 'phone', 'llamar', 'contacto'], icon: Phone },
-  { keywords: ['spotify', 'tiktok', 'playlist', 'musica', 'música'], icon: Music2 },
+  { keywords: ['playlist', 'musica', 'música'], icon: Music2 },
 ]
 
 function pickSocialIcon(label = '') {
