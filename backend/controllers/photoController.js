@@ -6,6 +6,25 @@ const { containsBannedWord } = require('../utils/moderationFilter');
 const MAX_VIDEO_BYTES = 20 * 1024 * 1024;
 const MAX_VIDEO_SECONDS = 15.5; // pequeño margen sobre el límite de 15s del frontend
 
+// Tope de archivos por evento, para no comerse de un saque la cuota del plan
+// gratis de Cloudinary (compartida entre storage/banda/transformaciones) si
+// alguien sube de más o hace spam. Es un límite blando pensado para el caso
+// raro, no para una boda real -- ninguna debería acercarse a esto.
+const MAX_PHOTOS_PER_EVENT = 600;
+const MAX_VIDEOS_PER_EVENT = 80;
+
+function getUploadCapMessage(assetType) {
+  return assetType === 'video'
+    ? 'Este evento ya alcanzó el límite de videos permitidos.'
+    : 'Este evento ya alcanzó el límite de fotos permitidas.';
+}
+
+async function isOverUploadCap(eventId, assetType) {
+  const max = assetType === 'video' ? MAX_VIDEOS_PER_EVENT : MAX_PHOTOS_PER_EVENT;
+  const count = await Photo.countDocuments({ eventId, assetType });
+  return count >= max;
+}
+
 function escapeRegex(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -56,6 +75,9 @@ async function signUpload(req, res) {
   if (assetType === 'video' && !event.gallerySettings?.allowVideos) {
     return res.status(403).json({ message: 'La subida de videos no está habilitada para este evento' });
   }
+  if (await isOverUploadCap(event._id, assetType)) {
+    return res.status(403).json({ message: getUploadCapMessage(assetType) });
+  }
 
   const folder = getGalleryFolder(event, assetType);
   const timestamp = Math.round(Date.now() / 1000);
@@ -105,6 +127,12 @@ async function registerPhoto(req, res) {
   }
   if (!event.activeModules.liveGallery && !event.activeModules.photoCollection) {
     return res.status(403).json({ message: 'El módulo de galería no está activo para este evento' });
+  }
+  // Mismo tope que en signUpload -- esto es la segunda barrera (por si una
+  // firma ya emitida se usa después de que otra subida llenó el cupo), la
+  // que de verdad evita que se gaste cuota de Cloudinary es la de arriba.
+  if (await isOverUploadCap(event._id, assetType)) {
+    return res.status(403).json({ message: getUploadCapMessage(assetType) });
   }
 
   if (assetType === 'video') {
