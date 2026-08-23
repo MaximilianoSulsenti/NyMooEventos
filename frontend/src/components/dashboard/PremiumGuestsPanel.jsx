@@ -27,7 +27,7 @@ function CopyButton({ text, label, icon: Icon }) {
     <button
       type="button"
       onClick={handleCopy}
-      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition shrink-0"
+      className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition whitespace-nowrap"
       style={{
         background: copied ? BRAND.lime : 'rgba(255,255,255,0.08)',
         color: copied ? getContrastTextColor(BRAND.lime) : 'rgba(255,255,255,0.7)',
@@ -183,7 +183,7 @@ function PremiumGuestsPanel({ eventSlug, eventName, token, guests, onGuestsChang
                   <p className="w-full min-w-0 truncate rounded-lg bg-neutral-800 border border-white/10 px-3 py-1.5 text-xs text-white/60">
                     {link}
                   </p>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 w-full sm:w-auto">
                     <CopyButton text={message} label="Copiar mensaje" icon={MessageSquareText} />
                     <CopyButton text={link} label="Copiar link" icon={Copy} />
                   </div>

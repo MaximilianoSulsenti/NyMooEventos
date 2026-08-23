@@ -16,13 +16,19 @@ function slugifyName(value) {
     .slice(0, 40);
 }
 
-// Genera un código de invitación único dentro del evento (ej. "familia-perez-4f2a"),
-// legible para poder compartirlo a mano si hiciera falta. Reintenta con otro
-// sufijo random en el caso, muy poco probable, de que ya exista.
+// Genera un código de invitación único dentro del evento, legible para
+// poder compartirlo a mano si hiciera falta. El caso normal (nombre único
+// en la lista) da un código limpio como "familia-perez", sin nada random
+// -- el sufijo solo se agrega si hace falta para desempatar dos invitados
+// con el mismo nombre.
 async function generateUniquePasscode(eventId, name) {
   const base = slugifyName(name) || 'invitado';
+
+  const baseTaken = await Guest.exists({ eventId, passcode: base });
+  if (!baseTaken) return base;
+
   for (let attempt = 0; attempt < 10; attempt++) {
-    const suffix = crypto.randomBytes(3).toString('hex');
+    const suffix = crypto.randomBytes(2).toString('hex');
     const candidate = `${base}-${suffix}`;
     // eslint-disable-next-line no-await-in-loop
     const exists = await Guest.exists({ eventId, passcode: candidate });
