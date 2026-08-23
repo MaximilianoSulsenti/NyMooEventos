@@ -1,10 +1,13 @@
 import { motion } from 'motion/react'
+import { Sparkles } from 'lucide-react'
+import usePremiumGuest from '../hooks/usePremiumGuest'
 
 function Hero({ event, config, appearance, styles }) {
   const title = config.title || event.eventName
   const subtitle = config.subtitle || ''
   const titleSize = config.fontSizeTitle || 'text-4xl'
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
+  const premiumGuest = usePremiumGuest(event)
 
   return (
     <section className={`min-h-[70vh] flex flex-col items-center justify-center text-center px-6 ${styles.fontClass}`}>
@@ -13,6 +16,22 @@ function Hero({ event, config, appearance, styles }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
+        {premiumGuest && (
+          <motion.p
+            initial={{ opacity: 0, y: -10, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full text-sm font-medium"
+            style={{
+              background: `${appearance.primaryColor}22`,
+              color: appearance.primaryColor,
+              border: `1px solid ${appearance.primaryColor}40`,
+            }}
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            ¡Hola, {premiumGuest.name}! Están cordialmente invitados
+          </motion.p>
+        )}
         <p className="uppercase tracking-[0.3em] text-xs mb-4" style={{ color: appearance.primaryColor }}>
           Te invitamos a celebrar
         </p>

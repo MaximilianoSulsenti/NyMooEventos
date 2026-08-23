@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { LayoutDashboard, ToggleLeft, Link2, Pencil, ChevronLeft, Users, UserCheck, UserX, Clock } from 'lucide-react'
+import { LayoutDashboard, ToggleLeft, Link2, Crown, Pencil, ChevronLeft, Users, UserCheck, UserX, Clock } from 'lucide-react'
 import api from '../services/api'
 import { getStoredUser } from '../services/auth'
 import PageBackground from '../components/PageBackground'
@@ -9,6 +9,7 @@ import StatCard from '../components/dashboard/StatCard'
 import ModuleToggle from '../components/dashboard/ModuleToggle'
 import GuestsTable from '../components/dashboard/GuestsTable'
 import QuickAccessLinks from '../components/dashboard/QuickAccessLinks'
+import PremiumGuestsPanel from '../components/dashboard/PremiumGuestsPanel'
 import { BRAND } from '../utils/brand'
 
 const NAV_SECTIONS = [
@@ -85,6 +86,13 @@ function Dashboard() {
     }
   }, [eventId, navigate])
 
+  function refreshGuests() {
+    api
+      .get(`/guests/event/${eventId}`)
+      .then(({ data }) => setGuests(data))
+      .catch(() => {})
+  }
+
   async function handleToggleModule(moduleKey, value) {
     if (!isAdmin) return
 
@@ -137,6 +145,11 @@ function Dashboard() {
   const declinados = rsvpGuests.filter((g) => g.status === 'declinado').length
   const pendientes = rsvpGuests.filter((g) => g.status === 'pendiente').length
 
+  const isPremiumRsvp = event.rsvpSettings?.rsvpType === 'premium_personalizado'
+  const navSections = isPremiumRsvp
+    ? [...NAV_SECTIONS, { key: 'vip', label: 'Invitados VIP', icon: Crown }]
+    : NAV_SECTIONS
+
   return (
     <div className="relative min-h-screen w-full text-white">
       <PageBackground settings={event.uploadPageSettings} />
@@ -166,7 +179,7 @@ function Dashboard() {
             </Link>
           </div>
           <nav className="flex flex-col gap-1">
-            {NAV_SECTIONS.map((section) => {
+            {navSections.map((section) => {
               const Icon = section.icon
               const isActive = activeSection === section.key
               return (
@@ -247,6 +260,15 @@ function Dashboard() {
             <section className="max-w-2xl">
               <QuickAccessLinks eventSlug={event.eventSlug} clientAccessToken={event.clientAccessToken} />
             </section>
+          )}
+
+          {activeSection === 'vip' && isPremiumRsvp && (
+            <PremiumGuestsPanel
+              eventId={eventId}
+              eventSlug={event.eventSlug}
+              guests={guests}
+              onGuestsChange={refreshGuests}
+            />
           )}
         </GlassPanel>
       </div>

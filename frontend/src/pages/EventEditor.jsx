@@ -8,6 +8,7 @@ import BrandingPanel from '../components/editor/BrandingPanel'
 import UploadPageStylePanel from '../components/editor/UploadPageStylePanel'
 import GallerySettingsPanel from '../components/editor/GallerySettingsPanel'
 import MusicSettingsPanel from '../components/editor/MusicSettingsPanel'
+import RsvpSettingsPanel from '../components/editor/RsvpSettingsPanel'
 import SectionsPanel from '../components/editor/SectionsPanel'
 import SectionRenderer from '../sections/SectionRenderer'
 import GlobalBackground from '../sections/GlobalBackground'
@@ -30,6 +31,7 @@ function EventEditor() {
   const [uploadPageSettings, setUploadPageSettings] = useState(null)
   const [gallerySettings, setGallerySettings] = useState(null)
   const [musicSettings, setMusicSettings] = useState(null)
+  const [rsvpSettings, setRsvpSettings] = useState(null)
   const [sections, setSections] = useState(null)
   const [savedSnapshot, setSavedSnapshot] = useState(null)
   const [loadState, setLoadState] = useState('loading') // loading | ready | error
@@ -47,6 +49,7 @@ function EventEditor() {
         setUploadPageSettings(data.uploadPageSettings)
         setGallerySettings(data.gallerySettings)
         setMusicSettings(data.musicSettings)
+        setRsvpSettings(data.rsvpSettings)
         setSections(data.sections)
         setSavedSnapshot(
           snapshotOf({
@@ -56,6 +59,7 @@ function EventEditor() {
             uploadPageSettings: data.uploadPageSettings,
             gallerySettings: data.gallerySettings,
             musicSettings: data.musicSettings,
+            rsvpSettings: data.rsvpSettings,
             sections: data.sections,
           })
         )
@@ -66,8 +70,16 @@ function EventEditor() {
 
   const hasUnsavedChanges =
     savedSnapshot !== null &&
-    snapshotOf({ appearance, envelopeSettings, branding, uploadPageSettings, gallerySettings, musicSettings, sections }) !==
-      savedSnapshot
+    snapshotOf({
+      appearance,
+      envelopeSettings,
+      branding,
+      uploadPageSettings,
+      gallerySettings,
+      musicSettings,
+      rsvpSettings,
+      sections,
+    }) !== savedSnapshot
 
   useEffect(() => {
     function handleBeforeUnload(event) {
@@ -89,6 +101,7 @@ function EventEditor() {
         api.patch(`/events/${eventId}/upload-page`, uploadPageSettings),
         api.patch(`/events/${eventId}/gallery-settings`, gallerySettings),
         api.patch(`/events/${eventId}/music`, musicSettings),
+        api.patch(`/events/${eventId}/rsvp-settings`, rsvpSettings),
         api.patch(`/events/${eventId}/sections`, { sections }),
       ]
       if (isAdmin) {
@@ -96,7 +109,16 @@ function EventEditor() {
       }
       await Promise.all(calls)
       setSavedSnapshot(
-        snapshotOf({ appearance, envelopeSettings, branding, uploadPageSettings, gallerySettings, musicSettings, sections })
+        snapshotOf({
+          appearance,
+          envelopeSettings,
+          branding,
+          uploadPageSettings,
+          gallerySettings,
+          musicSettings,
+          rsvpSettings,
+          sections,
+        })
       )
       setSaveState('saved')
       setTimeout(() => setSaveState('idle'), 1500)
@@ -110,7 +132,16 @@ function EventEditor() {
     try {
       await api.patch(`/events/${eventId}/sections`, { sections })
       setSavedSnapshot(
-        snapshotOf({ appearance, envelopeSettings, branding, uploadPageSettings, gallerySettings, musicSettings, sections })
+        snapshotOf({
+          appearance,
+          envelopeSettings,
+          branding,
+          uploadPageSettings,
+          gallerySettings,
+          musicSettings,
+          rsvpSettings,
+          sections,
+        })
       )
       setSectionSaveState('saved')
       setTimeout(() => setSectionSaveState('idle'), 1500)
@@ -192,6 +223,11 @@ function EventEditor() {
         <div>
           <h2 className="text-sm uppercase tracking-widest text-neutral-500 mb-3">Música de fondo</h2>
           <MusicSettingsPanel eventId={eventId} settings={musicSettings} onChange={setMusicSettings} />
+        </div>
+
+        <div>
+          <h2 className="text-sm uppercase tracking-widest text-neutral-500 mb-3">Plan de confirmación (RSVP)</h2>
+          <RsvpSettingsPanel settings={rsvpSettings} onChange={setRsvpSettings} />
         </div>
 
         <div>

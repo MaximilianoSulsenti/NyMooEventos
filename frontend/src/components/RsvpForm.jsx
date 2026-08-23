@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { X, Check } from 'lucide-react'
+import { X, Check, Lock } from 'lucide-react'
 import api from '../services/api'
 import Button from './ui/Button'
 import { shadeColor } from '../utils/color'
@@ -16,9 +16,18 @@ function parseDietaryOptions(raw = '') {
     .filter(Boolean)
 }
 
-function RsvpForm({ eventSlug, primaryColor = '#a855f7', dietaryOptions, extraQuestions, onClose }) {
+function RsvpForm({
+  eventSlug,
+  primaryColor = '#a855f7',
+  dietaryOptions,
+  extraQuestions,
+  onClose,
+  guestId,
+  lockedName,
+  maxCompanions,
+}) {
   useLockBodyScroll()
-  const [name, setName] = useState('')
+  const [name, setName] = useState(lockedName || '')
   const [attending, setAttending] = useState('confirmado')
   const [dietaryRestrictions, setDietaryRestrictions] = useState('')
   const [customDietary, setCustomDietary] = useState('')
@@ -44,6 +53,7 @@ function RsvpForm({ eventSlug, primaryColor = '#a855f7', dietaryOptions, extraQu
     try {
       await api.post('/guests/rsvp', {
         eventSlug,
+        guestId,
         name: name.trim(),
         status: attending,
         dietaryRestrictions: finalDietary,
@@ -108,13 +118,20 @@ function RsvpForm({ eventSlug, primaryColor = '#a855f7', dietaryOptions, extraQu
 
               <div>
                 <label className="block text-sm text-neutral-400 mb-1">Nombre completo</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  className={inputClass}
-                />
+                {lockedName ? (
+                  <div className="flex items-center gap-2 rounded-lg bg-neutral-800/60 border border-white/10 px-3 py-2 text-neutral-300">
+                    <Lock className="w-3.5 h-3.5 shrink-0 text-neutral-500" />
+                    <span className="truncate">{name}</span>
+                  </div>
+                ) : (
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    className={inputClass}
+                  />
+                )}
               </div>
 
               <div>
@@ -164,12 +181,19 @@ function RsvpForm({ eventSlug, primaryColor = '#a855f7', dietaryOptions, extraQu
               </div>
 
               <div>
-                <label className="block text-sm text-neutral-400 mb-1">Cantidad de acompañantes</label>
+                <label className="block text-sm text-neutral-400 mb-1">
+                  Cantidad de acompañantes
+                  {maxCompanions != null && <span className="text-neutral-500"> (cupo máximo: {maxCompanions})</span>}
+                </label>
                 <input
                   type="number"
                   min="0"
+                  max={maxCompanions ?? undefined}
                   value={companionsCount}
-                  onChange={(e) => setCompanionsCount(e.target.value)}
+                  onChange={(e) => {
+                    const value = Number(e.target.value)
+                    setCompanionsCount(maxCompanions != null ? Math.min(value, maxCompanions) : value)
+                  }}
                   className={inputClass}
                 />
               </div>

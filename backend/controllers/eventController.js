@@ -50,7 +50,7 @@ async function getEventBySlug(req, res) {
   const { eventSlug } = req.params;
 
   const event = await Event.findOne({ eventSlug }).select(
-    'eventName eventSlug date activeModules appearance sections gallerySettings envelopeSettings brandingSettings uploadPageSettings musicSettings'
+    'eventName eventSlug date activeModules appearance sections gallerySettings envelopeSettings brandingSettings uploadPageSettings musicSettings rsvpSettings'
   );
 
   if (!event) {

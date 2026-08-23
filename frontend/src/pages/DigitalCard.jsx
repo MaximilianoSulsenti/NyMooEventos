@@ -6,6 +6,7 @@ import SectionRenderer from '../sections/SectionRenderer'
 import GlobalBackground from '../sections/GlobalBackground'
 import Envelope from '../components/Envelope'
 import MusicPlayerWidget from '../components/MusicPlayerWidget'
+import ScrollProgressBar from '../components/ScrollProgressBar'
 import { getThemeStyles } from '../sections/theming'
 
 function DigitalCard() {
@@ -79,6 +80,8 @@ function DigitalCard() {
 
   return (
     <div className={`relative min-h-screen w-full overflow-x-hidden text-white ${styles.fontClass}`}>
+      <ScrollProgressBar color={appearance.primaryColor} />
+
       {appearance.useGlobalBackground ? (
         <GlobalBackground appearance={appearance} />
       ) : (
