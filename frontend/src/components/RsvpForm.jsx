@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { X, Check, Lock } from 'lucide-react'
 import api from '../services/api'
@@ -59,6 +59,15 @@ function RsvpForm({
   const [extraAnswers, setExtraAnswers] = useState({})
   const [status, setStatus] = useState('idle') // idle | sending | success | error
   const [errorMessage, setErrorMessage] = useState('')
+
+  // Después de confirmar, el modal se cierra solo para que se vuelva a ver
+  // la invitación -- antes se quedaba trabado en la pantalla de "gracias"
+  // hasta que alguien tocara la X a propósito.
+  useEffect(() => {
+    if (status !== 'success') return undefined
+    const timeout = setTimeout(onClose, 3500)
+    return () => clearTimeout(timeout)
+  }, [status, onClose])
 
   const dietaryPresets = parseDietaryOptions(dietaryOptions)
   const questions = Array.isArray(extraQuestions) ? extraQuestions.filter((q) => q.label) : []
