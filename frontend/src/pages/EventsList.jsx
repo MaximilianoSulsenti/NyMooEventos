@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
-import { LogOut, Plus, Calendar, Pencil, Trash2 } from 'lucide-react'
+import { LogOut, Plus, Calendar, Pencil, Trash2, Receipt } from 'lucide-react'
 import api from '../services/api'
 import { clearSession, getStoredUser } from '../services/auth'
 import BrandBackground from '../components/BrandBackground'
@@ -90,14 +90,25 @@ function EventsList() {
               <p className="text-white/50 text-sm">Hola, {user?.name}</p>
               <h1 className="text-2xl font-semibold">Eventos</h1>
             </div>
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="flex items-center gap-1.5 text-sm text-white/50 hover:text-white transition"
-            >
-              <LogOut className="w-4 h-4" />
-              Cerrar sesión
-            </button>
+            <div className="flex items-center gap-4">
+              {user?.isAdmin && (
+                <Link
+                  to="/pedidos"
+                  className="flex items-center gap-1.5 text-sm text-white/50 hover:text-white transition"
+                >
+                  <Receipt className="w-4 h-4" />
+                  Pedidos
+                </Link>
+              )}
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex items-center gap-1.5 text-sm text-white/50 hover:text-white transition"
+              >
+                <LogOut className="w-4 h-4" />
+                Cerrar sesión
+              </button>
+            </div>
           </div>
 
           {loadState === 'loading' && <p className="text-white/40">Cargando...</p>}

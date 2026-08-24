@@ -4,9 +4,8 @@ import { BRAND } from './brand'
 // número de WhatsApp, el Instagram y los packs en toda la página de una
 // sola vez.
 export const LANDING_CONTACT = {
-  // TODO: reemplazar por el número real en formato wa.me (código de país +
-  // área + número, sin 0 ni 15). Ejemplo Argentina/Buenos Aires: 5491122334455
-  whatsappNumber: '5491100000000',
+  // Número oficial de WhatsApp de Nymoo (contacto corporativo).
+  whatsappNumber: '5493416151235',
   // TODO: reemplazar por el link real de Instagram del negocio
   instagramUrl: 'https://instagram.com/nymoo.eventos',
 }

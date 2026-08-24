@@ -12,6 +12,9 @@ import StatsDashboard from './pages/StatsDashboard'
 import GalleryControl from './pages/GalleryControl'
 import PublicAlbum from './pages/PublicAlbum'
 import MessageBookPrint from './pages/MessageBookPrint'
+import Checkout from './pages/Checkout'
+import CheckoutSuccess from './pages/CheckoutSuccess'
+import OrdersDashboard from './pages/OrdersDashboard'
 
 function NotFound() {
   return (
@@ -60,6 +63,16 @@ function App() {
       <Route path="/evento/:eventSlug/gallery-control" element={<GalleryControl />} />
       <Route path="/evento/:eventSlug/album-publico" element={<PublicAlbum />} />
       <Route path="/evento/:eventSlug/libro-de-firmas" element={<MessageBookPrint />} />
+      <Route path="/checkout" element={<Checkout />} />
+      <Route path="/checkout/success" element={<CheckoutSuccess />} />
+      <Route
+        path="/pedidos"
+        element={
+          <ProtectedRoute>
+            <OrdersDashboard />
+          </ProtectedRoute>
+        }
+      />
       <Route path="*" element={<NotFound />} />
     </Routes>
   )

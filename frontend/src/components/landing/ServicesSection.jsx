@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { Check, CreditCard, Layers } from 'lucide-react'
 import { WhatsappIcon } from '../icons/BrandIcons'
@@ -87,19 +88,11 @@ function PackCard({ pack, index }) {
         </ul>
 
         <div className="flex flex-col gap-2.5">
-          {/* Todavía no hay links reales de Mercado Pago Checkout Pro -- este
-              botón redirige a WhatsApp con el pack pre-cargado hasta tenerlos;
-              cuando existan, cambiar el href por el link de pago del pack. */}
-          <Button
-            as="a"
-            href={buildWhatsappUrl(
-              `¡Hola Nymoo! Quiero pagar el paquete ${pack.name} (${pack.price}), ¿me pasás el link de Mercado Pago?`,
-              LANDING_CONTACT.whatsappNumber
-            )}
-            target="_blank"
-            rel="noreferrer"
-            className="w-full py-2.5"
-          >
+          {/* Lleva al checkout propio -- ahí el pedido queda guardado en
+              MongoDB y, si hay credenciales reales de Mercado Pago
+              configuradas, redirige a la pasarela; si no, cae a WhatsApp con
+              el pedido ya cargado (ver Checkout.jsx / orderController.js). */}
+          <Button as={Link} to={`/checkout?pack=${pack.id}`} className="w-full py-2.5">
             <span className="flex flex-col items-center leading-tight">
               <span className="flex items-center gap-2 text-sm font-semibold">
                 <CreditCard className="w-4 h-4" />
