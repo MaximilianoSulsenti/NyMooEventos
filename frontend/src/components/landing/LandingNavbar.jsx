@@ -49,7 +49,7 @@ function LandingNavbar() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/80 backdrop-blur-xl">
+    <header className="border-b border-white/10 bg-neutral-950/80 backdrop-blur-xl">
       <div className="max-w-6xl mx-auto flex items-center justify-between px-4 md:px-8 py-2 sm:py-2.5">
         <button type="button" onClick={scrollToTop} aria-label="Ir al inicio" className="shrink-0">
           <img src="/img/nymologo-navbar.png" alt="Nymoo Eventos Digitales" className="h-14 sm:h-16 w-auto" />

@@ -17,6 +17,16 @@ body {
   overflow-x: hidden;
 }
 
+/* Compensa el header fixed de la landing (cintillo + navbar) al saltar a un
+   ancla desde el navbar, así la sección no queda tapada debajo.
+   --landing-header-h la setea LandingPage.jsx con la altura real. */
+#servicios,
+#que-incluye,
+#beneficios,
+#faq {
+  scroll-margin-top: var(--landing-header-h, 0px);
+}
+
 .font-display {
   font-family: 'Playfair Display', ui-serif, Georgia, serif;
 }

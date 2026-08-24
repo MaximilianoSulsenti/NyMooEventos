@@ -7,6 +7,13 @@ import { LANDING_CONTACT, buildWhatsappUrl } from '../../utils/landingConfig'
 
 const WHATSAPP_MESSAGE = '¡Hola Nymoo! Quiero armar la invitación digital de mi evento.'
 
+const gradientTextStyle = {
+  backgroundImage: `linear-gradient(90deg, ${BRAND.blue}, ${BRAND.violet}, ${BRAND.pink})`,
+  WebkitBackgroundClip: 'text',
+  backgroundClip: 'text',
+  color: 'transparent',
+}
+
 function HeroSection() {
   return (
     <section className="relative overflow-hidden min-h-[85vh] flex items-center justify-center text-center px-4 md:px-8">
@@ -51,29 +58,26 @@ function HeroSection() {
           style={{ background: `${BRAND.lime}22`, color: BRAND.lime, border: `1px solid ${BRAND.lime}40` }}
         >
           <Sparkles className="w-3.5 h-3.5" />
-          Invitaciones digitales que se sienten premium
+          Tu Evento Desde Todas Las Miradas 
         </motion.p>
 
         <h1
-          className="font-extrabold tracking-tight mb-5 leading-tight"
+          className="font-extrabold tracking-tight mb-4 leading-tight"
           style={{ fontSize: 'clamp(2.25rem, 6vw, 3.75rem)' }}
         >
-          La invitación de tu evento,{' '}
-          <span
-            style={{
-              backgroundImage: `linear-gradient(90deg, ${BRAND.blue}, ${BRAND.violet}, ${BRAND.pink})`,
-              WebkitBackgroundClip: 'text',
-              backgroundClip: 'text',
-              color: 'transparent',
-            }}
-          >
-            viva en el celular
-          </span>{' '}
-          de cada invitado
+          Convertimos tu evento en una{' '}
+          <span style={gradientTextStyle}>experiencia digital</span>
         </h1>
 
         <p
-          className="text-white/60 mx-auto mb-9"
+          className="font-medium text-white/85 mx-auto mb-5"
+          style={{ fontSize: 'clamp(1.05rem, 2.4vw, 1.4rem)', maxWidth: '34rem' }}
+        >
+          La invitación de tu evento, viva en el celular de cada invitado.
+        </p>
+
+        <p
+          className="text-white/75 mx-auto mb-9"
           style={{ fontSize: 'clamp(0.95rem, 2vw, 1.15rem)', maxWidth: '38rem' }}
         >
           Diseñamos y programamos tu tarjeta digital interactiva: cuenta regresiva, ubicación, confirmación de

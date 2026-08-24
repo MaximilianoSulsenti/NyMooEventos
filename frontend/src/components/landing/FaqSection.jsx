@@ -56,7 +56,7 @@ function FaqItem({ faq, isOpen, onToggle }) {
             transition={{ duration: 0.25 }}
             className="overflow-hidden"
           >
-            <p className="px-5 pb-4 text-sm text-white/60 leading-relaxed">{faq.answer}</p>
+            <p className="px-5 pb-4 text-sm text-white/75 leading-relaxed">{faq.answer}</p>
           </motion.div>
         )}
       </AnimatePresence>

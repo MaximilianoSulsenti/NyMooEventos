@@ -32,7 +32,7 @@ function PackCard({ pack, index }) {
         </div>
 
         <h3 className="text-lg font-bold mb-1.5">{pack.name}</h3>
-        <p className="text-white/50 text-sm mb-4">{pack.tagline}</p>
+        <p className="text-white/70 text-sm mb-4">{pack.tagline}</p>
         <p className="text-3xl font-extrabold mb-5" style={{ color: pack.accentColor }}>
           {pack.price}
         </p>

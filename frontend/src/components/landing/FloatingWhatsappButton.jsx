@@ -5,37 +5,60 @@ import { LANDING_CONTACT, buildWhatsappUrl } from '../../utils/landingConfig'
 
 const WHATSAPP_MESSAGE = '¡Hola Nymoo! Quiero más información.'
 
-// Las burbujitas aparecen una después de la otra apenas se carga la landing
-// (para llamar la atención sobre el botón), y después se quedan ocultas --
-// el botón sigue disponible para clickear en cualquier momento.
+// Las burbujitas aparecen una después de la otra poco después de cargar la
+// landing (para llamar la atención sobre el botón), se ocultan, y el ciclo
+// se repite cada tanto -- sin ser invasivo -- para volver a llamar la
+// atención de alguien que se quedó navegando un rato largo.
 const TEASER_MESSAGES = ['Estamos para ayudarte', '¿Comenzamos? 👋']
+const FIRST_DELAY_MS = 1400
+const HOLD_MS = 3000
+const IDLE_BETWEEN_CYCLES_MS = 35000
 
 function ChatTeaser() {
-  const [step, setStep] = useState(0) // 0 = nada, 1/2 = índice+1 del mensaje, 3 = terminado
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
-    const timers = [
-      setTimeout(() => setStep(1), 1200),
-      setTimeout(() => setStep(2), 4200),
-      setTimeout(() => setStep(3), 7200),
-    ]
-    return () => timers.forEach(clearTimeout)
-  }, [])
+    let cancelled = false
+    let timeoutId
 
-  const message = step === 1 ? TEASER_MESSAGES[0] : step === 2 ? TEASER_MESSAGES[1] : null
+    function after(ms, fn) {
+      timeoutId = setTimeout(() => {
+        if (!cancelled) fn()
+      }, ms)
+    }
+
+    function runCycle(delay) {
+      after(delay, () => {
+        setMessage(TEASER_MESSAGES[0])
+        after(HOLD_MS, () => {
+          setMessage(TEASER_MESSAGES[1])
+          after(HOLD_MS, () => {
+            setMessage(null)
+            runCycle(IDLE_BETWEEN_CYCLES_MS)
+          })
+        })
+      })
+    }
+
+    runCycle(FIRST_DELAY_MS)
+    return () => {
+      cancelled = true
+      clearTimeout(timeoutId)
+    }
+  }, [])
 
   return (
     <AnimatePresence mode="wait">
       {message && (
         <motion.div
-          key={step}
+          key={message}
           initial={{ opacity: 0, y: 10, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 6, scale: 0.9 }}
           transition={{ duration: 0.3, ease: 'easeOut' }}
-          className="absolute bottom-full right-0 mb-3 max-w-[13rem]"
+          className="absolute bottom-full right-0 mb-3 pointer-events-none"
         >
-          <div className="relative bg-neutral-900/95 border border-white/10 text-white text-sm font-medium px-4 py-2.5 rounded-2xl rounded-br-md shadow-2xl backdrop-blur-sm">
+          <div className="relative whitespace-nowrap bg-neutral-900/95 border border-white/10 text-white text-sm font-medium px-4 py-2.5 rounded-2xl rounded-br-md shadow-2xl backdrop-blur-sm">
             {message}
             <span className="absolute -bottom-1.5 right-5 w-3 h-3 bg-neutral-900/95 border-r border-b border-white/10 rotate-45" />
           </div>

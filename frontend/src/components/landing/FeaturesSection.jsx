@@ -31,7 +31,7 @@ function FeatureItem({ feature, index }) {
       />
       <div>
         <p className="font-semibold text-sm mb-1">{feature.label}</p>
-        <p className="text-white/50 text-xs leading-relaxed">{feature.description}</p>
+        <p className="text-white/70 text-xs leading-relaxed">{feature.description}</p>
       </div>
     </motion.div>
   )
@@ -45,7 +45,7 @@ function FeaturesSection() {
         <h2 className="font-extrabold tracking-tight mb-4" style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)' }}>
           Componentes que activás cuando querés
         </h2>
-        <p className="text-white/50 max-w-xl mx-auto text-sm md:text-base">
+        <p className="text-white/70 max-w-xl mx-auto text-sm md:text-base">
           Cada invitación se arma con los módulos que necesites, todos editables desde el panel.
         </p>
       </div>

@@ -29,7 +29,7 @@ function BenefitCard({ benefit, index }) {
       </div>
       <div>
         <p className="font-semibold text-sm mb-1">{benefit.title}</p>
-        <p className="text-white/50 text-xs leading-relaxed">{benefit.description}</p>
+        <p className="text-white/70 text-xs leading-relaxed">{benefit.description}</p>
       </div>
     </motion.div>
   )

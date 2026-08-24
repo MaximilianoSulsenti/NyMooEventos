@@ -36,7 +36,7 @@ function LandingFooter() {
         Nymoo Eventos Digitales
       </motion.p>
 
-      <p className="text-white/50 text-sm mt-2 max-w-sm mx-auto">Invitaciones digitales interactivas, a tu medida.</p>
+      <p className="text-white/70 text-sm mt-2 max-w-sm mx-auto">Invitaciones digitales interactivas, a tu medida.</p>
 
       <div className="flex justify-center gap-3 mt-7">
         {SOCIAL_LINKS.map((link) => (
