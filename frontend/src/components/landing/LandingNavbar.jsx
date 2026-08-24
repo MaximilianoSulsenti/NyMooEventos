@@ -3,7 +3,9 @@ import { motion, AnimatePresence } from 'motion/react'
 import { Menu, X } from 'lucide-react'
 import { BRAND } from '../../utils/brand'
 
-const NAV_LINKS = [
+// Exportado para reusar los mismos links en el footer -- una sola fuente de
+// verdad en vez de mantener dos listas iguales por separado.
+export const NAV_LINKS = [
   { href: '#servicios', label: 'Servicios' },
   { href: '#que-incluye', label: 'Qué Incluye' },
   { href: '#beneficios', label: 'Beneficios' },
