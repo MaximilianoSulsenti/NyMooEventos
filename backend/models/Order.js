@@ -29,7 +29,9 @@ const orderSchema = new mongoose.Schema(
     },
     guestCardDetails: {
       hasCost: { type: Boolean, default: false },
-      pricePerCard: { type: Number, default: null },
+      // Texto libre a propósito (ej: "$15.000", "USD 20", "a confirmar") --
+      // no todos los organizadores tienen un número cerrado todavía.
+      pricePerCard: { type: String, default: '' },
       includesMenuDetails: { type: String, default: '' },
       paymentInstructions: { type: String, default: '' },
     },

@@ -113,7 +113,7 @@ function buildOrderPayload(body) {
       },
       guestCardDetails: {
         hasCost: Boolean(guestCardDetails?.hasCost),
-        pricePerCard: guestCardDetails?.hasCost ? Number(guestCardDetails?.pricePerCard) || 0 : null,
+        pricePerCard: guestCardDetails?.hasCost ? String(guestCardDetails?.pricePerCard || '').slice(0, 120) : '',
         includesMenuDetails: guestCardDetails?.includesMenuDetails || '',
         paymentInstructions: guestCardDetails?.paymentInstructions || '',
       },
