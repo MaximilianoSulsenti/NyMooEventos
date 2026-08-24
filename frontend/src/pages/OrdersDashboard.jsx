@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Navigate, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
-import { Plus, X, ChevronDown, Wallet, ShoppingBag, Clock, PieChart } from 'lucide-react'
+import { Plus, X, ChevronDown, Wallet, ShoppingBag, Clock, PieChart, Archive, ArchiveRestore } from 'lucide-react'
 import api from '../services/api'
 import { getStoredUser } from '../services/auth'
 import Button from '../components/ui/Button'
@@ -215,7 +215,7 @@ function ManualOrderModal({ onClose, onCreated }) {
   )
 }
 
-function OrderRow({ order, onStatusChange }) {
+function OrderRow({ order, onStatusChange, onArchiveToggle }) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -231,8 +231,17 @@ function OrderRow({ order, onStatusChange }) {
           <p className="text-sm font-semibold">{currency(order.packDetails?.price)}</p>
           <p className="text-xs text-white/40 hidden sm:block">{new Date(order.createdAt).toLocaleDateString('es-AR')}</p>
         </div>
-        <div onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
           <StatusSelect order={order} onChange={onStatusChange} />
+          <button
+            type="button"
+            onClick={() => onArchiveToggle(order._id, !order.archived)}
+            aria-label={order.archived ? 'Desarchivar pedido' : 'Archivar pedido'}
+            title={order.archived ? 'Desarchivar' : 'Archivar'}
+            className="p-1.5 rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition"
+          >
+            {order.archived ? <ArchiveRestore className="w-4 h-4" /> : <Archive className="w-4 h-4" />}
+          </button>
         </div>
       </button>
       <AnimatePresence initial={false}>
@@ -257,6 +266,7 @@ function OrdersDashboard() {
   const [orders, setOrders] = useState([])
   const [loadState, setLoadState] = useState('loading')
   const [modalOpen, setModalOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState('activos') // activos | archivados
 
   useEffect(() => {
     if (!isAdmin) return
@@ -279,20 +289,36 @@ function OrdersDashboard() {
     }
   }
 
+  async function handleArchiveToggle(orderId, archived) {
+    const previous = orders
+    setOrders((prev) => prev.map((o) => (o._id === orderId ? { ...o, archived } : o)))
+    try {
+      await api.patch(`/orders/${orderId}/archive`, { archived })
+    } catch {
+      setOrders(previous)
+    }
+  }
+
+  // Los archivados no cuentan para las estadísticas ni para la lista de
+  // "Activos" -- son pedidos que quedaron en Pendiente y nunca se cerraron.
+  const activeOrders = useMemo(() => orders.filter((o) => !o.archived), [orders])
+  const archivedOrders = useMemo(() => orders.filter((o) => o.archived), [orders])
+  const visibleOrders = activeTab === 'archivados' ? archivedOrders : activeOrders
+
   const stats = useMemo(() => {
-    const totalFacturado = orders
+    const totalFacturado = activeOrders
       .filter((o) => o.paymentStatus === 'Pagado Completo')
       .reduce((sum, o) => sum + (o.packDetails?.price || 0), 0)
-    const ventas = orders.filter((o) => o.paymentStatus !== 'Pendiente').length
-    const pendientes = orders.filter((o) => o.paymentStatus === 'Pendiente').length
+    const ventas = activeOrders.filter((o) => o.paymentStatus !== 'Pendiente').length
+    const pendientes = activeOrders.filter((o) => o.paymentStatus === 'Pendiente').length
     const byPack = {}
-    orders.forEach((o) => {
+    activeOrders.forEach((o) => {
       const name = o.packDetails?.packName || 'Sin pack'
       byPack[name] = (byPack[name] || 0) + 1
     })
     const topPack = Object.entries(byPack).sort((a, b) => b[1] - a[1])[0]
     return { totalFacturado, ventas, pendientes, topPack }
-  }, [orders])
+  }, [activeOrders])
 
   if (!isAdmin) {
     return <Navigate to="/eventos" replace />
@@ -321,13 +347,43 @@ function OrdersDashboard() {
           <StatCard icon={PieChart} label="Pack más vendido" value={stats.topPack ? stats.topPack[0] : '—'} color={BRAND.pink} />
         </div>
 
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setActiveTab('activos')}
+            className="px-3.5 py-1.5 rounded-full text-xs font-semibold transition"
+            style={
+              activeTab === 'activos'
+                ? { background: `${BRAND.blue}22`, color: BRAND.blue, boxShadow: `inset 0 0 0 1px ${BRAND.blue}55` }
+                : { color: 'rgba(255,255,255,0.4)' }
+            }
+          >
+            Activos ({activeOrders.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('archivados')}
+            className="px-3.5 py-1.5 rounded-full text-xs font-semibold transition flex items-center gap-1.5"
+            style={
+              activeTab === 'archivados'
+                ? { background: `${BRAND.blue}22`, color: BRAND.blue, boxShadow: `inset 0 0 0 1px ${BRAND.blue}55` }
+                : { color: 'rgba(255,255,255,0.4)' }
+            }
+          >
+            <Archive className="w-3.5 h-3.5" />
+            Archivados ({archivedOrders.length})
+          </button>
+        </div>
+
         <GlassPanel accentColor={BRAND.blue} className="p-4 sm:p-6">
           {loadState === 'loading' && <p className="text-white/40 text-center py-10">Cargando pedidos...</p>}
           {loadState === 'error' && <p className="text-red-400 text-center py-10">No se pudieron cargar los pedidos.</p>}
-          {loadState === 'ready' && orders.length === 0 && (
-            <p className="text-white/40 text-center py-10">Todavía no hay pedidos.</p>
+          {loadState === 'ready' && visibleOrders.length === 0 && (
+            <p className="text-white/40 text-center py-10">
+              {activeTab === 'archivados' ? 'Todavía no archivaste ningún pedido.' : 'Todavía no hay pedidos.'}
+            </p>
           )}
-          {loadState === 'ready' && orders.length > 0 && (
+          {loadState === 'ready' && visibleOrders.length > 0 && (
             <div className="space-y-2">
               <div className="hidden sm:grid grid-cols-[16px_1fr] gap-3 px-4 pb-2">
                 <div />
@@ -339,8 +395,8 @@ function OrdersDashboard() {
                   <span>Fecha</span>
                 </div>
               </div>
-              {orders.map((order) => (
-                <OrderRow key={order._id} order={order} onStatusChange={handleStatusChange} />
+              {visibleOrders.map((order) => (
+                <OrderRow key={order._id} order={order} onStatusChange={handleStatusChange} onArchiveToggle={handleArchiveToggle} />
               ))}
             </div>
           )}
