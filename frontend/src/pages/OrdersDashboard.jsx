@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Navigate, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
-import { Plus, X, ChevronDown, Wallet, ShoppingBag, Clock, PieChart, Archive, ArchiveRestore } from 'lucide-react'
+import { Plus, X, ChevronDown, Wallet, ShoppingBag, Clock, PieChart, Archive, ArchiveRestore, Share2, Check as CheckIcon } from 'lucide-react'
 import api from '../services/api'
 import { getStoredUser } from '../services/auth'
 import Button from '../components/ui/Button'
@@ -17,6 +17,12 @@ const STATUS_COLORS = {
   Pendiente: '#f59e0b',
   'Señado (50%)': BRAND.blue,
   'Pagado Completo': BRAND.lime,
+}
+
+const SHARED_FORM_URL = `${window.location.origin}/completar-pedido`
+const SOURCE_LABELS = {
+  carga_manual: 'Carga manual',
+  formulario_compartido: 'Formulario compartido',
 }
 
 function currency(n) {
@@ -225,7 +231,12 @@ function OrderRow({ order, onStatusChange, onArchiveToggle }) {
           <ChevronDown className="w-4 h-4" />
         </motion.span>
         <div className="min-w-0 flex-1 grid grid-cols-2 sm:grid-cols-5 gap-2 items-center">
-          <p className="font-mono text-xs sm:text-sm text-white/50 truncate">{order.orderNumber}</p>
+          <div className="min-w-0">
+            <p className="font-mono text-xs sm:text-sm text-white/50 truncate">{order.orderNumber}</p>
+            {SOURCE_LABELS[order.source] && (
+              <p className="text-[10px] text-white/30 truncate">{SOURCE_LABELS[order.source]}</p>
+            )}
+          </div>
           <p className="text-sm truncate">{order.clientData?.name}</p>
           <p className="text-sm text-white/60 truncate hidden sm:block">{order.packDetails?.packName}</p>
           <p className="text-sm font-semibold">{currency(order.packDetails?.price)}</p>
@@ -267,6 +278,18 @@ function OrdersDashboard() {
   const [loadState, setLoadState] = useState('loading')
   const [modalOpen, setModalOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('activos') // activos | archivados
+  const [linkCopied, setLinkCopied] = useState(false)
+
+  async function handleCopyShareLink() {
+    try {
+      await navigator.clipboard.writeText(SHARED_FORM_URL)
+    } catch {
+      window.prompt('Copiá este link:', SHARED_FORM_URL)
+      return
+    }
+    setLinkCopied(true)
+    setTimeout(() => setLinkCopied(false), 2000)
+  }
 
   useEffect(() => {
     if (!isAdmin) return
@@ -334,10 +357,21 @@ function OrdersDashboard() {
             </Link>
             <h1 className="text-2xl font-semibold mt-1">Pedidos</h1>
           </div>
-          <Button type="button" onClick={() => setModalOpen(true)} primaryColor={BRAND.blue} className="text-sm py-2.5">
-            <Plus className="w-4 h-4" />
-            Nuevo pedido manual
-          </Button>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button
+              type="button"
+              onClick={handleCopyShareLink}
+              className="text-sm py-2.5 bg-white/5 border border-white/10 hover:bg-white/10"
+              style={{ color: 'white' }}
+            >
+              {linkCopied ? <CheckIcon className="w-4 h-4" style={{ color: BRAND.lime }} /> : <Share2 className="w-4 h-4" />}
+              {linkCopied ? '¡Link copiado!' : 'Compartir formulario'}
+            </Button>
+            <Button type="button" onClick={() => setModalOpen(true)} primaryColor={BRAND.blue} className="text-sm py-2.5">
+              <Plus className="w-4 h-4" />
+              Nuevo pedido manual
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
