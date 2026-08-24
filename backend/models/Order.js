@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const PAYMENT_METHODS = ['mercado_pago', 'whatsapp_coordinar'];
 const PAYMENT_STATUSES = ['Pendiente', 'Señado (50%)', 'Pagado Completo'];
-const SOURCES = ['landing_page', 'carga_manual'];
+const SOURCES = ['landing_page', 'carga_manual', 'formulario_compartido'];
 
 const orderSchema = new mongoose.Schema(
   {

@@ -1,6 +1,7 @@
 const express = require('express');
 const {
   createOrder,
+  createSharedOrderForm,
   createManualOrder,
   listOrders,
   updateOrderStatus,
@@ -13,6 +14,7 @@ const { publicWriteLimiter } = require('../middleware/rateLimiters');
 const router = express.Router();
 
 router.post('/', publicWriteLimiter, createOrder);
+router.post('/self-fill', publicWriteLimiter, createSharedOrderForm);
 router.post('/manual', requireAuth, requireAdmin, createManualOrder);
 router.get('/', requireAuth, requireAdmin, listOrders);
 router.patch('/:orderId/status', requireAuth, requireAdmin, updateOrderStatus);

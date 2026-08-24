@@ -141,6 +141,27 @@ async function createOrder(req, res) {
   res.status(201).json({ order, redirectUrl });
 }
 
+// Formulario público para compartir por WhatsApp/Instagram/etc. cuando la
+// venta ya se cerró por fuera de la web -- en vez de que el equipo tipee los
+// datos del cliente a mano (como en createManualOrder), el cliente completa
+// sus propios datos de evento y estética. No pide método de pago (ya se
+// coordinó aparte) y el estado siempre entra en Pendiente: el equipo lo
+// confirma desde el panel una vez que revisa el pedido.
+async function createSharedOrderForm(req, res) {
+  const { payload, error } = buildOrderPayload({ ...req.body, paymentMethod: 'whatsapp_coordinar' });
+  if (error) return res.status(400).json({ message: error });
+
+  const orderNumber = await nextOrderNumber();
+  const order = await Order.create({
+    ...payload,
+    orderNumber,
+    source: 'formulario_compartido',
+    paymentStatus: 'Pendiente',
+  });
+
+  res.status(201).json({ order });
+}
+
 // Carga manual de un pedido cerrado por fuera de la web (efectivo,
 // transferencia directa, etc.) -- solo el equipo de Nymoo, y acá sí se
 // puede fijar el estado de pago de una porque ya se sabe cómo cerró.
@@ -197,6 +218,7 @@ async function updateOrderArchive(req, res) {
 
 module.exports = {
   createOrder,
+  createSharedOrderForm,
   createManualOrder,
   listOrders,
   updateOrderStatus,
