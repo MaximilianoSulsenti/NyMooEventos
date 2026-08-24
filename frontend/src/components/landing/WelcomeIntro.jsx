@@ -1,15 +1,28 @@
 import { useEffect, useState } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
+import { Camera, Projector, QrCode, Smartphone } from 'lucide-react'
 import useLockBodyScroll from '../../hooks/useLockBodyScroll'
 import { BRAND } from '../../utils/brand'
 
-const HOLD_MS = 1600
+const HOLD_MS = 2600
+
+// Íconos flotantes alrededor del mensaje -- lo que se trata Nymoo, de un
+// vistazo, antes de entrar a la landing. Posiciones en % para que se
+// mantengan proporcionadas en cualquier tamaño de pantalla (el contenedor
+// es fixed inset-0, o sea, siempre el viewport completo).
+const FLOATING_ICONS = [
+  { Icon: Camera, top: '20%', left: '13%', color: BRAND.blue, delay: 0.55 },
+  { Icon: Projector, top: '72%', left: '17%', color: BRAND.violet, delay: 0.7 },
+  { Icon: QrCode, top: '22%', left: '87%', color: BRAND.pink, delay: 0.85 },
+  { Icon: Smartphone, top: '70%', left: '83%', color: BRAND.lime, delay: 1.0 },
+]
 
 // Intro de marca: aparece cada vez que se entra o se recarga la landing (no
 // se guarda en localStorage a propósito -- el pedido fue que se vea siempre,
-// no solo la primera vez). Se sostiene un instante con el mensaje y el
-// ícono de los ojitos, y después se abre como un telón de teatro (dos
-// paneles que se separan desde el centro) revelando la landing de atrás.
+// no solo la primera vez). Se sostiene un instante con el mensaje, el ícono
+// de los ojitos y algunos íconos de lo que ofrece Nymoo flotando alrededor,
+// y después se abre como un telón de teatro (dos paneles que se separan
+// desde el centro) revelando la landing de atrás.
 function WelcomeIntro() {
   const [stage, setStage] = useState('hold') // hold -> curtain -> done
   const reduceMotion = useReducedMotion()
@@ -17,7 +30,7 @@ function WelcomeIntro() {
   useLockBodyScroll()
 
   useEffect(() => {
-    const timer = setTimeout(() => setStage('curtain'), reduceMotion ? 600 : HOLD_MS)
+    const timer = setTimeout(() => setStage('curtain'), reduceMotion ? 700 : HOLD_MS)
     return () => clearTimeout(timer)
   }, [reduceMotion])
 
@@ -28,42 +41,69 @@ function WelcomeIntro() {
 
   return (
     <div className="fixed inset-0 z-[100] overflow-hidden" role="presentation">
-      {/* Mensaje + ojitos, se desvanecen apenas arranca el telón */}
+      {/* Mensaje + ojitos + íconos flotantes, se desvanecen apenas arranca el telón */}
       <motion.div
-        className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-5 pointer-events-none px-6"
+        className="absolute inset-0 z-10 pointer-events-none"
         animate={{ opacity: opening ? 0 : 1, scale: opening ? 0.92 : 1 }}
         transition={{ duration: 0.35, ease: 'easeInOut' }}
       >
-        <motion.img
-          src="/img/ojosnymoo-icon.png"
-          alt="Nymoo"
-          className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl shadow-2xl"
-          initial={{ opacity: 0, scale: 0.6 }}
-          animate={{
-            opacity: 1,
-            scale: [0.6, 1.1, 0.95, 1],
-            scaleY: reduceMotion ? 1 : [1, 1, 1, 0.08, 1, 1],
-          }}
-          transition={{
-            opacity: { duration: 0.5, ease: 'easeOut' },
-            scale: { duration: 0.9, ease: 'easeOut' },
-            scaleY: { duration: 1.5, times: [0, 0.55, 0.62, 0.68, 0.74, 1], ease: 'easeInOut' },
-          }}
-        />
-        <motion.p
-          className="text-2xl sm:text-3xl font-extrabold tracking-tight text-center"
-          style={{
-            backgroundImage: `linear-gradient(90deg, ${BRAND.blue}, ${BRAND.violet}, ${BRAND.pink})`,
-            WebkitBackgroundClip: 'text',
-            backgroundClip: 'text',
-            color: 'transparent',
-          }}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.5, ease: 'easeOut' }}
-        >
-          Bienvenidos a Nymoo
-        </motion.p>
+        {FLOATING_ICONS.map(({ Icon, top, left, color, delay }, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-12 h-12 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center -translate-x-1/2 -translate-y-1/2"
+            style={{ top, left, background: `${color}22`, border: `1px solid ${color}45` }}
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={
+              reduceMotion
+                ? { opacity: 1, scale: 1 }
+                : { opacity: 1, scale: 1, y: [0, -8, 0] }
+            }
+            transition={
+              reduceMotion
+                ? { delay, duration: 0.4 }
+                : {
+                    opacity: { delay, duration: 0.4 },
+                    scale: { delay, duration: 0.4 },
+                    y: { delay: delay + 0.4, duration: 2.6, repeat: Infinity, ease: 'easeInOut' },
+                  }
+            }
+          >
+            <Icon className="w-5 h-5 sm:w-7 sm:h-7" style={{ color }} />
+          </motion.div>
+        ))}
+
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 px-6">
+          <motion.img
+            src="/img/ojosnymoo-icon.png"
+            alt="Nymoo"
+            className="w-28 h-28 sm:w-36 sm:h-36 rounded-3xl shadow-2xl"
+            initial={{ opacity: 0, scale: 0.6 }}
+            animate={{
+              opacity: 1,
+              scale: [0.6, 1.1, 0.95, 1],
+              scaleY: reduceMotion ? 1 : [1, 1, 1, 0.08, 1, 1],
+            }}
+            transition={{
+              opacity: { duration: 0.5, ease: 'easeOut' },
+              scale: { duration: 0.9, ease: 'easeOut' },
+              scaleY: { duration: 1.5, times: [0, 0.55, 0.62, 0.68, 0.74, 1], ease: 'easeInOut' },
+            }}
+          />
+          <motion.p
+            className="text-2xl sm:text-3xl font-extrabold tracking-tight text-center"
+            style={{
+              backgroundImage: `linear-gradient(90deg, ${BRAND.blue}, ${BRAND.violet}, ${BRAND.pink})`,
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              color: 'transparent',
+            }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35, duration: 0.5, ease: 'easeOut' }}
+          >
+            Bienvenidos a Nymoo
+          </motion.p>
+        </div>
       </motion.div>
 
       {/* Telón: dos paneles que se abren desde el centro hacia los costados */}
