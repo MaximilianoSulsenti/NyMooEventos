@@ -1,4 +1,6 @@
 const Event = require('../models/Event');
+const Guest = require('../models/Guest');
+const Photo = require('../models/Photo');
 const cloudinary = require('../config/cloudinary');
 const { isAdminEmail } = require('../middleware/admin');
 
@@ -394,6 +396,29 @@ async function updateMaxLivePhotosForClient(req, res) {
   res.json(event);
 }
 
+// Borra el evento por completo: invitados, fotos/videos (registro en Mongo
+// Y los archivos reales en Cloudinary) y el evento en sí. El prefijo de
+// Cloudinary lleva una barra al final a propósito -- sin eso, borrar
+// "eventos/mi-boda" también coincidiría con "eventos/mi-boda-duo" (un clon
+// Dúo de este mismo evento), porque delete_resources_by_prefix compara por
+// texto, no por carpeta real.
+async function deleteEvent(req, res) {
+  const event = req.event;
+  const folder = event.gallerySettings?.cloudinaryFolder || `eventos/${event.eventSlug}`;
+
+  try {
+    await cloudinary.api.delete_resources_by_prefix(`${folder}/`, { resource_type: 'image' });
+    await cloudinary.api.delete_resources_by_prefix(`${folder}/`, { resource_type: 'video' });
+  } catch (err) {
+    console.error('[Cloudinary] No se pudieron borrar los archivos del evento:', err.message);
+  }
+
+  await Promise.all([Guest.deleteMany({ eventId: event._id }), Photo.deleteMany({ eventId: event._id })]);
+  await event.deleteOne();
+
+  res.json({ message: 'Evento eliminado' });
+}
+
 // Invitación Dúo: clona el evento completo (apariencia, fondos, tipografías,
 // secciones, playlist, RSVP, etc.) bajo un slug y token de acceso propios,
 // para que el organizador solo tenga que entrar al nuevo evento y ajustar lo
@@ -457,4 +482,5 @@ module.exports = {
   updateMaxLivePhotosForClient,
   updateLiveControlsForClient,
   duplicateDuo,
+  deleteEvent,
 };
