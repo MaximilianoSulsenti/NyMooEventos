@@ -8,6 +8,7 @@ import BenefitsSection from '../components/landing/BenefitsSection'
 import FaqSection from '../components/landing/FaqSection'
 import LandingFooter from '../components/landing/LandingFooter'
 import FloatingWhatsappButton from '../components/landing/FloatingWhatsappButton'
+import WelcomeIntro from '../components/landing/WelcomeIntro'
 
 // Landing de ventas pública -- vive en "/", sin ningún link visible hacia el
 // login del panel interno (ver App.jsx: esa ruta quedó movida y sin enlaces).
@@ -39,6 +40,8 @@ function LandingPage() {
 
   return (
     <div className="min-h-screen w-full bg-neutral-950 text-white">
+      <WelcomeIntro />
+
       <div ref={headerRef} className="fixed inset-x-0 top-0 z-40">
         <AnnounceBar />
         <LandingNavbar />
