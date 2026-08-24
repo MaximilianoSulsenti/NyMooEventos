@@ -83,7 +83,7 @@ io.on('connection', (socket) => {
     if (!eventSlug) return;
     io.to(eventSlug).emit('party-config-changed', {
       enabled: Boolean(enabled),
-      layout: layout === 'single' ? 'single' : 'grid',
+      layout: ['single', 'carousel3d'].includes(layout) ? layout : 'grid',
       confetti: Boolean(confetti),
       lightBeams: Boolean(lightBeams),
       emojiRain: Boolean(emojiRain),

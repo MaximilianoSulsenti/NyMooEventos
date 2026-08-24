@@ -249,6 +249,11 @@ async function updateMyBranding(req, res) {
 async function updateClientBranding(req, res) {
   const event = req.event;
   applyBrandFields(event.brandingSettings.clientBrand, req.body);
+
+  const { salonBgImageUrl, salonBgOpacity } = req.body;
+  if (salonBgImageUrl !== undefined) event.brandingSettings.salonBgImageUrl = salonBgImageUrl;
+  if (salonBgOpacity !== undefined) event.brandingSettings.salonBgOpacity = salonBgOpacity;
+
   await event.save();
   res.json(event);
 }
@@ -349,7 +354,7 @@ async function updateLiveControlsForClient(req, res) {
   const event = req.event;
 
   if (partyMode !== undefined) event.gallerySettings.partyMode = Boolean(partyMode);
-  if (partyLayout !== undefined && ['grid', 'single'].includes(partyLayout)) {
+  if (partyLayout !== undefined && ['grid', 'single', 'carousel3d'].includes(partyLayout)) {
     event.gallerySettings.partyLayout = partyLayout;
   }
   if (confetti !== undefined) event.gallerySettings.confetti = Boolean(confetti);
@@ -389,6 +394,48 @@ async function updateMaxLivePhotosForClient(req, res) {
   res.json(event);
 }
 
+// Invitación Dúo: clona el evento completo (apariencia, fondos, tipografías,
+// secciones, playlist, RSVP, etc.) bajo un slug y token de acceso propios,
+// para que el organizador solo tenga que entrar al nuevo evento y ajustar lo
+// puntual (horario, texto de la locación) sin rehacer el diseño de cero.
+// Guests y Photos NO se copian -- viven en colecciones aparte referenciadas
+// por eventId, así que el clon arranca sin invitados ni fotos del original.
+async function duplicateDuo(req, res) {
+  const original = req.event.toObject();
+
+  const baseSlug = `${original.eventSlug}-duo`;
+  let eventSlug = baseSlug;
+  let attempt = 1;
+  // eslint-disable-next-line no-await-in-loop
+  while (await Event.exists({ eventSlug })) {
+    attempt += 1;
+    eventSlug = `${baseSlug}-${attempt}`;
+  }
+
+  const {
+    _id,
+    createdAt,
+    updatedAt,
+    __v,
+    clientAccessToken,
+    eventSlug: _originalSlug,
+    eventName,
+    isDuo,
+    duoOf,
+    ...clonable
+  } = original;
+
+  const duoEvent = await Event.create({
+    ...clonable,
+    eventName: `${eventName} (Dúo)`,
+    eventSlug,
+    isDuo: true,
+    duoOf: original._id,
+  });
+
+  res.status(201).json(duoEvent);
+}
+
 module.exports = {
   getEventBySlug,
   listMyEvents,
@@ -409,4 +456,5 @@ module.exports = {
   updatePlaybackSpeedForClient,
   updateMaxLivePhotosForClient,
   updateLiveControlsForClient,
+  duplicateDuo,
 };

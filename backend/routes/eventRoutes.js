@@ -19,6 +19,7 @@ const {
   updatePlaybackSpeedForClient,
   updateMaxLivePhotosForClient,
   updateLiveControlsForClient,
+  duplicateDuo,
 } = require('../controllers/eventController');
 const { requireAuth } = require('../middleware/auth');
 const { requireAdmin } = require('../middleware/admin');
@@ -43,6 +44,7 @@ router.patch('/:eventId/music', requireAuth, requireEventOwnership, updateMusicS
 router.patch('/:eventId/rsvp-settings', requireAuth, requireEventOwnership, updateRsvpSettings);
 router.patch('/:eventId/sections', requireAuth, requireEventOwnership, updateSections);
 router.get('/:eventId/appearance/sign', requireAuth, requireEventOwnership, signAppearanceUpload);
+router.post('/:eventId/duplicate-duo', requireAuth, requireEventOwnership, duplicateDuo);
 router.patch('/client/:eventSlug/moderation-mode', requireClientToken, updateModerationModeForClient);
 router.patch('/client/:eventSlug/playback-speed', requireClientToken, updatePlaybackSpeedForClient);
 router.patch('/client/:eventSlug/max-live-photos', requireClientToken, updateMaxLivePhotosForClient);

@@ -68,7 +68,7 @@ const eventSchema = new mongoose.Schema(
       maxLivePhotos: { type: Number, default: 60, min: 10, max: 300 },
       allowVideos: { type: Boolean, default: false },
       partyMode: { type: Boolean, default: false },
-      partyLayout: { type: String, enum: ['grid', 'single'], default: 'grid' },
+      partyLayout: { type: String, enum: ['grid', 'single', 'carousel3d'], default: 'grid' },
       confetti: { type: Boolean, default: false },
       lightBeams: { type: Boolean, default: false },
       emojiRain: { type: Boolean, default: false },
@@ -103,6 +103,11 @@ const eventSchema = new mongoose.Schema(
     brandingSettings: {
       myBrand: { type: brandSchema, default: () => ({}) },
       clientBrand: { type: brandSchema, default: () => ({}) },
+      // Fondo de marca de otros organizadores para la pantalla del salón
+      // (LiveScreen) -- distinto de myBrand/clientBrand, que son watermarks
+      // chicos: esto es una imagen a pantalla completa detrás de las fotos.
+      salonBgImageUrl: { type: String, default: '' },
+      salonBgOpacity: { type: Number, default: 40, min: 0, max: 100 },
     },
     rsvpSettings: {
       // intermedio_db es el default para no cambiarle el comportamiento a
@@ -130,6 +135,11 @@ const eventSchema = new mongoose.Schema(
       type: String,
       default: () => crypto.randomBytes(16).toString('hex'),
     },
+    // Invitación Dúo: clon de otro evento con su propio slug/token, para
+    // organizar por separado a dos grupos del mismo festejo (cena vs.
+    // post-cena, con/sin tarjeta del salón, etc.) sin rehacer todo el diseño.
+    isDuo: { type: Boolean, default: false },
+    duoOf: { type: mongoose.Schema.Types.ObjectId, ref: 'Event', default: null },
   },
   { timestamps: true }
 );
