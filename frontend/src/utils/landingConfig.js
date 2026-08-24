@@ -19,7 +19,10 @@ export function buildWhatsappUrl(message, number = LANDING_CONTACT.whatsappNumbe
   return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`
 }
 
-const PAYMENT_NOTE = 'Se seña con el 50% · hasta 3 cuotas con Mercado Pago'
+// Texto exacto pedido para las 4 cards -- transparente sobre la tasa
+// financiera real, que varía según la cuenta de Mercado Pago de cada
+// usuario, por eso no se promete "sin interés" acá.
+const PAYMENT_NOTE = 'Se seña con el 50% | Hasta 3 cuotas con Mercado Pago'
 
 export const LANDING_PACKS = [
   {
@@ -29,6 +32,8 @@ export const LANDING_PACKS = [
     price: '$50.000',
     paymentNote: PAYMENT_NOTE,
     accentColor: BRAND.blue,
+    whatsappMessage:
+      '¡Hola, Nymoo! Me encantó el plan Nymoo INVITA ($50.000). Quisiera recibir asesoramiento para implementarlo en mi próxima celebración.',
     features: [
       'Tarjeta digital interactiva 100% personalizada',
       'Música de fondo y galería de fotos de los anfitriones',
@@ -51,6 +56,8 @@ export const LANDING_PACKS = [
     accentColor: BRAND.violet,
     recommended: true,
     includesFrom: 'Nymoo INVITA',
+    whatsappMessage:
+      '¡Hola, Nymoo! Estoy interesado en el plan destacado Nymoo CONECTA ($70.000). Me gustaría coordinar la seña para comenzar con el diseño.',
     features: [
       'Confirmación de asistencia (RSVP) por formulario en base de datos',
       'Acceso al panel de estadísticas de invitados en vivo',
@@ -71,6 +78,8 @@ export const LANDING_PACKS = [
     paymentNote: PAYMENT_NOTE,
     accentColor: BRAND.pink,
     includesFrom: 'Nymoo CONECTA',
+    whatsappMessage:
+      '¡Hola, Nymoo! Quiero la experiencia completa con el plan Premium Nymoo VIVE ($100.000). Me interesa saber más sobre las invitaciones VIP y la pantalla en vivo.',
     features: [
       'Confirmación de asistencia VIP con invitaciones personalizadas (pase individual con control estricto de cupos por familia/invitado)',
       'Panel de invitados VIP habilitado para personalizar los nombres desde las estadísticas en vivo',
@@ -92,6 +101,8 @@ export const LANDING_PACKS = [
     paymentNote: PAYMENT_NOTE,
     accentColor: BRAND.orange,
     banner: '¡Ideal si ya tenés tu invitación digital de otro proveedor y solo querés la pantalla en vivo para tu fiesta!',
+    whatsappMessage:
+      '¡Hola, Nymoo! Ya tengo mi invitación pero quiero contratar el pack Nymoo VISIÓN ($60.000) para tener la pantalla en vivo y la galería por QR en mi fiesta.',
     features: [
       'Pack exclusivo de álbum por QR colaborativo para subir fotos y videos cortos',
       'Capacidad total de 600 fotos y 80 videos de 15 segundos',

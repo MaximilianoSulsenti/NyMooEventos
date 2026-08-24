@@ -12,7 +12,13 @@ const NAV_LINKS = [
 
 const GRADIENT_IMAGE = `linear-gradient(90deg, ${BRAND.blue}, ${BRAND.violet}, ${BRAND.pink})`
 
-function NavLink({ href, label, onClick }) {
+// index solo se pasa en el menú móvil -- habilita la entrada escalonada
+// (stagger) de arriba hacia abajo apenas se abre; en desktop el link ya
+// está en pantalla desde el primer render, así que no necesita animación
+// de entrada.
+function NavLink({ href, label, onClick, index }) {
+  const hasEntrance = typeof index === 'number'
+
   // El filter de hover se anima en el MISMO elemento que tiene el degradé
   // (antes estaba en un <motion.span> hijo aparte) -- separarlos hace que
   // algunos navegadores promuevan ese hijo a su propia capa de composición
@@ -30,7 +36,11 @@ function NavLink({ href, label, onClick }) {
     <motion.a
       href={href}
       onClick={onClick}
-      whileHover={{ filter: 'brightness(1.35)' }}
+      initial={hasEntrance ? { opacity: 0, y: -8 } : false}
+      animate={hasEntrance ? { opacity: 1, y: 0 } : undefined}
+      transition={hasEntrance ? { delay: index * 0.07, duration: 0.3, ease: 'easeOut' } : undefined}
+      whileHover={{ filter: 'brightness(1.35)', transition: { duration: 0.2 } }}
+      whileTap={{ scale: 0.98 }}
       className="relative inline-block transform-gpu bg-clip-text text-transparent text-sm font-medium group py-1"
       style={{ backgroundImage: GRADIENT_IMAGE }}
     >
@@ -83,8 +93,8 @@ function LandingNavbar() {
             className="md:hidden overflow-hidden border-t border-white/10"
           >
             <nav className="flex flex-col gap-4 px-4 py-5">
-              {NAV_LINKS.map((link) => (
-                <NavLink key={link.href} {...link} onClick={() => setMobileOpen(false)} />
+              {NAV_LINKS.map((link, i) => (
+                <NavLink key={link.href} {...link} index={i} onClick={() => setMobileOpen(false)} />
               ))}
             </nav>
           </motion.div>

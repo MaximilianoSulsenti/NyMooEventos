@@ -62,26 +62,19 @@ function HeroSection() {
         </motion.p>
 
         <h1
-          className="font-extrabold tracking-tight mb-4 leading-tight"
+          className="font-extrabold tracking-tight mb-5 leading-tight"
           style={{ fontSize: 'clamp(2.25rem, 6vw, 3.75rem)' }}
         >
-          Convertimos tu evento en una{' '}
-          <span style={gradientTextStyle}>experiencia digital</span>
+          Convertimos tu gran día en una{' '}
+          <span style={gradientTextStyle}>experiencia digital interactiva</span>
         </h1>
 
         <p
-          className="font-medium text-white/85 mx-auto mb-5"
-          style={{ fontSize: 'clamp(1.05rem, 2.4vw, 1.4rem)', maxWidth: '34rem' }}
+          className="font-medium text-white/85 mx-auto mb-9"
+          style={{ fontSize: 'clamp(1.05rem, 2.4vw, 1.3rem)', maxWidth: '38rem' }}
         >
-          La invitación de tu evento, viva en el celular de cada invitado.
-        </p>
-
-        <p
-          className="text-white/75 mx-auto mb-9"
-          style={{ fontSize: 'clamp(0.95rem, 2vw, 1.15rem)', maxWidth: '38rem' }}
-        >
-          Diseñamos y programamos tu tarjeta digital interactiva: cuenta regresiva, ubicación, confirmación de
-          asistencia, álbum colaborativo y pantalla en vivo para la fiesta. Todo listo en menos de 3 días.
+          Invitaciones inteligentes, pantallas en tiempo real y álbumes compartidos para que tu celebración sea
+          recordada para siempre. Innovación y elegancia en un solo lugar.
         </p>
 
         <motion.div animate={{ scale: [1, 1.03, 1] }} transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}>

@@ -6,6 +6,7 @@ import { cn } from '../../utils/cn'
 import { shadeColor } from '../../utils/color'
 import { BRAND } from '../../utils/brand'
 import { LANDING_CONTACT, LANDING_PACKS, buildWhatsappUrl } from '../../utils/landingConfig'
+import { PACK_VISUALS } from './PackVisuals'
 
 const BRAND_GRADIENT = `linear-gradient(90deg, ${BRAND.blue}, ${BRAND.violet}, ${BRAND.pink})`
 
@@ -14,6 +15,7 @@ function PackCard({ pack, index }) {
   const borderGradient = pack.recommended
     ? BRAND_GRADIENT
     : `linear-gradient(160deg, ${light}80, transparent 45%, ${pack.accentColor}30)`
+  const Visual = PACK_VISUALS[pack.id]
 
   return (
     <motion.div
@@ -46,16 +48,14 @@ function PackCard({ pack, index }) {
         )}
 
         <div
-          className="h-24 rounded-2xl mb-6 flex items-center justify-center relative overflow-hidden shrink-0"
+          className="h-28 rounded-2xl mb-6 flex items-center justify-center relative overflow-hidden shrink-0"
           style={{ background: `linear-gradient(135deg, ${pack.accentColor}33, transparent)` }}
         >
           <div
             className="absolute w-40 h-40 rounded-full blur-2xl opacity-40"
             style={{ background: pack.accentColor }}
           />
-          <span className="relative text-3xl font-black tracking-tight" style={{ color: pack.accentColor }}>
-            {String(index + 1).padStart(2, '0')}
-          </span>
+          <div className="relative">{Visual && <Visual color={pack.accentColor} />}</div>
         </div>
 
         <h3 className="text-lg font-bold mb-1.5">{pack.name}</h3>
@@ -99,15 +99,12 @@ function PackCard({ pack, index }) {
                 <CreditCard className="w-4 h-4" />
                 Comprar con Mercado Pago
               </span>
-              <span className="text-[11px] font-normal text-white/60">Hasta 3 cuotas sin interés</span>
+              <span className="text-[11px] font-normal text-white/60">Hasta 3 cuotas con Mercado Pago</span>
             </span>
           </Button>
           <Button
             as="a"
-            href={buildWhatsappUrl(
-              `¡Hola Nymoo! Me interesa contratar el paquete ${pack.name} de ${pack.price} para mi evento.`,
-              LANDING_CONTACT.whatsappNumber
-            )}
+            href={buildWhatsappUrl(pack.whatsappMessage, LANDING_CONTACT.whatsappNumber)}
             target="_blank"
             rel="noreferrer"
             primaryColor="#25D366"
