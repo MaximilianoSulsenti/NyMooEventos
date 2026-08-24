@@ -10,32 +10,34 @@ const NAV_LINKS = [
   { href: '#faq', label: 'Preguntas Frecuentes' },
 ]
 
-const gradientTextStyle = {
-  backgroundImage: `linear-gradient(90deg, ${BRAND.blue}, ${BRAND.violet}, ${BRAND.pink})`,
-  WebkitBackgroundClip: 'text',
-  backgroundClip: 'text',
-  color: 'transparent',
-}
+const GRADIENT_IMAGE = `linear-gradient(90deg, ${BRAND.blue}, ${BRAND.violet}, ${BRAND.pink})`
 
 function NavLink({ href, label, onClick }) {
-  // El filter de hover se anima en el MISMO elemento que tiene el
-  // background-clip:text (antes estaba en un <motion.span> hijo aparte) --
-  // separarlos hace que algunos navegadores promuevan ese hijo a su propia
-  // capa de composición al animar `filter`, y el texto (color: transparent)
-  // se renderiza sin el degradé del padre detrás: el link "desaparece"
-  // apenas se lo toca con el mouse.
+  // El filter de hover se anima en el MISMO elemento que tiene el degradé
+  // (antes estaba en un <motion.span> hijo aparte) -- separarlos hace que
+  // algunos navegadores promuevan ese hijo a su propia capa de composición
+  // al animar `filter`, y el texto (transparent) se renderiza sin el
+  // degradé del padre detrás: el link "desaparece" apenas se lo toca.
+  //
+  // bg-clip-text/text-transparent van como clases (no inline style) para
+  // que el navegador las resuelva igual que cualquier otra utilidad de
+  // Tailwind, y transform-gpu fuerza una capa de composición propia desde
+  // el primer render -- en el menú móvil este link nace dentro de un
+  // contenedor que anima su `height` (0 -> auto), y algunos WebKit
+  // (iOS Safari) no repintan bien un `background-clip: text` que aparece
+  // en medio de esa animación si no tiene ya su propia capa.
   return (
     <motion.a
       href={href}
       onClick={onClick}
       whileHover={{ filter: 'brightness(1.35)' }}
-      className="relative inline-block text-sm font-medium group py-1"
-      style={gradientTextStyle}
+      className="relative inline-block transform-gpu bg-clip-text text-transparent text-sm font-medium group py-1"
+      style={{ backgroundImage: GRADIENT_IMAGE }}
     >
       {label}
       <span
         className="absolute left-0 -bottom-0.5 h-[2px] w-0 rounded-full transition-all duration-300 group-hover:w-full pointer-events-none"
-        style={{ backgroundImage: gradientTextStyle.backgroundImage }}
+        style={{ backgroundImage: GRADIENT_IMAGE }}
       />
     </motion.a>
   )
