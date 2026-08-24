@@ -48,7 +48,7 @@ function PackCard({ pack, index }) {
         )}
 
         <div
-          className="h-28 rounded-2xl mb-6 flex items-center justify-center relative overflow-hidden shrink-0"
+          className="h-40 rounded-2xl mb-6 flex items-center justify-center relative overflow-hidden shrink-0"
           style={{ background: `linear-gradient(135deg, ${pack.accentColor}33, transparent)` }}
         >
           <div
