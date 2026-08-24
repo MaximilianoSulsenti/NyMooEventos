@@ -54,7 +54,7 @@ export const LANDING_PACKS = [
     price: '$70.000',
     paymentNote: PAYMENT_NOTE,
     accentColor: BRAND.violet,
-    recommended: true,
+    badge: { emoji: '⭐', label: 'El más elegido', tone: 'brand' },
     includesFrom: 'Nymoo INVITA',
     whatsappMessage:
       '¡Hola, Nymoo! Estoy interesado en el plan destacado Nymoo CONECTA ($70.000). Me gustaría coordinar la seña para comenzar con el diseño.',
@@ -77,6 +77,7 @@ export const LANDING_PACKS = [
     price: '$100.000',
     paymentNote: PAYMENT_NOTE,
     accentColor: BRAND.pink,
+    badge: { emoji: '👑', label: 'La más completa', tone: 'gold' },
     includesFrom: 'Nymoo CONECTA',
     whatsappMessage:
       '¡Hola, Nymoo! Quiero la experiencia completa con el plan Premium Nymoo VIVE ($100.000). Me interesa saber más sobre las invitaciones VIP y la pantalla en vivo.',

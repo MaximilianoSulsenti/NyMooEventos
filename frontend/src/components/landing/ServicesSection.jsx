@@ -9,12 +9,14 @@ import { LANDING_CONTACT, LANDING_PACKS, buildWhatsappUrl } from '../../utils/la
 import { PACK_VISUALS } from './PackVisuals'
 
 const BRAND_GRADIENT = `linear-gradient(90deg, ${BRAND.blue}, ${BRAND.violet}, ${BRAND.pink})`
+const GOLD_GRADIENT = 'linear-gradient(90deg, #F2C94C, #F2994A, #F2C94C)'
+const BADGE_GRADIENTS = { brand: BRAND_GRADIENT, gold: GOLD_GRADIENT }
+const BADGE_GLOW = { brand: `${BRAND.violet}80`, gold: '#F2994A80' }
 
 function PackCard({ pack, index }) {
   const light = shadeColor(pack.accentColor, 20)
-  const borderGradient = pack.recommended
-    ? BRAND_GRADIENT
-    : `linear-gradient(160deg, ${light}80, transparent 45%, ${pack.accentColor}30)`
+  const highlightGradient = pack.badge ? BADGE_GRADIENTS[pack.badge.tone] : null
+  const borderGradient = highlightGradient || `linear-gradient(160deg, ${light}80, transparent 45%, ${pack.accentColor}30)`
   const Visual = PACK_VISUALS[pack.id]
 
   return (
@@ -25,16 +27,18 @@ function PackCard({ pack, index }) {
       transition={{ duration: 0.5, delay: index * 0.08 }}
       whileHover={{ y: -6 }}
       whileTap={{ scale: 0.99 }}
-      className={cn('relative rounded-3xl p-px', pack.recommended && 'lg:-translate-y-3')}
-      style={{ background: borderGradient, boxShadow: pack.recommended ? `0 20px 45px -20px ${BRAND.violet}80` : undefined }}
+      className={cn('relative rounded-3xl p-px', pack.badge && 'lg:-translate-y-3')}
+      style={{ background: borderGradient, boxShadow: pack.badge ? `0 20px 45px -20px ${BADGE_GLOW[pack.badge.tone]}` : undefined }}
     >
-      {pack.recommended && (
-        <div
+      {pack.badge && (
+        <motion.div
           className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10 px-4 py-1.5 rounded-full text-xs font-bold tracking-wide text-white shadow-lg whitespace-nowrap"
-          style={{ backgroundImage: BRAND_GRADIENT }}
+          style={{ backgroundImage: highlightGradient, backgroundSize: '200% 100%' }}
+          animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
+          transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
         >
-          ⭐ El más elegido
-        </div>
+          {pack.badge.emoji} {pack.badge.label}
+        </motion.div>
       )}
 
       <div className="h-full rounded-[calc(1.5rem-1px)] bg-neutral-950/80 backdrop-blur-xl border border-white/5 p-6 md:p-7 flex flex-col">
@@ -48,11 +52,11 @@ function PackCard({ pack, index }) {
         )}
 
         <div
-          className="h-40 rounded-2xl mb-6 flex items-center justify-center relative overflow-hidden shrink-0"
+          className="h-52 rounded-2xl mb-6 flex items-center justify-center relative overflow-hidden shrink-0"
           style={{ background: `linear-gradient(135deg, ${pack.accentColor}33, transparent)` }}
         >
           <div
-            className="absolute w-40 h-40 rounded-full blur-2xl opacity-40"
+            className="absolute w-48 h-48 rounded-full blur-2xl opacity-40"
             style={{ background: pack.accentColor }}
           />
           <div className="absolute inset-0 flex items-center justify-center">
