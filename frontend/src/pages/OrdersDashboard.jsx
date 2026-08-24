@@ -133,13 +133,19 @@ function ManualOrderModal({ onClose, onCreated }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-start sm:items-center justify-center p-4 overflow-y-auto"
+      className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
     >
+      {/* El scroll va DENTRO de esta tarjeta (max-h + overflow-y-auto acá),
+          no en el fondo de atrás -- con "items-center" en el contenedor de
+          afuera, un hijo más alto que la pantalla queda con la parte de
+          arriba inaccesible aunque el fondo tenga overflow-y-auto (bug
+          clásico de flexbox centrado + scroll). Mismo patrón que ya usan
+          UploadAccessModal/GiftModal/etc. en el resto del sitio. */}
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96 }}
-        className="w-full max-w-2xl my-8 bg-neutral-950 border border-white/10 rounded-3xl p-5 sm:p-7 relative"
+        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-neutral-950 border border-white/10 rounded-3xl p-5 sm:p-7 relative"
       >
         <button type="button" onClick={onClose} className="absolute top-4 right-4 text-white/40 hover:text-white transition" aria-label="Cerrar">
           <X className="w-5 h-5" />
