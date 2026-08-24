@@ -93,12 +93,12 @@ function PackCard({ pack, index }) {
               configuradas, redirige a la pasarela; si no, cae a WhatsApp con
               el pedido ya cargado (ver Checkout.jsx / orderController.js). */}
           <Button as={Link} to={`/checkout?pack=${pack.id}`} className="w-full py-2.5">
-            <span className="flex flex-col items-center leading-tight">
+            <span className="flex flex-col items-center leading-tight text-center">
               <span className="flex items-center gap-2 text-sm font-semibold">
                 <CreditCard className="w-4 h-4" />
-                Comprar con Mercado Pago
+                Comprar por WhatsApp o Mercado Pago
               </span>
-              <span className="text-[11px] font-normal text-white/60">Hasta 3 cuotas con Mercado Pago</span>
+              <span className="text-[11px] font-normal text-white/60">En 3 cuotas</span>
             </span>
           </Button>
           <Button
