@@ -79,14 +79,24 @@ const Carousel = memo(({ handleClick, controls, cards, isCarouselActive, onDragS
         }}
         animate={controls}
       >
+        {/* key={imgUrl} (sin el índice `i`) a propósito: cuando `cards` se
+            alimenta de un feed en vivo que va agregando fotos al principio
+            del array (Pantalla en Vivo), el índice de cada foto YA
+            existente cambia en cada foto nueva -- con el índice en la key,
+            React trataba a todas las tarjetas como elementos nuevos en
+            cada subida y las volvía a montar de cero (de ahí el salto y el
+            reblur en cada foto que entraba). El ángulo/radio ahora se anima
+            con `animate` en vez de fijarse en `style` para que, cuando
+            `faceCount` cambia (entra o sale una foto), las tarjetas
+            existentes giren suavemente a su nueva posición en vez de
+            saltar de golpe. */}
         {cards.map((imgUrl, i) => (
           <motion.div
-            key={`key-${imgUrl}-${i}`}
+            key={imgUrl}
             className="absolute flex h-full origin-center items-center justify-center rounded-xl p-2"
-            style={{
-              width: `${faceWidth}px`,
-              transform: `rotateY(${i * (360 / faceCount)}deg) translateZ(${radius}px)`,
-            }}
+            style={{ width: `${faceWidth}px` }}
+            animate={{ rotateY: i * (360 / faceCount), z: radius }}
+            transition={{ duration: 0.6, ease: 'easeInOut' }}
             onClick={() => handleClick(imgUrl, i)}
           >
             <motion.img

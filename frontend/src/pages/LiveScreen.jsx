@@ -180,6 +180,12 @@ function AnnouncementBanner({ announcement }) {
 // Fondo de marca a pantalla completa para la pantalla del salón -- distinto
 // de BrandLogos (watermarks chicos en una esquina), esto ambienta toda la
 // proyección detrás de las fotos.
+//
+// Para que esto realmente quede DETRÁS del bg-black del contenedor raíz,
+// ese contenedor necesita "relative z-0" (que forma su propio stacking
+// context). Sin eso, el bg-black del div raíz -- al no estar posicionado --
+// pinta en la misma capa que este `-z-10` compite por ganar, y termina
+// tapando la imagen por completo sin importar la opacidad configurada.
 function SalonBackground({ branding }) {
   if (!branding?.salonBgImageUrl) return null
   return (
@@ -213,6 +219,11 @@ function LiveQrPanel({ eventSlug, eventName }) {
 
 const DEFAULT_PARTY_CONFIG = { enabled: false, layout: 'grid', confetti: false, lightBeams: false, emojiRain: false }
 
+// Con muchas fotos (maxLivePhotos admite hasta 300) el cilindro 3D se vuelve
+// lento e ilegible: caras minúsculas y demasiadas para animar a la vez.
+// Este modo se ve mejor -- y rinde mejor -- con un puñado de fotos recientes.
+const CAROUSEL_3D_MAX_PHOTOS = 16
+
 function LiveScreen() {
   const { eventSlug } = useParams()
   const [event, setEvent] = useState(null)
@@ -224,6 +235,11 @@ function LiveScreen() {
   const [announcement, setAnnouncement] = useState(null)
   const [commentFeed, setCommentFeed] = useState([])
   const maxLivePhotosRef = useRef(60)
+  // El handler de sockets se registra una sola vez (deps: [eventSlug]) y
+  // por eso su closure queda "congelada" con el `party` de ese momento; sin
+  // este ref, el chequeo de "¿estamos en carousel3d?" de más abajo nunca
+  // vería un cambio de modo posterior y los comentarios dejarían de sumarse.
+  const partyRef = useRef(party)
 
   useEffect(() => {
     api
@@ -250,11 +266,32 @@ function LiveScreen() {
   }, [eventSlug])
 
   useEffect(() => {
+    partyRef.current = party
+  }, [party])
+
+  useEffect(() => {
     socket.connect()
     socket.emit('join-event', eventSlug)
 
     function handleNewPhoto(photo) {
       setPhotos((prev) => [photo, ...prev].slice(0, maxLivePhotosRef.current))
+
+      // En modo grilla cada foto ya muestra su comentario abajo, y en modo
+      // foto única el feed se arma solo cuando esa foto pasa a estar en
+      // pantalla (más abajo). El carrusel 3D no tiene un "cursor" de foto
+      // actual -- todas giran a la vez -- así que acá es donde se entera de
+      // que hay un comentario nuevo para mostrar en el feed lateral.
+      if (photo.comment && partyRef.current.enabled && partyRef.current.layout === 'carousel3d') {
+        setCommentFeed((prev) => {
+          const entry = {
+            id: photo._id,
+            text: truncateForBubble(photo.comment),
+            guestName: photo.guestName || '',
+            thumbUrl: photo.assetType === 'video' ? null : photo.cloudinaryUrl,
+          }
+          return [...prev, entry].slice(-MAX_CHAT_ITEMS)
+        })
+      }
     }
     function handlePartyConfig(config) {
       setParty(config)
@@ -331,7 +368,7 @@ function LiveScreen() {
 
   if (photos.length === 0) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center text-neutral-600">
+      <div className="relative z-0 min-h-screen bg-black flex items-center justify-center text-neutral-600">
         Esperando las primeras fotos...
         {event && <SalonBackground branding={event.brandingSettings} />}
         {event && <BrandLogos branding={event.brandingSettings} />}
@@ -346,7 +383,9 @@ function LiveScreen() {
   })
 
   return (
-    <div className={`min-h-screen w-full bg-black p-4 sm:p-6 flex items-center justify-center overflow-hidden ${party.enabled ? 'party-glow' : ''}`}>
+    <div
+      className={`relative z-0 min-h-screen w-full bg-black p-4 sm:p-6 flex items-center justify-center overflow-hidden ${party.enabled ? 'party-glow' : ''}`}
+    >
       {party.enabled && party.lightBeams && <LightBeams />}
       {party.enabled && party.confetti && <Confetti />}
       {party.enabled && party.emojiRain && <EmojiRain />}
@@ -354,7 +393,7 @@ function LiveScreen() {
       {event && <BrandLogos branding={event.brandingSettings} />}
       {event?.activeModules?.photoCollection && <LiveQrPanel eventSlug={eventSlug} eventName={event.eventName} />}
       <AnimatePresence>{announcement && <AnnouncementBanner announcement={announcement} />}</AnimatePresence>
-      {!isGrid && !isCarousel3D && <LiveCommentFeed items={commentFeed} />}
+      {!isGrid && <LiveCommentFeed items={commentFeed} />}
 
       {isGrid ? (
         <div
@@ -406,7 +445,10 @@ function LiveScreen() {
       ) : isCarousel3D ? (
         <div className="w-full max-w-5xl">
           <ThreeDPhotoCarousel
-            images={photos.filter((p) => p.assetType !== 'video').map((p) => cloudinaryThumb(p.cloudinaryUrl, 700))}
+            images={photos
+              .filter((p) => p.assetType !== 'video')
+              .slice(0, CAROUSEL_3D_MAX_PHOTOS)
+              .map((p) => cloudinaryThumb(p.cloudinaryUrl, 700))}
           />
         </div>
       ) : (
