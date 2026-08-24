@@ -49,6 +49,10 @@ const orderSchema = new mongoose.Schema(
     paymentMethod: { type: String, enum: PAYMENT_METHODS, required: true },
     paymentStatus: { type: String, enum: PAYMENT_STATUSES, default: 'Pendiente' },
     source: { type: String, enum: SOURCES, default: 'landing_page' },
+    // Para pedidos que quedaron en Pendiente y nunca se concretaron -- se
+    // sacan de la vista activa del panel sin borrarlos (a diferencia de un
+    // delete, sigue quedando el registro para llevar la cuenta real).
+    archived: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

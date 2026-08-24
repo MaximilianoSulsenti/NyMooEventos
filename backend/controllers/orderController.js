@@ -181,10 +181,25 @@ async function updateOrderStatus(req, res) {
   res.json(order);
 }
 
+// Archivar/desarchivar -- para pedidos que quedaron en Pendiente y nunca se
+// concretaron. No borra nada, solo lo saca de la vista activa del panel.
+async function updateOrderArchive(req, res) {
+  const { orderId } = req.params;
+  const archived = Boolean(req.body.archived);
+
+  const order = await Order.findByIdAndUpdate(orderId, { archived }, { new: true });
+  if (!order) {
+    return res.status(404).json({ message: 'Pedido no encontrado' });
+  }
+
+  res.json(order);
+}
+
 module.exports = {
   createOrder,
   createManualOrder,
   listOrders,
   updateOrderStatus,
+  updateOrderArchive,
   PACK_PRICES,
 };
