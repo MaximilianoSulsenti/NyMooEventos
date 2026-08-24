@@ -8,6 +8,15 @@
   color-scheme: dark;
 }
 
+/* A nivel de página (no en un div interno) para blindar contra scroll
+   horizontal -- ponerlo en un wrapper interno rompe position:sticky adentro
+   (un ancestro con overflow-x distinto de "visible" pasa a ser el
+   contenedor de referencia del sticky, en vez del viewport). */
+html,
+body {
+  overflow-x: hidden;
+}
+
 .font-display {
   font-family: 'Playfair Display', ui-serif, Georgia, serif;
 }

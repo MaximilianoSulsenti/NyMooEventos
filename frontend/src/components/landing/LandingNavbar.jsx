@@ -18,16 +18,26 @@ const gradientTextStyle = {
 }
 
 function NavLink({ href, label, onClick }) {
+  // El filter de hover se anima en el MISMO elemento que tiene el
+  // background-clip:text (antes estaba en un <motion.span> hijo aparte) --
+  // separarlos hace que algunos navegadores promuevan ese hijo a su propia
+  // capa de composición al animar `filter`, y el texto (color: transparent)
+  // se renderiza sin el degradé del padre detrás: el link "desaparece"
+  // apenas se lo toca con el mouse.
   return (
-    <a href={href} onClick={onClick} className="relative text-sm font-medium group py-1" style={gradientTextStyle}>
-      <motion.span whileHover={{ filter: 'brightness(1.25)' }} className="inline-block">
-        {label}
-      </motion.span>
+    <motion.a
+      href={href}
+      onClick={onClick}
+      whileHover={{ filter: 'brightness(1.35)' }}
+      className="relative inline-block text-sm font-medium group py-1"
+      style={gradientTextStyle}
+    >
+      {label}
       <span
-        className="absolute left-0 -bottom-0.5 h-[2px] w-0 rounded-full transition-all duration-300 group-hover:w-full"
+        className="absolute left-0 -bottom-0.5 h-[2px] w-0 rounded-full transition-all duration-300 group-hover:w-full pointer-events-none"
         style={{ backgroundImage: gradientTextStyle.backgroundImage }}
       />
-    </a>
+    </motion.a>
   )
 }
 
@@ -40,9 +50,9 @@ function LandingNavbar() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/80 backdrop-blur-xl">
-      <div className="max-w-6xl mx-auto flex items-center justify-between px-4 md:px-8 py-2.5">
+      <div className="max-w-6xl mx-auto flex items-center justify-between px-4 md:px-8 py-2 sm:py-2.5">
         <button type="button" onClick={scrollToTop} aria-label="Ir al inicio" className="shrink-0">
-          <img src="/img/nymologo-navbar.png" alt="Nymoo Eventos Digitales" className="h-9 sm:h-10 w-auto" />
+          <img src="/img/nymologo-navbar.png" alt="Nymoo Eventos Digitales" className="h-14 sm:h-16 w-auto" />
         </button>
 
         <nav className="hidden md:flex items-center gap-8">

@@ -12,7 +12,7 @@ import FloatingWhatsappButton from '../components/landing/FloatingWhatsappButton
 // login del panel interno (ver App.jsx: esa ruta quedó movida y sin enlaces).
 function LandingPage() {
   return (
-    <div className="min-h-screen w-full overflow-x-hidden bg-neutral-950 text-white">
+    <div className="min-h-screen w-full bg-neutral-950 text-white">
       <AnnounceBar />
       <LandingNavbar />
       <main>
