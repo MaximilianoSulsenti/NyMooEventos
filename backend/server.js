@@ -16,6 +16,7 @@ const photoRoutes = require('./routes/photoRoutes');
 const guestRoutes = require('./routes/guestRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const backupRoutes = require('./routes/backupRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 
 validateEnv();
 
@@ -51,6 +52,7 @@ app.use('/api/photos', photoRoutes);
 app.use('/api/guests', guestRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/backup', backupRoutes);
+app.use('/api/orders', orderRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Ruta no encontrada' });
