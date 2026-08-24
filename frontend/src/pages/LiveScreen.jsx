@@ -10,7 +10,7 @@ import TypewriterText from '../components/TypewriterText'
 import Confetti from '../components/Confetti'
 import LightBeams from '../components/LightBeams'
 import EmojiRain from '../components/EmojiRain'
-import ThreeDPhotoCarousel from '../components/ui/ThreeDPhotoCarousel'
+import LiveCarousel3D from '../components/LiveCarousel3D'
 import { cloudinaryThumb, cloudinaryLarge } from '../utils/cloudinary'
 import { identityColor } from '../utils/identityColor'
 
@@ -219,11 +219,6 @@ function LiveQrPanel({ eventSlug, eventName }) {
 
 const DEFAULT_PARTY_CONFIG = { enabled: false, layout: 'grid', confetti: false, lightBeams: false, emojiRain: false }
 
-// Con muchas fotos (maxLivePhotos admite hasta 300) el cilindro 3D se vuelve
-// lento e ilegible: caras minúsculas y demasiadas para animar a la vez.
-// Este modo se ve mejor -- y rinde mejor -- con un puñado de fotos recientes.
-const CAROUSEL_3D_MAX_PHOTOS = 16
-
 function LiveScreen() {
   const { eventSlug } = useParams()
   const [event, setEvent] = useState(null)
@@ -235,11 +230,6 @@ function LiveScreen() {
   const [announcement, setAnnouncement] = useState(null)
   const [commentFeed, setCommentFeed] = useState([])
   const maxLivePhotosRef = useRef(60)
-  // El handler de sockets se registra una sola vez (deps: [eventSlug]) y
-  // por eso su closure queda "congelada" con el `party` de ese momento; sin
-  // este ref, el chequeo de "¿estamos en carousel3d?" de más abajo nunca
-  // vería un cambio de modo posterior y los comentarios dejarían de sumarse.
-  const partyRef = useRef(party)
 
   useEffect(() => {
     api
@@ -266,32 +256,11 @@ function LiveScreen() {
   }, [eventSlug])
 
   useEffect(() => {
-    partyRef.current = party
-  }, [party])
-
-  useEffect(() => {
     socket.connect()
     socket.emit('join-event', eventSlug)
 
     function handleNewPhoto(photo) {
       setPhotos((prev) => [photo, ...prev].slice(0, maxLivePhotosRef.current))
-
-      // En modo grilla cada foto ya muestra su comentario abajo, y en modo
-      // foto única el feed se arma solo cuando esa foto pasa a estar en
-      // pantalla (más abajo). El carrusel 3D no tiene un "cursor" de foto
-      // actual -- todas giran a la vez -- así que acá es donde se entera de
-      // que hay un comentario nuevo para mostrar en el feed lateral.
-      if (photo.comment && partyRef.current.enabled && partyRef.current.layout === 'carousel3d') {
-        setCommentFeed((prev) => {
-          const entry = {
-            id: photo._id,
-            text: truncateForBubble(photo.comment),
-            guestName: photo.guestName || '',
-            thumbUrl: photo.assetType === 'video' ? null : photo.cloudinaryUrl,
-          }
-          return [...prev, entry].slice(-MAX_CHAT_ITEMS)
-        })
-      }
     }
     function handlePartyConfig(config) {
       setParty(config)
@@ -336,8 +305,8 @@ function LiveScreen() {
   const animationClass = party.enabled ? 'photo-enter-party' : 'photo-enter-elegant'
 
   useEffect(() => {
-    // El carrusel 3D gira solo (rotación propia en ThreeDPhotoCarousel) --
-    // no necesita este cursor de "foto actual" que usan grilla y foto única.
+    // El carrusel 3D gira solo (rotación propia en LiveCarousel3D) -- no
+    // necesita este cursor de "foto actual" que usan grilla y foto única.
     if (photos.length === 0 || isPaused || isCarousel3D) return undefined
     const interval = setInterval(() => {
       setCursor((prev) => prev + visibleCount)
@@ -393,7 +362,7 @@ function LiveScreen() {
       {event && <BrandLogos branding={event.brandingSettings} />}
       {event?.activeModules?.photoCollection && <LiveQrPanel eventSlug={eventSlug} eventName={event.eventName} />}
       <AnimatePresence>{announcement && <AnnouncementBanner announcement={announcement} />}</AnimatePresence>
-      {!isGrid && <LiveCommentFeed items={commentFeed} />}
+      {!isGrid && !isCarousel3D && <LiveCommentFeed items={commentFeed} />}
 
       {isGrid ? (
         <div
@@ -443,14 +412,7 @@ function LiveScreen() {
           ))}
         </div>
       ) : isCarousel3D ? (
-        <div className="w-full max-w-5xl">
-          <ThreeDPhotoCarousel
-            images={photos
-              .filter((p) => p.assetType !== 'video')
-              .slice(0, CAROUSEL_3D_MAX_PHOTOS)
-              .map((p) => cloudinaryThumb(p.cloudinaryUrl, 700))}
-          />
-        </div>
+        <LiveCarousel3D photos={photos} />
       ) : (
         <PhotoCard key={`${visiblePhotos[0]._id}-${cursor}`} photo={visiblePhotos[0]} animationClass={animationClass} fit="contain" />
       )}

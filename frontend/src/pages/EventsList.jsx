@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
-import { LogOut, Plus, Calendar } from 'lucide-react'
+import { LogOut, Plus, Calendar, Pencil, Trash2 } from 'lucide-react'
 import api from '../services/api'
 import { clearSession, getStoredUser } from '../services/auth'
 import BrandBackground from '../components/BrandBackground'
@@ -20,6 +20,7 @@ function EventsList() {
   const [eventSlug, setEventSlug] = useState('')
   const [date, setDate] = useState('')
   const [createError, setCreateError] = useState('')
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null)
 
   function loadEvents() {
     setLoadState('loading')
@@ -48,6 +49,23 @@ function EventsList() {
       loadEvents()
     } catch (err) {
       setCreateError(err.response?.data?.message || 'No se pudo crear el evento')
+    }
+  }
+
+  async function handleDelete(eventId) {
+    if (confirmDeleteId !== eventId) {
+      setConfirmDeleteId(eventId)
+      setTimeout(() => setConfirmDeleteId((current) => (current === eventId ? null : current)), 3000)
+      return
+    }
+
+    setConfirmDeleteId(null)
+    const previousEvents = events
+    setEvents((prev) => prev.filter((e) => e._id !== eventId))
+    try {
+      await api.delete(`/events/${eventId}`)
+    } catch {
+      setEvents(previousEvents)
     }
   }
 
@@ -97,30 +115,54 @@ function EventsList() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
                 >
-                  <Link
-                    to={`/dashboard/${event._id}`}
-                    className="relative flex items-center gap-4 rounded-2xl bg-white/5 border border-white/10 pl-5 pr-4 py-4 overflow-hidden hover:bg-white/[0.08] hover:border-white/20 transition group"
-                  >
+                  <div className="relative flex items-center gap-2 rounded-2xl bg-white/5 border border-white/10 pl-5 pr-3 py-4 overflow-hidden hover:bg-white/[0.08] hover:border-white/20 transition group">
                     <div
                       className="absolute left-0 top-0 bottom-0 w-1"
                       style={{ background: CARD_ACCENTS[index % CARD_ACCENTS.length] }}
                     />
-                    <span
-                      className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-                      style={{
-                        background: `${CARD_ACCENTS[index % CARD_ACCENTS.length]}22`,
-                        color: CARD_ACCENTS[index % CARD_ACCENTS.length],
-                      }}
-                    >
-                      <Calendar className="w-5 h-5" />
-                    </span>
-                    <div className="min-w-0">
-                      <p className="font-medium truncate">{event.eventName}</p>
-                      <p className="text-white/40 text-sm">
-                        {new Date(event.date).toLocaleDateString('es-ES')} · /{event.eventSlug}
-                      </p>
+                    <Link to={`/dashboard/${event._id}`} className="flex items-center gap-4 min-w-0 flex-1">
+                      <span
+                        className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+                        style={{
+                          background: `${CARD_ACCENTS[index % CARD_ACCENTS.length]}22`,
+                          color: CARD_ACCENTS[index % CARD_ACCENTS.length],
+                        }}
+                      >
+                        <Calendar className="w-5 h-5" />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="font-medium truncate">{event.eventName}</p>
+                        <p className="text-white/40 text-sm">
+                          {new Date(event.date).toLocaleDateString('es-ES')} · /{event.eventSlug}
+                        </p>
+                      </div>
+                    </Link>
+
+                    <div className="flex items-center gap-1 shrink-0">
+                      <Link
+                        to={`/dashboard/${event._id}/editor`}
+                        aria-label="Editar evento"
+                        title="Editar"
+                        className="p-2 rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(event._id)}
+                        aria-label="Eliminar evento"
+                        title="Eliminar"
+                        className={`flex items-center gap-1 p-2 rounded-lg transition ${
+                          confirmDeleteId === event._id
+                            ? 'bg-red-600 text-white px-2.5'
+                            : 'text-white/40 hover:text-red-400 hover:bg-red-500/10'
+                        }`}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        {confirmDeleteId === event._id && <span className="text-xs whitespace-nowrap">¿Seguro?</span>}
+                      </button>
                     </div>
-                  </Link>
+                  </div>
                 </motion.div>
               ))}
             </div>
