@@ -1,10 +1,10 @@
-import { Download, MessageCircle, Video } from 'lucide-react'
+import { Download, MessageCircle, Video, Printer } from 'lucide-react'
 import { cloudinaryThumb } from '../../utils/cloudinary'
 import { identityColor } from '../../utils/identityColor'
 import { messagesToCsv, downloadCsv } from '../../utils/csv'
 import { getContrastTextColor } from '../../utils/color'
 
-function MessageBook({ photos, eventSlug, primaryColor }) {
+function MessageBook({ photos, eventSlug, token, primaryColor }) {
   const messages = photos
     .filter((photo) => photo.status === 'aprobada' && (photo.comment || photo.guestName))
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
@@ -14,6 +14,11 @@ function MessageBook({ photos, eventSlug, primaryColor }) {
     downloadCsv(csv, `mensajes-${eventSlug}.csv`)
   }
 
+  // Vista aparte, con estética de libro de firmas (fondo claro, tipografía
+  // cursiva, foto + mensaje) pensada para imprimir o guardar como PDF --
+  // el CSV es un dato crudo para trabajar, esto es para guardar el recuerdo.
+  const printUrl = `${window.location.origin}/evento/${encodeURIComponent(eventSlug)}/libro-de-firmas?token=${encodeURIComponent(token)}`
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-3">
@@ -22,15 +27,26 @@ function MessageBook({ photos, eventSlug, primaryColor }) {
           Libro de mensajes
         </h2>
         {messages.length > 0 && (
-          <button
-            type="button"
-            onClick={handleExport}
-            className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition hover:brightness-110 shadow-lg"
-            style={{ background: primaryColor, color: getContrastTextColor(primaryColor) }}
-          >
-            <Download className="w-4 h-4" />
-            Exportar CSV
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <a
+              href={printUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition hover:brightness-110 shadow-lg"
+              style={{ background: primaryColor, color: getContrastTextColor(primaryColor) }}
+            >
+              <Printer className="w-4 h-4" />
+              Libro de firmas (PDF)
+            </a>
+            <button
+              type="button"
+              onClick={handleExport}
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition bg-white/10 hover:bg-white/15 border border-white/10"
+            >
+              <Download className="w-4 h-4" />
+              Exportar CSV
+            </button>
+          </div>
         )}
       </div>
 

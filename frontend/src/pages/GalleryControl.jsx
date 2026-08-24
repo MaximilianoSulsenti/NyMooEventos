@@ -684,7 +684,7 @@ function GalleryControl() {
 
         {event?.activeModules?.messageBook && (
           <div className="pt-2 border-t border-white/10">
-            <MessageBook photos={photos} eventSlug={eventSlug} primaryColor={primaryColor} />
+            <MessageBook photos={photos} eventSlug={eventSlug} token={token} primaryColor={primaryColor} />
           </div>
         )}
       </GlassPanel>
