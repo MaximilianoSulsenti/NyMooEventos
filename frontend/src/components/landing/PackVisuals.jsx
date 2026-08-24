@@ -81,7 +81,7 @@ function ViveVisual({ color }) {
         <motion.div
           key={i}
           className="absolute w-9 h-7 rounded-md bg-white/15 border border-white/25 backdrop-blur-md"
-          style={{ left: p.left, top: p.top, rotate: p.rotate }}
+          style={{ left: p.left, top: p.top, rotate: `${p.rotate}deg` }}
           animate={{ y: [0, -7, 0] }}
           transition={{ duration: p.duration, repeat: Infinity, ease: 'easeInOut', delay: p.delay }}
         />

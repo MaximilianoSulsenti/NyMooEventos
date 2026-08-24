@@ -55,7 +55,9 @@ function PackCard({ pack, index }) {
             className="absolute w-40 h-40 rounded-full blur-2xl opacity-40"
             style={{ background: pack.accentColor }}
           />
-          <div className="relative">{Visual && <Visual color={pack.accentColor} />}</div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            {Visual && <Visual color={pack.accentColor} />}
+          </div>
         </div>
 
         <h3 className="text-lg font-bold mb-1.5">{pack.name}</h3>
