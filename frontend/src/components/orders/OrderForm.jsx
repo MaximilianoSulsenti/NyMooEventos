@@ -1,10 +1,24 @@
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
+import { Check } from 'lucide-react'
+import { cn } from '../../utils/cn'
 import { BRAND } from '../../utils/brand'
-import { EVENT_TYPE_OPTIONS, THEME_OPTIONS, TYPOGRAPHY_OPTIONS } from '../../utils/orderForm'
+import {
+  EVENT_TYPE_OPTIONS,
+  THEME_OPTIONS,
+  TYPOGRAPHY_OPTIONS,
+  TYPOGRAPHY_PREVIEW_CLASS,
+  CUSTOM_TYPOGRAPHY_VALUE,
+  COLOR_PRESETS,
+} from '../../utils/orderForm'
 
 const inputClass =
   'w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm outline-none transition-colors focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30'
 const labelClass = 'block text-sm text-white/60 mb-1.5'
+// Los <option> de un <select> se renderizan con la UI nativa del navegador,
+// no con el CSS de la página -- sin fondo/color explícitos, en Windows salen
+// con fondo blanco y el texto blanco heredado de acá arriba queda invisible.
+const optionClass = 'bg-neutral-800 text-white'
 
 function Field({ label, children }) {
   return (
@@ -27,20 +41,105 @@ function SectionCard({ title, subtitle, children }) {
   )
 }
 
+// Elegir un color "a ojo" por nombre (más orgánico que pensar en hex) con
+// una grilla de muestras, más un selector nativo + campo de texto al lado
+// para quien quiera un tono exacto.
 function ColorInput({ label, value, onChange }) {
+  const normalized = value?.toLowerCase()
   return (
     <div>
       <label className={labelClass}>{label}</label>
+      <div className="flex flex-wrap gap-2 mb-2.5">
+        {COLOR_PRESETS.map((preset) => {
+          const isSelected = normalized === preset.hex.toLowerCase()
+          return (
+            <button
+              key={preset.hex}
+              type="button"
+              title={preset.name}
+              aria-label={preset.name}
+              onClick={() => onChange(preset.hex)}
+              className="relative w-7 h-7 rounded-full shrink-0 transition-transform hover:scale-110"
+              style={{
+                background: preset.hex,
+                boxShadow: isSelected ? `0 0 0 2px #0a0a0a, 0 0 0 4px ${preset.hex}` : '0 0 0 1px rgba(255,255,255,0.15)',
+              }}
+            >
+              {isSelected && (
+                <Check
+                  className="w-3.5 h-3.5 absolute inset-0 m-auto"
+                  style={{ color: preset.hex === '#FFFFFF' || preset.hex === '#F4EFE6' ? '#111' : '#fff' }}
+                />
+              )}
+            </button>
+          )
+        })}
+      </div>
       <div className="flex items-center gap-2">
         <input
           type="color"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className="w-11 h-11 rounded-lg cursor-pointer bg-transparent border border-white/10 shrink-0"
+          title="Elegir un tono exacto"
         />
-        <input type="text" value={value} onChange={(e) => onChange(e.target.value)} className={inputClass} />
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="#RRGGBB"
+          className={inputClass}
+        />
       </div>
     </div>
+  )
+}
+
+function TypographyField({ value, onChange }) {
+  const isCustom = Boolean(value) && !TYPOGRAPHY_OPTIONS.includes(value)
+  const [customMode, setCustomMode] = useState(isCustom)
+  const selectValue = customMode ? CUSTOM_TYPOGRAPHY_VALUE : value
+
+  function handleSelect(next) {
+    if (next === CUSTOM_TYPOGRAPHY_VALUE) {
+      setCustomMode(true)
+      onChange('')
+      return
+    }
+    setCustomMode(false)
+    onChange(next)
+  }
+
+  return (
+    <Field label="Tipografía sugerida">
+      <select value={selectValue} onChange={(e) => handleSelect(e.target.value)} className={inputClass}>
+        <option value="" className={optionClass}>
+          Elegir...
+        </option>
+        {TYPOGRAPHY_OPTIONS.map((opt) => (
+          <option key={opt} value={opt} className={optionClass}>
+            {opt}
+          </option>
+        ))}
+        <option value={CUSTOM_TYPOGRAPHY_VALUE} className={optionClass}>
+          Otra (especificarla yo)
+        </option>
+      </select>
+
+      {TYPOGRAPHY_PREVIEW_CLASS[value] && (
+        <p className={cn('mt-2 text-lg', TYPOGRAPHY_PREVIEW_CLASS[value])}>Así se ve esta tipografía</p>
+      )}
+
+      {customMode && (
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="Nombre de la tipografía que te gusta"
+          className={cn(inputClass, 'mt-2.5')}
+        />
+      )}
+    </Field>
   )
 }
 
@@ -90,9 +189,11 @@ function OrderForm({ form, onField }) {
               onChange={(e) => update('eventData', 'eventType', e.target.value)}
               className={inputClass}
             >
-              <option value="">Elegir...</option>
+              <option value="" className={optionClass}>
+                Elegir...
+              </option>
               {EVENT_TYPE_OPTIONS.map((opt) => (
-                <option key={opt} value={opt}>
+                <option key={opt} value={opt} className={optionClass}>
                   {opt}
                 </option>
               ))}
@@ -143,28 +244,20 @@ function OrderForm({ form, onField }) {
               onChange={(e) => update('designPresets', 'theme', e.target.value)}
               className={inputClass}
             >
-              <option value="">Elegir...</option>
+              <option value="" className={optionClass}>
+                Elegir...
+              </option>
               {THEME_OPTIONS.map((opt) => (
-                <option key={opt} value={opt}>
+                <option key={opt} value={opt} className={optionClass}>
                   {opt}
                 </option>
               ))}
             </select>
           </Field>
-          <Field label="Tipografía sugerida">
-            <select
-              value={form.designPresets.typography}
-              onChange={(e) => update('designPresets', 'typography', e.target.value)}
-              className={inputClass}
-            >
-              <option value="">Elegir...</option>
-              {TYPOGRAPHY_OPTIONS.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
-          </Field>
+          <TypographyField
+            value={form.designPresets.typography}
+            onChange={(v) => update('designPresets', 'typography', v)}
+          />
         </div>
         <div className="grid sm:grid-cols-3 gap-4">
           <ColorInput
@@ -225,11 +318,11 @@ function OrderForm({ form, onField }) {
               <div className="grid sm:grid-cols-2 gap-4 pt-4">
                 <Field label="Precio por tarjeta">
                   <input
-                    type="number"
-                    min={0}
+                    type="text"
+                    inputMode="decimal"
                     value={form.guestCardDetails.pricePerCard}
                     onChange={(e) => update('guestCardDetails', 'pricePerCard', e.target.value)}
-                    placeholder="$"
+                    placeholder="Ej: $15.000, USD 20, a confirmar..."
                     className={inputClass}
                   />
                 </Field>
@@ -270,7 +363,7 @@ function OrderForm({ form, onField }) {
               className={inputClass}
             />
           </Field>
-          <Field label="Datos bancarios (alias/CBU para regalos)">
+          <Field label="Datos bancarios (opcional)">
             <input
               type="text"
               value={form.additionalInfo.bankDetails}
@@ -278,6 +371,9 @@ function OrderForm({ form, onField }) {
               placeholder="alias.banco"
               className={inputClass}
             />
+            <p className="text-white/30 text-xs mt-1">
+              Solo si querés que lo incluyamos en la sección de regalos -- no es obligatorio.
+            </p>
           </Field>
           <div className="sm:col-span-2">
             <Field label="Otros tips importantes">

@@ -1,12 +1,11 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { Check, CreditCard, Layers } from 'lucide-react'
-import { WhatsappIcon } from '../icons/BrandIcons'
 import Button from '../ui/Button'
 import { cn } from '../../utils/cn'
 import { shadeColor } from '../../utils/color'
 import { BRAND } from '../../utils/brand'
-import { LANDING_CONTACT, LANDING_PACKS, buildWhatsappUrl } from '../../utils/landingConfig'
+import { LANDING_PACKS } from '../../utils/landingConfig'
 import { PACK_VISUALS } from './PackVisuals'
 
 const BRAND_GRADIENT = `linear-gradient(90deg, ${BRAND.blue}, ${BRAND.violet}, ${BRAND.pink})`
@@ -87,32 +86,20 @@ function PackCard({ pack, index }) {
           ))}
         </ul>
 
-        <div className="flex flex-col gap-2.5">
-          {/* Lleva al checkout propio -- ahí el pedido queda guardado en
-              MongoDB y, si hay credenciales reales de Mercado Pago
-              configuradas, redirige a la pasarela; si no, cae a WhatsApp con
-              el pedido ya cargado (ver Checkout.jsx / orderController.js). */}
-          <Button as={Link} to={`/checkout?pack=${pack.id}`} className="w-full py-2.5">
-            <span className="flex flex-col items-center leading-tight text-center">
-              <span className="flex items-center gap-2 text-sm font-semibold">
-                <CreditCard className="w-4 h-4" />
-                Comprar por WhatsApp o Mercado Pago
-              </span>
-              <span className="text-[11px] font-normal text-white/60">En 3 cuotas</span>
+        {/* Un solo botón, bien protagonista -- lleva al checkout propio,
+            donde el pedido queda guardado en MongoDB y, si hay credenciales
+            reales de Mercado Pago configuradas, redirige a la pasarela; si
+            no, cae a WhatsApp con el pedido ya cargado (ver Checkout.jsx /
+            orderController.js). */}
+        <Button as={Link} to={`/checkout?pack=${pack.id}`} primaryColor={pack.accentColor} className="w-full py-3.5 shadow-lg">
+          <span className="flex flex-col items-center leading-tight text-center">
+            <span className="flex items-center gap-2 text-sm font-bold">
+              <CreditCard className="w-4 h-4" />
+              Comprar por WhatsApp o Mercado Pago
             </span>
-          </Button>
-          <Button
-            as="a"
-            href={buildWhatsappUrl(pack.whatsappMessage, LANDING_CONTACT.whatsappNumber)}
-            target="_blank"
-            rel="noreferrer"
-            primaryColor="#25D366"
-            className="w-full text-sm py-2.5"
-          >
-            <WhatsappIcon className="w-4 h-4" />
-            Consultar por WhatsApp
-          </Button>
-        </div>
+            <span className="text-[11px] font-medium opacity-80">En 3 cuotas</span>
+          </span>
+        </Button>
       </div>
     </motion.div>
   )

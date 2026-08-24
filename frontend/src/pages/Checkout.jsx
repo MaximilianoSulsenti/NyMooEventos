@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { Sparkles, CreditCard, Check } from 'lucide-react'
@@ -72,6 +72,13 @@ function Checkout() {
   const [status, setStatus] = useState('idle') // idle | submitting | error
   const [errorMessage, setErrorMessage] = useState('')
 
+  // Se llega acá con <Link> desde la landing (navegación de cliente, sin
+  // recarga de página) -- el navegador no resetea el scroll solo, así que
+  // sin esto el checkout "empieza" donde haya quedado scrolleada la landing.
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
   const selectedPack = LANDING_PACKS.find((p) => p.id === selectedPackId)
 
   function updateField(section, field, value) {
@@ -93,7 +100,7 @@ function Checkout() {
         ...form,
         guestCardDetails: {
           ...form.guestCardDetails,
-          pricePerCard: form.guestCardDetails.hasCost ? Number(form.guestCardDetails.pricePerCard) || 0 : 0,
+          pricePerCard: form.guestCardDetails.hasCost ? form.guestCardDetails.pricePerCard : '',
         },
         packDetails: { packName: selectedPack.name },
         paymentMethod,

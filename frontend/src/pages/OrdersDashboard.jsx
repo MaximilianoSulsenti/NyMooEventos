@@ -75,7 +75,7 @@ function OrderDetails({ order }) {
       {order.guestCardDetails?.hasCost && (
         <div className="space-y-1 sm:col-span-2 pt-2 border-t border-white/10">
           <p className="text-white/40 text-xs uppercase tracking-wide mb-1">Tarjeta con costo</p>
-          <p className="text-white/70">Precio por tarjeta: {currency(order.guestCardDetails.pricePerCard)}</p>
+          <p className="text-white/70">Precio por tarjeta: {order.guestCardDetails.pricePerCard || '—'}</p>
           <p className="text-white/70">Menú: {order.guestCardDetails.includesMenuDetails || '—'}</p>
           <p className="text-white/70">Pago invitados: {order.guestCardDetails.paymentInstructions || '—'}</p>
         </div>
@@ -115,7 +115,7 @@ function ManualOrderModal({ onClose, onCreated }) {
         ...form,
         guestCardDetails: {
           ...form.guestCardDetails,
-          pricePerCard: form.guestCardDetails.hasCost ? Number(form.guestCardDetails.pricePerCard) || 0 : 0,
+          pricePerCard: form.guestCardDetails.hasCost ? form.guestCardDetails.pricePerCard : '',
         },
         packDetails: { packName: pack.name },
         paymentMethod,
@@ -158,7 +158,7 @@ function ManualOrderModal({ onClose, onCreated }) {
                 className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm outline-none"
               >
                 {LANDING_PACKS.map((p) => (
-                  <option key={p.id} value={p.id}>
+                  <option key={p.id} value={p.id} className="text-white bg-neutral-800">
                     {p.name} · {p.price}
                   </option>
                 ))}
@@ -172,7 +172,7 @@ function ManualOrderModal({ onClose, onCreated }) {
                 className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm outline-none"
               >
                 {PAYMENT_STATUSES.map((s) => (
-                  <option key={s} value={s}>
+                  <option key={s} value={s} className="text-white bg-neutral-800">
                     {s}
                   </option>
                 ))}
@@ -189,8 +189,12 @@ function ManualOrderModal({ onClose, onCreated }) {
               onChange={(e) => setPaymentMethod(e.target.value)}
               className="w-full sm:w-64 rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm outline-none"
             >
-              <option value="whatsapp_coordinar">Coordinado por WhatsApp</option>
-              <option value="mercado_pago">Mercado Pago</option>
+              <option value="whatsapp_coordinar" className="text-white bg-neutral-800">
+                Coordinado por WhatsApp
+              </option>
+              <option value="mercado_pago" className="text-white bg-neutral-800">
+                Mercado Pago
+              </option>
             </select>
           </div>
 
