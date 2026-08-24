@@ -81,13 +81,46 @@ function BrandBlock({ eventId, label, brand, onChange }) {
   )
 }
 
-function BrandingPanel({ eventId, branding, isAdmin, onChangeMyBrand, onChangeClientBrand }) {
+function SalonBackgroundBlock({ eventId, imageUrl, opacity, onChange }) {
+  return (
+    <div className="space-y-3 rounded-xl bg-white/5 border border-white/10 p-3" style={{ '--accent': BRAND.blue }}>
+      <span className="text-sm font-medium">Fondo de la pantalla del salón</span>
+      <p className="text-xs text-neutral-500">
+        Imagen a pantalla completa detrás de las fotos en la Pantalla en Vivo -- para otros organizadores que quieran
+        ambientar la proyección con su propio branding.
+      </p>
+      <ImageUploadField eventId={eventId} label="Imagen de fondo" value={imageUrl || ''} onChange={(url) => onChange({ salonBgImageUrl: url })} />
+      {imageUrl && (
+        <div>
+          <label className="block text-xs text-neutral-400 mb-1">Opacidad: {opacity}%</label>
+          <input
+            type="range"
+            min={0}
+            max={100}
+            step={5}
+            value={opacity}
+            onChange={(e) => onChange({ salonBgOpacity: Number(e.target.value) })}
+            className="w-full accent-[var(--accent)]"
+          />
+        </div>
+      )}
+    </div>
+  )
+}
+
+function BrandingPanel({ eventId, branding, isAdmin, onChangeMyBrand, onChangeClientBrand, onChangeSalonBg }) {
   return (
     <div className="space-y-3">
       {isAdmin && (
         <BrandBlock eventId={eventId} label="Mi marca (NyMoo)" brand={branding.myBrand} onChange={onChangeMyBrand} />
       )}
       <BrandBlock eventId={eventId} label="Marca del cliente / salón" brand={branding.clientBrand} onChange={onChangeClientBrand} />
+      <SalonBackgroundBlock
+        eventId={eventId}
+        imageUrl={branding.salonBgImageUrl}
+        opacity={branding.salonBgOpacity ?? 40}
+        onChange={onChangeSalonBg}
+      />
     </div>
   )
 }

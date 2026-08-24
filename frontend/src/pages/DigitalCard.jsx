@@ -7,6 +7,7 @@ import GlobalBackground from '../sections/GlobalBackground'
 import Envelope from '../components/Envelope'
 import MusicPlayerWidget from '../components/MusicPlayerWidget'
 import ScrollProgressBar from '../components/ScrollProgressBar'
+import usePremiumGuest from '../hooks/usePremiumGuest'
 import { getThemeStyles } from '../sections/theming'
 
 function DigitalCard() {
@@ -14,6 +15,10 @@ function DigitalCard() {
   const [event, setEvent] = useState(null)
   const [loadState, setLoadState] = useState('loading') // loading | ready | not-found | error
   const [envelopeOpen, setEnvelopeOpen] = useState(false)
+  // Invitación VIP (Nymoo VIVE): si la URL trae ?guest=<passcode>, resuelve
+  // el nombre del invitado para saludarlo por su nombre en el sobre --
+  // mismo hook que ya usa Hero.jsx para el pill "¡Hola, {nombre}!".
+  const premiumGuest = usePremiumGuest(event)
 
   useEffect(() => {
     let isMounted = true
@@ -92,6 +97,7 @@ function DigitalCard() {
         <Envelope
           settings={event.envelopeSettings}
           appearance={appearance}
+          guestName={premiumGuest?.name}
           onOpen={() => setEnvelopeOpen(true)}
         />
       )}

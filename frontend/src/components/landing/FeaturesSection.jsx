@@ -39,7 +39,7 @@ const FEATURES = [
   { icon: Volume2, label: 'Música ambiente', description: 'Un tema de fondo sonando apenas se abre la invitación.', color: BRAND.violet },
   { icon: CalendarClock, label: 'Cronograma de la fiesta', description: 'Horarios de cada momento, minuto a minuto.', color: BRAND.pink },
   { icon: Gift, label: 'Lista de regalos o colecta', description: 'Alias o CBU para que los invitados puedan colaborar.', color: BRAND.orange },
-  { icon: InstagramIcon, label: 'Instagram del evento', description: 'Invitá a tus invitados a compartir y etiquetar sus fotos.', color: BRAND.lime },
+  { icon: InstagramIcon, label: 'Instagram del evento', description: 'Conectá la red social oficial de tu celebración para que todos sigan el minuto a minuto del gran día en un clic.', color: BRAND.lime },
   { icon: Info, label: 'Información adicional', description: 'Traslados, hospedaje, estacionamiento o lo que necesites aclarar.', color: BRAND.blue },
 ]
 

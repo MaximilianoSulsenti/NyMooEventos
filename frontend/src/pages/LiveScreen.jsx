@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
 import { Video } from 'lucide-react'
+import { QRCodeCanvas } from 'qrcode.react'
 import api from '../services/api'
 import socket from '../services/socket'
 import BrandLogos from '../components/BrandLogos'
@@ -9,6 +10,7 @@ import TypewriterText from '../components/TypewriterText'
 import Confetti from '../components/Confetti'
 import LightBeams from '../components/LightBeams'
 import EmojiRain from '../components/EmojiRain'
+import ThreeDPhotoCarousel from '../components/ui/ThreeDPhotoCarousel'
 import { cloudinaryThumb, cloudinaryLarge } from '../utils/cloudinary'
 import { identityColor } from '../utils/identityColor'
 
@@ -175,6 +177,40 @@ function AnnouncementBanner({ announcement }) {
   )
 }
 
+// Fondo de marca a pantalla completa para la pantalla del salón -- distinto
+// de BrandLogos (watermarks chicos en una esquina), esto ambienta toda la
+// proyección detrás de las fotos.
+function SalonBackground({ branding }) {
+  if (!branding?.salonBgImageUrl) return null
+  return (
+    <div
+      className="fixed inset-0 -z-10 bg-cover bg-center"
+      style={{
+        backgroundImage: `url(${branding.salonBgImageUrl})`,
+        opacity: (branding.salonBgOpacity ?? 40) / 100,
+      }}
+    />
+  )
+}
+
+// Panel de QR fijo para que los invitados escaneen y suban fotos desde la
+// pista de baile en cualquier momento -- arriba a la derecha, lejos del
+// feed de comentarios (centro derecha) y de donde por defecto caen las
+// marcas de agua (abajo derecha).
+function LiveQrPanel({ eventSlug, eventName }) {
+  const uploadUrl = `${window.location.origin}/evento/${encodeURIComponent(eventSlug)}/upload`
+  return (
+    <div className="fixed top-4 right-4 sm:top-6 sm:right-6 z-30 flex flex-col items-center gap-2 backdrop-blur-md bg-black/30 border border-white/10 rounded-2xl p-3 sm:p-4 shadow-2xl">
+      <div className="bg-white p-2 rounded-xl">
+        <QRCodeCanvas value={uploadUrl} size={92} level="M" />
+      </div>
+      <p className="text-white/70 text-[10px] sm:text-[11px] font-light italic tracking-wide text-center max-w-[100px] leading-tight">
+        {eventName}
+      </p>
+    </div>
+  )
+}
+
 const DEFAULT_PARTY_CONFIG = { enabled: false, layout: 'grid', confetti: false, lightBeams: false, emojiRain: false }
 
 function LiveScreen() {
@@ -257,22 +293,25 @@ function LiveScreen() {
   }, [eventSlug])
 
   const isGrid = party.enabled && party.layout === 'grid'
+  const isCarousel3D = party.enabled && party.layout === 'carousel3d'
   const visibleCount = isGrid ? 6 : 1
   const intervalMs = (speedSeconds ?? (party.enabled ? 3 : 7)) * 1000
   const animationClass = party.enabled ? 'photo-enter-party' : 'photo-enter-elegant'
 
   useEffect(() => {
-    if (photos.length === 0 || isPaused) return undefined
+    // El carrusel 3D gira solo (rotación propia en ThreeDPhotoCarousel) --
+    // no necesita este cursor de "foto actual" que usan grilla y foto única.
+    if (photos.length === 0 || isPaused || isCarousel3D) return undefined
     const interval = setInterval(() => {
       setCursor((prev) => prev + visibleCount)
     }, intervalMs)
     return () => clearInterval(interval)
-  }, [photos.length, visibleCount, intervalMs, isPaused])
+  }, [photos.length, visibleCount, intervalMs, isPaused, isCarousel3D])
 
   // Modo elegante (foto única): cada vez que cambia la foto en pantalla, si
-  // tiene comentario se agrega al feed tipo chat. En modo grilla no se usa
-  // (cada foto ya muestra el suyo abajo, no hay lugar para un feed al costado).
-  const currentSinglePhoto = !isGrid && photos.length > 0 ? photos[cursor % photos.length] : null
+  // tiene comentario se agrega al feed tipo chat. En modo grilla y carrusel
+  // 3D no se usa (no hay un cursor de "foto actual" que avance solo).
+  const currentSinglePhoto = !isGrid && !isCarousel3D && photos.length > 0 ? photos[cursor % photos.length] : null
   const currentSingleKey = currentSinglePhoto ? `${currentSinglePhoto._id}-${cursor}` : null
 
   useEffect(() => {
@@ -294,7 +333,9 @@ function LiveScreen() {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center text-neutral-600">
         Esperando las primeras fotos...
+        {event && <SalonBackground branding={event.brandingSettings} />}
         {event && <BrandLogos branding={event.brandingSettings} />}
+        {event?.activeModules?.photoCollection && <LiveQrPanel eventSlug={eventSlug} eventName={event.eventName} />}
       </div>
     )
   }
@@ -309,9 +350,11 @@ function LiveScreen() {
       {party.enabled && party.lightBeams && <LightBeams />}
       {party.enabled && party.confetti && <Confetti />}
       {party.enabled && party.emojiRain && <EmojiRain />}
+      {event && <SalonBackground branding={event.brandingSettings} />}
       {event && <BrandLogos branding={event.brandingSettings} />}
+      {event?.activeModules?.photoCollection && <LiveQrPanel eventSlug={eventSlug} eventName={event.eventName} />}
       <AnimatePresence>{announcement && <AnnouncementBanner announcement={announcement} />}</AnimatePresence>
-      {!isGrid && <LiveCommentFeed items={commentFeed} />}
+      {!isGrid && !isCarousel3D && <LiveCommentFeed items={commentFeed} />}
 
       {isGrid ? (
         <div
@@ -359,6 +402,12 @@ function LiveScreen() {
               )}
             </div>
           ))}
+        </div>
+      ) : isCarousel3D ? (
+        <div className="w-full max-w-5xl">
+          <ThreeDPhotoCarousel
+            images={photos.filter((p) => p.assetType !== 'video').map((p) => cloudinaryThumb(p.cloudinaryUrl, 700))}
+          />
         </div>
       ) : (
         <PhotoCard key={`${visiblePhotos[0]._id}-${cursor}`} photo={visiblePhotos[0]} animationClass={animationClass} fit="contain" />

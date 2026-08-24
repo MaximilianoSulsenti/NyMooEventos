@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { motion } from 'motion/react'
-import { Play, Pause, Megaphone, X, Tv, QrCode as QrCodeIcon, Trash2, Download } from 'lucide-react'
+import { Play, Pause, Megaphone, X, Tv, QrCode as QrCodeIcon, Trash2, Download, Images, Check } from 'lucide-react'
 import api from '../services/api'
 import socket from '../services/socket'
 import PageBackground from '../components/PageBackground'
@@ -57,6 +57,7 @@ function GalleryControl() {
   const token = searchParams.get('token')
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
+  const [albumLinkCopied, setAlbumLinkCopied] = useState(false)
   const [confirmDeleteId, setConfirmDeleteId] = useState(null)
   const [photos, setPhotos] = useState([])
   const [event, setEvent] = useState(null)
@@ -311,6 +312,17 @@ function GalleryControl() {
   const primaryColor = event?.appearance?.primaryColor || '#a855f7'
 
   const liveFeedUrl = `${window.location.origin}/evento/${encodeURIComponent(eventSlug)}/live-feed`
+  const publicAlbumUrl = `${window.location.origin}/evento/${encodeURIComponent(eventSlug)}/album-publico`
+
+  async function handleCopyAlbumLink() {
+    try {
+      await navigator.clipboard.writeText(publicAlbumUrl)
+      setAlbumLinkCopied(true)
+      setTimeout(() => setAlbumLinkCopied(false), 1500)
+    } catch {
+      setAlbumLinkCopied(false)
+    }
+  }
 
   return (
     <div className={`relative min-h-screen w-full overflow-x-hidden text-white px-4 sm:px-6 py-6 sm:py-10 ${styles.fontClass}`}>
@@ -324,7 +336,7 @@ function GalleryControl() {
         <div className="space-y-4">
           <h1 className="text-xl sm:text-2xl font-semibold">Hub de la Galería</h1>
 
-          <div className="grid grid-cols-2 sm:flex sm:flex-row gap-3">
+          <div className="grid grid-cols-1 sm:flex sm:flex-row sm:flex-wrap gap-3">
             {event?.activeModules?.liveGallery && (
               <motion.a
                 href={liveFeedUrl}
@@ -332,18 +344,30 @@ function GalleryControl() {
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex flex-col sm:flex-row items-center justify-center gap-2 px-4 py-3 sm:py-2.5 rounded-xl sm:rounded-full bg-white/10 hover:bg-white/15 border border-white/20 transition text-sm font-medium text-center shadow-lg"
+                className="flex flex-row items-center justify-center gap-2 px-4 py-3 sm:py-2.5 rounded-xl sm:rounded-full bg-white/10 hover:bg-white/15 border border-white/20 transition text-sm font-medium text-center shadow-lg"
               >
                 <Tv className="w-5 h-5 sm:w-4 sm:h-4" />
                 Ver Pantalla en Vivo
               </motion.a>
+            )}
+            {event?.activeModules?.liveGallery && (
+              <motion.button
+                type="button"
+                onClick={handleCopyAlbumLink}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="flex flex-row items-center justify-center gap-2 px-4 py-3 sm:py-2.5 rounded-xl sm:rounded-full bg-white/10 hover:bg-white/15 border border-white/20 transition text-sm font-medium text-center shadow-lg"
+              >
+                {albumLinkCopied ? <Check className="w-5 h-5 sm:w-4 sm:h-4" /> : <Images className="w-5 h-5 sm:w-4 sm:h-4" />}
+                {albumLinkCopied ? 'Enlace copiado' : 'Copiar Enlace de Álbum para Invitados'}
+              </motion.button>
             )}
             <motion.button
               type="button"
               onClick={() => setIsUploadModalOpen(true)}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-2 px-4 py-3 sm:py-2.5 rounded-xl sm:rounded-full transition text-sm font-medium text-center shadow-lg"
+              className="flex flex-row items-center justify-center gap-2 px-4 py-3 sm:py-2.5 rounded-xl sm:rounded-full transition text-sm font-medium text-center shadow-lg"
               style={{ background: primaryColor, color: getContrastTextColor(primaryColor) }}
             >
               <QrCodeIcon className="w-5 h-5 sm:w-4 sm:h-4" />
@@ -438,6 +462,7 @@ function GalleryControl() {
                 >
                   <option value="grid">Cuadrícula (varias fotos)</option>
                   <option value="single">Foto única, más rápido</option>
+                  <option value="carousel3d">Carrusel 3D (efecto premium)</option>
                 </select>
               </div>
 

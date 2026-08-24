@@ -10,6 +10,7 @@ import UploadPage from './pages/UploadPage'
 import LiveScreen from './pages/LiveScreen'
 import StatsDashboard from './pages/StatsDashboard'
 import GalleryControl from './pages/GalleryControl'
+import PublicAlbum from './pages/PublicAlbum'
 
 function NotFound() {
   return (
@@ -56,6 +57,7 @@ function App() {
       <Route path="/evento/:eventSlug/live-feed" element={<LiveScreen />} />
       <Route path="/evento/:eventSlug/stats-dashboard" element={<StatsDashboard />} />
       <Route path="/evento/:eventSlug/gallery-control" element={<GalleryControl />} />
+      <Route path="/evento/:eventSlug/album-publico" element={<PublicAlbum />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   )

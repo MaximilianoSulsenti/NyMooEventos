@@ -39,7 +39,7 @@ const FLAP_CLIP_PATH = 'polygon(0 0, 100% 0, 100% 74%, 50% 100%, 0 74%)'
 // solapa) -- ahí es donde se apoyan las costuras y el sello de cera.
 const FLAP_TIP_Y = FLAP_HEIGHT_PERCENT
 
-function Envelope({ settings, appearance, onOpen }) {
+function Envelope({ settings, appearance, guestName, onOpen }) {
   const [opening, setOpening] = useState(false)
   const fontClass = FONT_FAMILY_CLASSES[settings.fontFamily] || 'font-sans'
   const bgColor = settings.bgColor || '#0a0a0a'
@@ -104,6 +104,20 @@ function Envelope({ settings, appearance, onOpen }) {
             animate={{ opacity: opening ? 0 : 1, y: opening ? 10 : 0 }}
             transition={{ duration: 0.3, delay: opening ? 0 : 0.2 }}
           >
+            {/* Invitación VIP: si se resolvió el invitado por ?guest=<passcode>
+                (Nymoo VIVE), lo saluda por su nombre en cursiva -- no
+                reemplaza el texto de la solapa, se suma arriba del botón. */}
+            {guestName && (
+              <motion.p
+                className="font-script text-xl sm:text-2xl mb-2 text-center drop-shadow-lg"
+                style={{ color: appearance.primaryColor }}
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: opening ? 0 : 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.15 }}
+              >
+                ¡Hola {guestName}!
+              </motion.p>
+            )}
             <motion.div
               animate={{ y: [0, -5, 0] }}
               transition={{ repeat: Infinity, duration: 2.6, ease: 'easeInOut' }}

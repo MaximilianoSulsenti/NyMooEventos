@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Copy } from 'lucide-react'
 import api from '../services/api'
 import { getStoredUser } from '../services/auth'
 import AppearancePanel from '../components/editor/AppearancePanel'
@@ -23,7 +24,9 @@ function snapshotOf(state) {
 
 function EventEditor() {
   const { eventId } = useParams()
+  const navigate = useNavigate()
   const isAdmin = Boolean(getStoredUser()?.isAdmin)
+  const [duoState, setDuoState] = useState('idle') // idle | creating | error
   const [event, setEvent] = useState(null)
   const [appearance, setAppearance] = useState(null)
   const [envelopeSettings, setEnvelopeSettings] = useState(null)
@@ -97,7 +100,11 @@ function EventEditor() {
       const calls = [
         api.patch(`/events/${eventId}/appearance`, appearance),
         api.patch(`/events/${eventId}/envelope`, envelopeSettings),
-        api.patch(`/events/${eventId}/branding/client`, branding.clientBrand),
+        api.patch(`/events/${eventId}/branding/client`, {
+          ...branding.clientBrand,
+          salonBgImageUrl: branding.salonBgImageUrl,
+          salonBgOpacity: branding.salonBgOpacity,
+        }),
         api.patch(`/events/${eventId}/upload-page`, uploadPageSettings),
         api.patch(`/events/${eventId}/gallery-settings`, gallerySettings),
         api.patch(`/events/${eventId}/music`, musicSettings),
@@ -124,6 +131,21 @@ function EventEditor() {
       setTimeout(() => setSaveState('idle'), 1500)
     } catch {
       setSaveState('error')
+    }
+  }
+
+  // Invitación Dúo: clona este evento completo (diseño, fondos, playlist,
+  // secciones) bajo un slug propio y lleva directo a su editor, para armar
+  // la segunda versión (cena vs. fiesta, con/sin tarjeta, etc.) sin
+  // rehacer nada de cero.
+  async function handleCreateDuo() {
+    setDuoState('creating')
+    try {
+      const { data } = await api.post(`/events/${eventId}/duplicate-duo`)
+      navigate(`/dashboard/${data._id}/editor`)
+    } catch {
+      setDuoState('error')
+      setTimeout(() => setDuoState('idle'), 2000)
     }
   }
 
@@ -183,6 +205,20 @@ function EventEditor() {
         </div>
         <h1 className="text-lg font-semibold">Editor de invitación</h1>
 
+        <button
+          type="button"
+          onClick={handleCreateDuo}
+          disabled={duoState === 'creating'}
+          className="w-full flex items-center justify-center gap-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 px-3 py-2.5 text-sm text-neutral-300 hover:text-white transition disabled:opacity-40"
+        >
+          <Copy className="w-4 h-4" />
+          {duoState === 'creating'
+            ? 'Creando versión Dúo...'
+            : duoState === 'error'
+              ? 'No se pudo crear, reintentá'
+              : 'Crear versión Dúo (clonar este evento)'}
+        </button>
+
         {hasUnsavedChanges && (
           <p className="text-xs text-yellow-400 bg-yellow-400/10 border border-yellow-400/20 rounded-lg px-3 py-2">
             Tenés cambios sin guardar. Si salís de esta página sin guardar, se pierden.
@@ -207,6 +243,7 @@ function EventEditor() {
             isAdmin={isAdmin}
             onChangeMyBrand={(myBrand) => setBranding((prev) => ({ ...prev, myBrand }))}
             onChangeClientBrand={(clientBrand) => setBranding((prev) => ({ ...prev, clientBrand }))}
+            onChangeSalonBg={(patch) => setBranding((prev) => ({ ...prev, ...patch }))}
           />
         </div>
 
