@@ -55,7 +55,7 @@ function ImageListField({ eventId, label, images, onChange }) {
         <div className="grid grid-cols-4 gap-2 mb-3">
           {list.map((url, index) => (
             <div key={index} className="relative group">
-              <img src={url} alt="" className="w-full aspect-square object-cover rounded-lg" />
+              <img src={url} alt="" loading="lazy" className="w-full aspect-square object-cover rounded-lg" />
               <button
                 type="button"
                 onClick={() => removeImage(index)}

@@ -17,6 +17,7 @@ function MessageCard({ photo, primaryColor }) {
         <img
           src={cloudinaryThumb(photo.cloudinaryUrl, 200)}
           alt=""
+          loading="lazy"
           className="w-20 h-20 rounded-xl object-cover shrink-0"
           style={{ border: `2px solid ${primaryColor}30` }}
         />

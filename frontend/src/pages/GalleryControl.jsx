@@ -632,7 +632,7 @@ function GalleryControl() {
                       </div>
                     </>
                   ) : (
-                    <img src={cloudinaryThumb(photo.cloudinaryUrl)} alt="" className="w-full h-full object-cover" />
+                    <img src={cloudinaryThumb(photo.cloudinaryUrl)} alt="" loading="lazy" className="w-full h-full object-cover" />
                   )}
                 </div>
                 {(photo.guestName || photo.comment) && (

@@ -42,6 +42,7 @@ function PhotoTile({ photo, index, onOpen }) {
           src={cloudinaryThumb(photo.cloudinaryUrl, 500)}
           alt=""
           draggable={false}
+          loading="lazy"
           className="w-full h-full object-cover pointer-events-none select-none transition-transform duration-500 group-hover:scale-105"
         />
       )}

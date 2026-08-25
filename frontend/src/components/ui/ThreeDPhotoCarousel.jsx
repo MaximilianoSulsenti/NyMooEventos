@@ -102,6 +102,7 @@ const Carousel = memo(({ handleClick, controls, cards, isCarouselActive, onDragS
             <motion.img
               src={imgUrl}
               alt=""
+              loading="lazy"
               layoutId={`img-${imgUrl}`}
               className="pointer-events-none w-full rounded-xl object-cover aspect-square"
               initial={{ filter: 'blur(4px)' }}

@@ -75,6 +75,7 @@ function LandingFooter() {
               <img
                 src="/img/ojosnymoo-icon.png"
                 alt=""
+                loading="lazy"
                 className="w-11 h-11 rounded-xl shadow-lg shrink-0"
               />
               <p

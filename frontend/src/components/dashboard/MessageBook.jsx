@@ -51,6 +51,7 @@ function MessageBook({ photos, eventSlug, token, primaryColor }) {
                   <img
                     src={cloudinaryThumb(photo.cloudinaryUrl, 96)}
                     alt=""
+                    loading="lazy"
                     className="w-16 h-16 rounded-xl object-cover shrink-0"
                   />
                 ) : (

@@ -25,6 +25,7 @@ function BentoGrid({ images }) {
           transition={{ delay: (index % 6) * 0.05 }}
           src={src}
           alt=""
+          loading="lazy"
           className={`w-full h-full object-cover rounded-lg ${spanClasses[index % spanClasses.length]}`}
         />
       ))}

@@ -41,7 +41,7 @@ function ImageUploadField({ eventId, label, value, onChange }) {
   return (
     <div>
       <label className="block text-sm text-neutral-400 mb-1">{label}</label>
-      {value && <img src={value} alt="" className="w-full h-24 object-cover rounded-lg mb-2" />}
+      {value && <img src={value} alt="" loading="lazy" className="w-full h-24 object-cover rounded-lg mb-2" />}
       <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
       <button
         type="button"
