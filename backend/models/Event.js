@@ -150,6 +150,11 @@ const eventSchema = new mongoose.Schema(
     // post-cena, con/sin tarjeta del salón, etc.) sin rehacer todo el diseño.
     isDuo: { type: Boolean, default: false },
     duoOf: { type: mongoose.Schema.Types.ObjectId, ref: 'Event', default: null },
+    // Qué representa esta versión Dúo (ej. "Brindis", "Fiesta", o texto
+    // libre que haya escrito el organizador) -- se usa para el nombre del
+    // evento clonado y, cuando el original tiene invitaciones VIP, para la
+    // card final que reemplaza al formulario de RSVP (ver RSVPSection.jsx).
+    duoLabel: { type: String, default: '' },
   },
   { timestamps: true }
 );

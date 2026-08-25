@@ -52,7 +52,7 @@ async function getEventBySlug(req, res) {
   const { eventSlug } = req.params;
 
   const event = await Event.findOne({ eventSlug }).select(
-    'eventName eventSlug date activeModules appearance sections gallerySettings envelopeSettings brandingSettings uploadPageSettings musicSettings rsvpSettings'
+    'eventName eventSlug date activeModules appearance sections gallerySettings envelopeSettings brandingSettings uploadPageSettings musicSettings rsvpSettings isDuo duoLabel'
   );
 
   if (!event) {
@@ -440,6 +440,9 @@ async function deleteEvent(req, res) {
 async function duplicateDuo(req, res) {
   const original = req.event.toObject();
 
+  const rawLabel = typeof req.body.label === 'string' ? req.body.label.trim() : '';
+  const label = rawLabel.slice(0, 60) || 'Dúo';
+
   const baseSlug = `${original.eventSlug}-duo`;
   let eventSlug = baseSlug;
   let attempt = 1;
@@ -464,10 +467,11 @@ async function duplicateDuo(req, res) {
 
   const duoEvent = await Event.create({
     ...clonable,
-    eventName: `${eventName} (Dúo)`,
+    eventName: `${eventName} (${label})`,
     eventSlug,
     isDuo: true,
     duoOf: original._id,
+    duoLabel: label,
   });
 
   res.status(201).json(duoEvent);
