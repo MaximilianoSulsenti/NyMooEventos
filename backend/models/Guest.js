@@ -23,6 +23,12 @@ const guestSchema = new mongoose.Schema(
     // planes -- no se usan y no rompen nada de lo existente.
     maxCompanionsAllowed: { type: Number, default: null },
     passcode: { type: String, default: '' },
+    // Invitación Dúo: cuando este invitado se carga en un evento que tiene
+    // una versión Dúo vinculada, se refleja automáticamente acá el mismo
+    // invitado en el evento Dúo (ver buildPremiumGuest en
+    // guestController.js) -- este campo apunta a ESE otro registro, para
+    // poder armar los dos links (original y Dúo) desde un solo lugar.
+    duoGuestId: { type: mongoose.Schema.Types.ObjectId, ref: 'Guest', default: null },
   },
   { timestamps: true }
 );

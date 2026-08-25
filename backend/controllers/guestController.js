@@ -122,12 +122,35 @@ async function getGuestsByEvent(req, res) {
 
 async function getGuestsForClient(req, res) {
   const guests = await Guest.find({ eventId: req.event._id }).sort({ createdAt: -1 });
-  res.json(guests);
+
+  // Si este evento tiene una versión Dúo vinculada, resolvemos su slug una
+  // sola vez para poder armar el segundo link de cada invitado espejado
+  // (ver buildPremiumGuest) sin repetir la consulta por invitado.
+  const duoEvent = req.event.isDuo ? null : await Event.findOne({ duoOf: req.event._id }).select('eventSlug').sort({ createdAt: -1 });
+
+  if (!duoEvent) {
+    return res.json(guests);
+  }
+
+  const duoGuestIds = guests.map((g) => g.duoGuestId).filter(Boolean);
+  const duoGuests = await Guest.find({ _id: { $in: duoGuestIds } }).select('passcode');
+  const duoPasscodeById = new Map(duoGuests.map((g) => [g._id.toString(), g.passcode]));
+
+  const enriched = guests.map((g) => {
+    const obj = g.toObject();
+    if (g.duoGuestId) {
+      obj.duoEventSlug = duoEvent.eventSlug;
+      obj.duoPasscode = duoPasscodeById.get(g.duoGuestId.toString()) || null;
+    }
+    return obj;
+  });
+
+  res.json(enriched);
 }
 
 // --- Plan premium: invitados pre-cargados con cupo propio ---
 
-async function buildPremiumGuest(eventId, body) {
+async function buildPremiumGuest(event, body) {
   const { name, maxCompanionsAllowed } = body;
 
   if (!name || !name.trim()) {
@@ -140,9 +163,29 @@ async function buildPremiumGuest(eventId, body) {
   }
 
   const trimmedName = name.trim();
-  const passcode = await generateUniquePasscode(eventId, trimmedName);
+  const passcode = await generateUniquePasscode(event._id, trimmedName);
+  const guest = await Guest.create({ eventId: event._id, name: trimmedName, maxCompanionsAllowed: parsedMax, passcode });
 
-  const guest = await Guest.create({ eventId, name: trimmedName, maxCompanionsAllowed: parsedMax, passcode });
+  // Invitación Dúo: si este evento tiene una versión Dúo vinculada, se
+  // refleja automáticamente el mismo invitado ahí también (mismo nombre y
+  // cupo, passcode propio) para no tener que cargarlo dos veces a mano --
+  // el organizador elige después cuál de los dos links mandar (ver
+  // getGuestsForClient / PremiumGuestsPanel.jsx).
+  if (!event.isDuo) {
+    const duoEvent = await Event.findOne({ duoOf: event._id }).sort({ createdAt: -1 });
+    if (duoEvent) {
+      const duoPasscode = await generateUniquePasscode(duoEvent._id, trimmedName);
+      const duoGuest = await Guest.create({
+        eventId: duoEvent._id,
+        name: trimmedName,
+        maxCompanionsAllowed: parsedMax,
+        passcode: duoPasscode,
+      });
+      guest.duoGuestId = duoGuest._id;
+      await guest.save();
+    }
+  }
+
   return { guest };
 }
 
@@ -154,7 +197,7 @@ async function createPremiumGuest(req, res) {
     return res.status(404).json({ message: 'Evento no encontrado' });
   }
 
-  const { guest, error } = await buildPremiumGuest(event._id, req.body);
+  const { guest, error } = await buildPremiumGuest(event, req.body);
   if (error) return res.status(error.status).json({ message: error.message });
   res.status(201).json(guest);
 }
@@ -167,6 +210,10 @@ async function deleteGuest(req, res) {
     return res.status(404).json({ message: 'Invitado no encontrado' });
   }
 
+  if (guest.duoGuestId) {
+    await Guest.deleteOne({ _id: guest.duoGuestId });
+  }
+
   res.json({ message: 'Invitado eliminado' });
 }
 
@@ -174,7 +221,7 @@ async function deleteGuest(req, res) {
 // lista VIP es el cliente (novios) desde su panel de estadísticas sin
 // login, autenticado con el clientAccessToken en vez de un JWT de admin.
 async function createPremiumGuestForClient(req, res) {
-  const { guest, error } = await buildPremiumGuest(req.event._id, req.body);
+  const { guest, error } = await buildPremiumGuest(req.event, req.body);
   if (error) return res.status(error.status).json({ message: error.message });
   res.status(201).json(guest);
 }
@@ -191,6 +238,12 @@ async function deleteGuestForClient(req, res) {
   const guest = await Guest.findOneAndDelete({ _id: guestId, eventId: req.event._id });
   if (!guest) {
     return res.status(404).json({ message: 'Invitado no encontrado' });
+  }
+
+  // Si era un invitado con su espejo en el Dúo (ver buildPremiumGuest), se
+  // borra también ese registro para no dejar un link del Dúo huérfano.
+  if (guest.duoGuestId) {
+    await Guest.deleteOne({ _id: guest.duoGuestId });
   }
 
   res.json({ message: 'Invitado eliminado' });
