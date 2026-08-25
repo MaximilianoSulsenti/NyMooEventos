@@ -98,12 +98,13 @@ function PackCard({ pack, index }) {
               <CreditCard className="w-4 h-4" />
               Comprar por WhatsApp o Mercado Pago
             </span>
-            {/* Aclaración a propósito: las cuotas las financia el banco del
-                cliente, no Nymoo -- por eso el texto lo dice explícito y no
-                promete "sin interés". Tipografía chica y liviana a propósito,
-                que quede como aclaración legal discreta, no como promesa. */}
+            {/* "Hasta" a propósito, no "en" -- la cantidad de cuotas depende
+                del Mercado Pago/banco de cada cliente, no es algo que Nymoo
+                controle o pueda prometer como número fijo. Mismo texto que
+                ya usa la tarjeta de Mercado Pago en Checkout.jsx. Tipografía
+                chica y liviana, que quede como aclaración legal discreta. */}
             <span className="text-[10px] font-normal tracking-wide opacity-55 italic">
-              En 3 cuotas con tarjetas bancarias
+              Hasta 3 cuotas con tarjeta bancaria
             </span>
           </span>
         </Button>
