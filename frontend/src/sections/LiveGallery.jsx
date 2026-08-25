@@ -3,23 +3,34 @@ import { motion } from 'motion/react'
 import api from '../services/api'
 import Button from '../components/ui/Button'
 import UploadPhotosModal from '../components/UploadPhotosModal'
+import ModulePreviewModal from '../components/ModulePreviewModal'
 import { cloudinaryThumb } from '../utils/cloudinary'
+
+const PREVIEW_PARAGRAPHS = [
+  'Acá vas a poder ver en tiempo real, proyectadas en la pantalla del salón, las fotos y videos que vayan subiendo tus invitados durante la fiesta.',
+  'Cada momento que compartan se va sumando al instante, para que todos disfruten juntos de cada recuerdo mientras está pasando.',
+  '¡Una forma única de vivir la fiesta, todos conectados al mismo momento!',
+]
 
 function LiveGallery({ event, config, appearance, styles }) {
   const [photos, setPhotos] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
   const titleSize = config.fontSizeTitle || 'text-2xl'
+  const moduleActive = Boolean(event.activeModules?.liveGallery)
 
   useEffect(() => {
-    if (!event.activeModules?.liveGallery) return
+    if (!moduleActive) return
     api
       .get(`/photos/slug/${event.eventSlug}`)
       .then(({ data }) => setPhotos(data))
       .catch(() => {})
-  }, [event.eventSlug, event.activeModules?.liveGallery])
+  }, [event.eventSlug, moduleActive])
 
-  if (!event.activeModules?.liveGallery) return null
-
+  // Antes esta sección se ocultaba entera (return null) si el módulo no
+  // estaba activo, aunque el organizador la hubiera dejado habilitada en
+  // el editor. Ahora se ve siempre, y al tocar el botón muestra el flujo
+  // real (si el módulo está pago) o un preview explicando la función.
   return (
     <section className={`text-center px-6 ${styles.fontClass}`}>
       <h2 className={`${titleSize} mb-3 ${styles.heading}`} style={{ color: config.textColor || undefined }}>
@@ -55,7 +66,11 @@ function LiveGallery({ event, config, appearance, styles }) {
         </div>
       )}
 
-      <Button type="button" onClick={() => setIsModalOpen(true)} primaryColor={appearance.primaryColor}>
+      <Button
+        type="button"
+        onClick={() => (moduleActive ? setIsModalOpen(true) : setShowPreview(true))}
+        primaryColor={appearance.primaryColor}
+      >
         Subir fotos
       </Button>
 
@@ -65,6 +80,15 @@ function LiveGallery({ event, config, appearance, styles }) {
           primaryColor={appearance.primaryColor}
           allowVideos={Boolean(event.gallerySettings?.allowVideos)}
           onClose={() => setIsModalOpen(false)}
+        />
+      )}
+      {showPreview && (
+        <ModulePreviewModal
+          title="Galería en vivo"
+          paragraphs={PREVIEW_PARAGRAPHS}
+          primaryColor={appearance.primaryColor}
+          eventName={event.eventName}
+          onClose={() => setShowPreview(false)}
         />
       )}
     </section>

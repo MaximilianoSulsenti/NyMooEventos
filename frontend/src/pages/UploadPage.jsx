@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { Camera } from 'lucide-react'
+import { Camera, Sparkles } from 'lucide-react'
 import api from '../services/api'
 import UploadPhotosForm from '../components/UploadPhotosForm'
 import PageBackground from '../components/PageBackground'
@@ -21,6 +21,11 @@ function UploadPage() {
 
   const styles = getThemeStyles(event?.uploadPageSettings?.theme)
   const primaryColor = event?.appearance?.primaryColor || '#a855f7'
+  // Antes se mostraba siempre el formulario y recién al tocar "Subir" caía
+  // un 403 con un mensaje interno ("El módulo de galería no está activo
+  // para este evento"). Si ya sabemos que el módulo está apagado, mejor
+  // mostrar esto directo en vez de dejar que el invitado llegue a ese error.
+  const moduleActive = !event || Boolean(event.activeModules?.liveGallery || event.activeModules?.photoCollection)
 
   return (
     <div className={`relative min-h-screen w-full overflow-x-hidden flex flex-col items-center justify-center gap-4 px-4 sm:px-6 py-10 ${styles.fontClass}`}>
@@ -33,19 +38,25 @@ function UploadPage() {
             className="w-12 h-12 rounded-full flex items-center justify-center mb-1"
             style={{ background: `${primaryColor}22`, color: primaryColor }}
           >
-            <Camera className="w-6 h-6" />
+            {moduleActive ? <Camera className="w-6 h-6" /> : <Sparkles className="w-6 h-6" />}
           </span>
-          <h1 className="text-xl sm:text-2xl font-semibold text-white break-words">Subí tus fotos del evento</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold text-white break-words">
+            {moduleActive ? 'Subí tus fotos del evento' : 'Álbum del evento'}
+          </h1>
           <p className="text-white/50 text-sm max-w-xs">
-            Van a aparecer en la pantalla en vivo para que todos las vean.
+            {moduleActive
+              ? 'Van a aparecer en la pantalla en vivo para que todos las vean.'
+              : 'Este espacio todavía no está activo -- va a estar listo para subir y compartir las fotos del evento en tiempo real.'}
           </p>
         </div>
 
-        <UploadPhotosForm
-          eventSlug={eventSlug}
-          primaryColor={primaryColor}
-          allowVideos={Boolean(event?.gallerySettings?.allowVideos)}
-        />
+        {moduleActive && (
+          <UploadPhotosForm
+            eventSlug={eventSlug}
+            primaryColor={primaryColor}
+            allowVideos={Boolean(event?.gallerySettings?.allowVideos)}
+          />
+        )}
       </GlassPanel>
     </div>
   )
