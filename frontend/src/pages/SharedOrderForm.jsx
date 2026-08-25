@@ -37,7 +37,7 @@ function SharedOrderForm() {
   const initialPackId = searchParams.get('pack')
   const initialPack = LANDING_PACKS.find((p) => p.id === initialPackId) || null
 
-  const [selectedPackId, setSelectedPackId] = useState(initialPack?.id || LANDING_PACKS[1].id)
+  const [selectedPackIds, setSelectedPackIds] = useState(initialPack ? [initialPack.id] : [LANDING_PACKS[1].id])
   const [form, setForm] = useState(EMPTY_ORDER_FORM)
   const [status, setStatus] = useState('idle') // idle | submitting | done | error
   const [errorMessage, setErrorMessage] = useState('')
@@ -46,7 +46,12 @@ function SharedOrderForm() {
     window.scrollTo(0, 0)
   }, [])
 
-  const selectedPack = LANDING_PACKS.find((p) => p.id === selectedPackId)
+  const selectedPacks = LANDING_PACKS.filter((p) => selectedPackIds.includes(p.id))
+  const total = selectedPacks.reduce((sum, p) => sum + p.priceValue, 0)
+
+  function togglePack(id) {
+    setSelectedPackIds((prev) => (prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]))
+  }
 
   function updateField(section, field, value) {
     setForm((prev) => ({ ...prev, [section]: { ...prev[section], [field]: value } }))
@@ -54,6 +59,11 @@ function SharedOrderForm() {
 
   async function handleSubmit(e) {
     e.preventDefault()
+    if (selectedPacks.length === 0) {
+      setErrorMessage('Elegí al menos un pack para continuar')
+      return
+    }
+
     setStatus('submitting')
     setErrorMessage('')
 
@@ -64,7 +74,7 @@ function SharedOrderForm() {
           ...form.guestCardDetails,
           pricePerCard: form.guestCardDetails.hasCost ? form.guestCardDetails.pricePerCard : '',
         },
-        packDetails: { packName: selectedPack.name },
+        items: selectedPacks.map((p) => ({ name: p.name })),
       })
       setStatus('done')
     } catch (err) {
@@ -98,8 +108,15 @@ function SharedOrderForm() {
           </motion.div>
 
           <div>
-            <h2 className="text-base font-semibold mb-3">Tu pack</h2>
-            <PackPicker selectedId={selectedPackId} onSelect={setSelectedPackId} />
+            <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
+              <h2 className="text-base font-semibold">Tu(s) pack(s)</h2>
+              {selectedPacks.length > 0 && (
+                <p className="text-sm text-white/60">
+                  Total: <span className="font-bold text-white">${total.toLocaleString('es-AR')}</span>
+                </p>
+              )}
+            </div>
+            <PackPicker selectedIds={selectedPackIds} onToggle={togglePack} />
           </div>
 
           <OrderForm form={form} onField={updateField} />
@@ -109,7 +126,7 @@ function SharedOrderForm() {
           <Button
             type="submit"
             disabled={status === 'submitting'}
-            primaryColor={selectedPack?.accentColor || BRAND.blue}
+            primaryColor={selectedPacks[0]?.accentColor || BRAND.blue}
             className="w-full py-3.5 text-base font-semibold disabled:opacity-40"
           >
             {status === 'submitting' ? 'Enviando...' : 'Enviar mis datos'}

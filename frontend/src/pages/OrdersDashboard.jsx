@@ -1,15 +1,30 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Navigate, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
-import { Plus, X, ChevronDown, Wallet, ShoppingBag, Clock, PieChart, Archive, ArchiveRestore, Share2, Check as CheckIcon } from 'lucide-react'
+import {
+  Plus,
+  X,
+  ChevronDown,
+  Wallet,
+  ShoppingBag,
+  Clock,
+  PieChart,
+  Archive,
+  ArchiveRestore,
+  Share2,
+  Check as CheckIcon,
+  Receipt,
+  Printer,
+} from 'lucide-react'
 import api from '../services/api'
 import { getStoredUser } from '../services/auth'
 import Button from '../components/ui/Button'
 import GlassPanel from '../components/ui/GlassPanel'
 import OrderForm from '../components/orders/OrderForm'
+import PackPicker from '../components/orders/PackPicker'
 import useLockBodyScroll from '../hooks/useLockBodyScroll'
 import { BRAND } from '../utils/brand'
-import { LANDING_PACKS } from '../utils/landingConfig'
+import { LANDING_PACKS, LANDING_CONTACT } from '../utils/landingConfig'
 import { EMPTY_ORDER_FORM } from '../utils/orderForm'
 
 const PAYMENT_STATUSES = ['Pendiente', 'Señado (50%)', 'Pagado Completo']
@@ -23,6 +38,10 @@ const SHARED_FORM_URL = `${window.location.origin}/completar-pedido`
 const SOURCE_LABELS = {
   carga_manual: 'Carga manual',
   formulario_compartido: 'Formulario compartido',
+}
+const PAYMENT_METHOD_LABELS = {
+  mercado_pago: 'Mercado Pago',
+  whatsapp_coordinar: 'Coordinado por WhatsApp',
 }
 
 function currency(n) {
@@ -63,6 +82,15 @@ function StatusSelect({ order, onChange }) {
 function OrderDetails({ order }) {
   return (
     <div className="grid sm:grid-cols-2 gap-4 px-4 pb-4 text-sm">
+      {(order.items || []).length > 1 && (
+        <div className="sm:col-span-2 flex flex-wrap gap-1.5">
+          {order.items.map((item) => (
+            <span key={item.name} className="text-xs px-2.5 py-1 rounded-full bg-white/5 text-white/60">
+              {item.name} · {currency(item.price)}
+            </span>
+          ))}
+        </div>
+      )}
       <div className="space-y-1">
         <p className="text-white/40 text-xs uppercase tracking-wide mb-1">Evento</p>
         <p className="text-white/70">Protagonistas: {order.eventData?.protagonists || '—'}</p>
@@ -100,13 +128,18 @@ function OrderDetails({ order }) {
 function ManualOrderModal({ onClose, onCreated }) {
   useLockBodyScroll()
   const [form, setForm] = useState(EMPTY_ORDER_FORM)
-  const [packId, setPackId] = useState(LANDING_PACKS[0].id)
+  const [packIds, setPackIds] = useState([LANDING_PACKS[0].id])
   const [paymentMethod, setPaymentMethod] = useState('whatsapp_coordinar')
   const [paymentStatus, setPaymentStatus] = useState('Pagado Completo')
   const [status, setStatus] = useState('idle')
   const [errorMessage, setErrorMessage] = useState('')
 
-  const pack = LANDING_PACKS.find((p) => p.id === packId)
+  const packs = LANDING_PACKS.filter((p) => packIds.includes(p.id))
+  const total = packs.reduce((sum, p) => sum + p.priceValue, 0)
+
+  function togglePack(id) {
+    setPackIds((prev) => (prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]))
+  }
 
   function updateField(section, field, value) {
     setForm((prev) => ({ ...prev, [section]: { ...prev[section], [field]: value } }))
@@ -114,6 +147,10 @@ function ManualOrderModal({ onClose, onCreated }) {
 
   async function handleSubmit(e) {
     e.preventDefault()
+    if (packs.length === 0) {
+      setErrorMessage('Elegí al menos un pack')
+      return
+    }
     setStatus('submitting')
     setErrorMessage('')
     try {
@@ -123,7 +160,7 @@ function ManualOrderModal({ onClose, onCreated }) {
           ...form.guestCardDetails,
           pricePerCard: form.guestCardDetails.hasCost ? form.guestCardDetails.pricePerCard : '',
         },
-        packDetails: { packName: pack.name },
+        items: packs.map((p) => ({ name: p.name })),
         paymentMethod,
         paymentStatus,
       })
@@ -161,35 +198,31 @@ function ManualOrderModal({ onClose, onCreated }) {
         <p className="text-white/40 text-xs mb-5">Para clientes que compraron de palabra, fuera de la web.</p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="grid sm:grid-cols-3 gap-4">
-            <div className="sm:col-span-2">
-              <label className="block text-sm text-white/60 mb-1.5">Pack</label>
-              <select
-                value={packId}
-                onChange={(e) => setPackId(e.target.value)}
-                className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm outline-none"
-              >
-                {LANDING_PACKS.map((p) => (
-                  <option key={p.id} value={p.id} className="text-white bg-neutral-800">
-                    {p.name} · {p.price}
-                  </option>
-                ))}
-              </select>
+          <div>
+            <div className="flex items-center justify-between mb-1.5 gap-3 flex-wrap">
+              <label className="block text-sm text-white/60">Pack(s)</label>
+              {packs.length > 0 && (
+                <p className="text-xs text-white/50">
+                  Total: <span className="font-semibold text-white">{currency(total)}</span>
+                </p>
+              )}
             </div>
-            <div>
-              <label className="block text-sm text-white/60 mb-1.5">Estado de pago</label>
-              <select
-                value={paymentStatus}
-                onChange={(e) => setPaymentStatus(e.target.value)}
-                className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm outline-none"
-              >
-                {PAYMENT_STATUSES.map((s) => (
-                  <option key={s} value={s} className="text-white bg-neutral-800">
-                    {s}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <PackPicker selectedIds={packIds} onToggle={togglePack} />
+          </div>
+
+          <div>
+            <label className="block text-sm text-white/60 mb-1.5">Estado de pago</label>
+            <select
+              value={paymentStatus}
+              onChange={(e) => setPaymentStatus(e.target.value)}
+              className="w-full sm:w-64 rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm outline-none"
+            >
+              {PAYMENT_STATUSES.map((s) => (
+                <option key={s} value={s} className="text-white bg-neutral-800">
+                  {s}
+                </option>
+              ))}
+            </select>
           </div>
 
           <OrderForm form={form} onField={updateField} />
@@ -221,8 +254,9 @@ function ManualOrderModal({ onClose, onCreated }) {
   )
 }
 
-function OrderRow({ order, onStatusChange, onArchiveToggle }) {
+function OrderRow({ order, onStatusChange, onArchiveToggle, onInvoice }) {
   const [open, setOpen] = useState(false)
+  const itemNames = (order.items || []).map((i) => i.name).join(', ')
 
   return (
     <div className="rounded-2xl bg-white/[0.02] border border-white/10 overflow-hidden">
@@ -238,12 +272,23 @@ function OrderRow({ order, onStatusChange, onArchiveToggle }) {
             )}
           </div>
           <p className="text-sm truncate">{order.clientData?.name}</p>
-          <p className="text-sm text-white/60 truncate hidden sm:block">{order.packDetails?.packName}</p>
-          <p className="text-sm font-semibold">{currency(order.packDetails?.price)}</p>
+          <p className="text-sm text-white/60 truncate hidden sm:block" title={itemNames}>
+            {itemNames}
+          </p>
+          <p className="text-sm font-semibold">{currency(order.totalPrice)}</p>
           <p className="text-xs text-white/40 hidden sm:block">{new Date(order.createdAt).toLocaleDateString('es-AR')}</p>
         </div>
         <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
           <StatusSelect order={order} onChange={onStatusChange} />
+          <button
+            type="button"
+            onClick={() => onInvoice(order)}
+            aria-label="Generar factura"
+            title="Generar factura"
+            className="p-1.5 rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition"
+          >
+            <Receipt className="w-4 h-4" />
+          </button>
           <button
             type="button"
             onClick={() => onArchiveToggle(order._id, !order.archived)}
@@ -272,6 +317,133 @@ function OrderRow({ order, onStatusChange, onArchiveToggle }) {
   )
 }
 
+// Comprobante formal para que el equipo se lo pase al cliente por mail al
+// cerrar la venta. "Descargar" acá es imprimir/guardar como PDF desde el
+// navegador -- mismo truco que MessageBookPrint.jsx, pero recortado a este
+// modal en vez de a la página entera: en @media print se ocultan todos los
+// elementos del documento salvo .invoice-print-area (ver <style> abajo).
+function InvoiceModal({ order, onClose }) {
+  useLockBodyScroll()
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+    >
+      <style>{`
+        @media print {
+          body * { visibility: hidden; }
+          .invoice-print-area, .invoice-print-area * { visibility: visible; }
+          .invoice-print-area {
+            position: fixed; inset: 0; margin: 0; max-height: none; overflow: visible;
+            box-shadow: none; border-radius: 0;
+          }
+          .no-print { display: none !important; }
+          @page { margin: 1.6cm; }
+        }
+      `}</style>
+
+      <motion.div
+        initial={{ opacity: 0, scale: 0.96, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.96 }}
+        className="invoice-print-area w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl"
+        style={{ background: '#f7f3ec', color: '#1c1917' }}
+      >
+        <div className="no-print flex items-center justify-end gap-2 p-4 border-b sticky top-0" style={{ borderColor: '#e7e1d6', background: '#f7f3ec' }}>
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold text-white transition hover:brightness-110"
+            style={{ background: BRAND.blue }}
+          >
+            <Printer className="w-4 h-4" />
+            Descargar / Imprimir PDF
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-2 rounded-full hover:bg-black/5 transition"
+            style={{ color: '#78716c' }}
+            aria-label="Cerrar"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="p-8 sm:p-10">
+          <div className="flex items-start justify-between gap-4 mb-8">
+            <div>
+              <img src="/img/nymologo-navbar.png" alt="Nymoo" className="h-9 w-auto mb-3" />
+              <p className="text-xs uppercase tracking-widest" style={{ color: '#78716c' }}>
+                Comprobante de compra
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="font-mono text-sm font-semibold">{order.orderNumber}</p>
+              <p className="text-xs" style={{ color: '#78716c' }}>
+                {new Date(order.createdAt).toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </p>
+            </div>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-6 mb-8 text-sm">
+            <div>
+              <p className="text-xs uppercase tracking-wide mb-1" style={{ color: '#78716c' }}>
+                Cliente
+              </p>
+              <p className="font-semibold">{order.clientData?.name}</p>
+              {order.clientData?.email && <p style={{ color: '#57534e' }}>{order.clientData.email}</p>}
+              {order.clientData?.phone && <p style={{ color: '#57534e' }}>{order.clientData.phone}</p>}
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-wide mb-1" style={{ color: '#78716c' }}>
+                Estado
+              </p>
+              <p className="font-semibold">{order.paymentStatus}</p>
+              <p style={{ color: '#57534e' }}>{PAYMENT_METHOD_LABELS[order.paymentMethod] || order.paymentMethod}</p>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border overflow-hidden mb-6" style={{ borderColor: '#e7e1d6' }}>
+            <div
+              className="grid grid-cols-[1fr_auto] gap-3 px-4 py-2.5 text-xs uppercase tracking-wide"
+              style={{ background: '#efe9dd', color: '#78716c' }}
+            >
+              <span>Producto</span>
+              <span>Precio</span>
+            </div>
+            {(order.items || []).map((item) => (
+              <div
+                key={item.name}
+                className="grid grid-cols-[1fr_auto] gap-3 px-4 py-3 text-sm border-t"
+                style={{ borderColor: '#e7e1d6' }}
+              >
+                <span>{item.name}</span>
+                <span className="font-medium">{currency(item.price)}</span>
+              </div>
+            ))}
+            <div
+              className="grid grid-cols-[1fr_auto] gap-3 px-4 py-3 text-sm font-bold border-t"
+              style={{ borderColor: '#e7e1d6', background: '#efe9dd' }}
+            >
+              <span>Total</span>
+              <span>{currency(order.totalPrice)}</span>
+            </div>
+          </div>
+
+          <p className="text-xs leading-relaxed" style={{ color: '#78716c' }}>
+            Gracias por confiar en Nymoo Eventos Digitales. Ante cualquier consulta sobre este comprobante, escribinos por WhatsApp al{' '}
+            {LANDING_CONTACT.whatsappNumber}.
+          </p>
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
+
 function OrdersDashboard() {
   const isAdmin = Boolean(getStoredUser()?.isAdmin)
   const [orders, setOrders] = useState([])
@@ -279,6 +451,7 @@ function OrdersDashboard() {
   const [modalOpen, setModalOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('activos') // activos | archivados
   const [linkCopied, setLinkCopied] = useState(false)
+  const [invoiceOrder, setInvoiceOrder] = useState(null)
 
   async function handleCopyShareLink() {
     try {
@@ -331,13 +504,14 @@ function OrdersDashboard() {
   const stats = useMemo(() => {
     const totalFacturado = activeOrders
       .filter((o) => o.paymentStatus === 'Pagado Completo')
-      .reduce((sum, o) => sum + (o.packDetails?.price || 0), 0)
+      .reduce((sum, o) => sum + (o.totalPrice || 0), 0)
     const ventas = activeOrders.filter((o) => o.paymentStatus !== 'Pendiente').length
     const pendientes = activeOrders.filter((o) => o.paymentStatus === 'Pendiente').length
     const byPack = {}
     activeOrders.forEach((o) => {
-      const name = o.packDetails?.packName || 'Sin pack'
-      byPack[name] = (byPack[name] || 0) + 1
+      ;(o.items || []).forEach((item) => {
+        byPack[item.name] = (byPack[item.name] || 0) + 1
+      })
     })
     const topPack = Object.entries(byPack).sort((a, b) => b[1] - a[1])[0]
     return { totalFacturado, ventas, pendientes, topPack }
@@ -424,13 +598,19 @@ function OrdersDashboard() {
                 <div className="grid grid-cols-5 gap-2 text-xs text-white/40 uppercase tracking-wide">
                   <span>Pedido</span>
                   <span>Cliente</span>
-                  <span>Pack</span>
-                  <span>Precio</span>
+                  <span>Producto(s)</span>
+                  <span>Total</span>
                   <span>Fecha</span>
                 </div>
               </div>
               {visibleOrders.map((order) => (
-                <OrderRow key={order._id} order={order} onStatusChange={handleStatusChange} onArchiveToggle={handleArchiveToggle} />
+                <OrderRow
+                  key={order._id}
+                  order={order}
+                  onStatusChange={handleStatusChange}
+                  onArchiveToggle={handleArchiveToggle}
+                  onInvoice={setInvoiceOrder}
+                />
               ))}
             </div>
           )}
@@ -448,6 +628,8 @@ function OrdersDashboard() {
           />
         )}
       </AnimatePresence>
+
+      <AnimatePresence>{invoiceOrder && <InvoiceModal order={invoiceOrder} onClose={() => setInvoiceOrder(null)} />}</AnimatePresence>
     </div>
   )
 }

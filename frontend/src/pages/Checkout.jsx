@@ -15,10 +15,11 @@ import { EMPTY_ORDER_FORM } from '../utils/orderForm'
 const WELCOME_MESSAGE =
   '✨ ¡Estás a un paso de comenzar la transformación de tu gran día! Completar estos campos nos ayudará a orientarnos para diseñar y maquetar tu software de forma ágil. No te preocupes por la perfección, esto es un punto de partida inicial; luego, a través de nuestro contacto privado, realizaremos la personalización al 100% de cada detalle.'
 
-function buildOrderWhatsappMessage(orderNumber, form, packName) {
+function buildOrderWhatsappMessage(orderNumber, form, packNames, total) {
   const lines = [
     `¡Hola Nymoo! Acabo de completar mi solicitud para el Pedido ${orderNumber}.`,
-    `Pack: ${packName}.`,
+    `Pack(s): ${packNames.join(', ')}.`,
+    `Total: $${total.toLocaleString('es-AR')}.`,
     form.eventData.protagonists && `Protagonistas: ${form.eventData.protagonists}.`,
     form.eventData.eventType && `Tipo de evento: ${form.eventData.eventType}.`,
     form.eventData.date && `Fecha: ${form.eventData.date}.`,
@@ -32,7 +33,7 @@ function Checkout() {
   const initialPackId = searchParams.get('pack')
   const initialPack = LANDING_PACKS.find((p) => p.id === initialPackId) || null
 
-  const [selectedPackId, setSelectedPackId] = useState(initialPack?.id || LANDING_PACKS[1].id)
+  const [selectedPackIds, setSelectedPackIds] = useState(initialPack ? [initialPack.id] : [LANDING_PACKS[1].id])
   const [form, setForm] = useState(EMPTY_ORDER_FORM)
   const [paymentMethod, setPaymentMethod] = useState(null)
   const [status, setStatus] = useState('idle') // idle | submitting | error
@@ -45,7 +46,12 @@ function Checkout() {
     window.scrollTo(0, 0)
   }, [])
 
-  const selectedPack = LANDING_PACKS.find((p) => p.id === selectedPackId)
+  const selectedPacks = LANDING_PACKS.filter((p) => selectedPackIds.includes(p.id))
+  const total = selectedPacks.reduce((sum, p) => sum + p.priceValue, 0)
+
+  function togglePack(id) {
+    setSelectedPackIds((prev) => (prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]))
+  }
 
   function updateField(section, field, value) {
     setForm((prev) => ({ ...prev, [section]: { ...prev[section], [field]: value } }))
@@ -53,6 +59,10 @@ function Checkout() {
 
   async function handleSubmit(e) {
     e.preventDefault()
+    if (selectedPacks.length === 0) {
+      setErrorMessage('Elegí al menos un pack para continuar')
+      return
+    }
     if (!paymentMethod) {
       setErrorMessage('Elegí una forma de pago para continuar')
       return
@@ -68,7 +78,7 @@ function Checkout() {
           ...form.guestCardDetails,
           pricePerCard: form.guestCardDetails.hasCost ? form.guestCardDetails.pricePerCard : '',
         },
-        packDetails: { packName: selectedPack.name },
+        items: selectedPacks.map((p) => ({ name: p.name })),
         paymentMethod,
       })
 
@@ -80,7 +90,12 @@ function Checkout() {
       // whatsapp_coordinar, o mercado_pago sin credenciales reales activadas
       // todavía -- mismo destino honesto: coordinar por WhatsApp con todo el
       // contexto del pedido ya guardado.
-      const message = buildOrderWhatsappMessage(data.order.orderNumber, form, selectedPack.name)
+      const message = buildOrderWhatsappMessage(
+        data.order.orderNumber,
+        form,
+        selectedPacks.map((p) => p.name),
+        total
+      )
       window.location.href = buildWhatsappUrl(message, LANDING_CONTACT.whatsappNumber)
     } catch (err) {
       setStatus('error')
@@ -110,8 +125,15 @@ function Checkout() {
         </motion.div>
 
         <div>
-          <h2 className="text-base font-semibold mb-3">Elegí tu pack</h2>
-          <PackPicker selectedId={selectedPackId} onSelect={setSelectedPackId} />
+          <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
+            <h2 className="text-base font-semibold">Elegí uno o más packs</h2>
+            {selectedPacks.length > 0 && (
+              <p className="text-sm text-white/60">
+                Total: <span className="font-bold text-white">${total.toLocaleString('es-AR')}</span>
+              </p>
+            )}
+          </div>
+          <PackPicker selectedIds={selectedPackIds} onToggle={togglePack} />
         </div>
 
         <OrderForm form={form} onField={updateField} />
@@ -130,7 +152,7 @@ function Checkout() {
             >
               <CreditCard className="w-6 h-6" style={{ color: BRAND.blue }} />
               <span className="font-semibold text-sm">Mercado Pago</span>
-              <span className="text-white/50 text-xs">Hasta 3 cuotas</span>
+              <span className="text-white/50 text-xs italic">Hasta 3 cuotas con tarjeta bancaria</span>
             </button>
             <button
               type="button"
@@ -153,10 +175,10 @@ function Checkout() {
         <Button
           type="submit"
           disabled={status === 'submitting'}
-          primaryColor={selectedPack?.accentColor || BRAND.blue}
+          primaryColor={selectedPacks[0]?.accentColor || BRAND.blue}
           className="w-full py-3.5 text-base font-semibold disabled:opacity-40"
         >
-          {status === 'submitting' ? 'Enviando...' : `Finalizar compra · ${selectedPack?.price || ''}`}
+          {status === 'submitting' ? 'Enviando...' : `Finalizar compra · $${total.toLocaleString('es-AR')}`}
         </Button>
       </form>
     </div>

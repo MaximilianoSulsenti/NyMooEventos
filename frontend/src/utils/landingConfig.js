@@ -29,6 +29,10 @@ export const LANDING_PACKS = [
     name: 'Nymoo INVITA',
     tagline: 'Plan inicial',
     price: '$50.000',
+    // Debe coincidir con ITEM_PRICES en backend/controllers/orderController.js
+    // -- se usa solo para mostrar el total en vivo mientras eligen productos;
+    // el precio real que se cobra siempre lo recalcula el servidor.
+    priceValue: 50000,
     paymentNote: PAYMENT_NOTE,
     accentColor: BRAND.blue,
     whatsappMessage:
@@ -51,6 +55,7 @@ export const LANDING_PACKS = [
     name: 'Nymoo CONECTA',
     tagline: 'Plan recomendado',
     price: '$70.000',
+    priceValue: 70000,
     paymentNote: PAYMENT_NOTE,
     accentColor: BRAND.violet,
     badge: { emoji: '⭐', label: 'El más elegido', tone: 'brand' },
@@ -74,6 +79,7 @@ export const LANDING_PACKS = [
     name: 'Nymoo VIVE',
     tagline: 'Experiencia premium',
     price: '$100.000',
+    priceValue: 100000,
     paymentNote: PAYMENT_NOTE,
     accentColor: BRAND.pink,
     badge: { emoji: '👑', label: 'La más completa', tone: 'gold' },
@@ -98,6 +104,7 @@ export const LANDING_PACKS = [
     name: 'Nymoo VISIÓN',
     tagline: 'Producto independiente',
     price: '$60.000',
+    priceValue: 60000,
     paymentNote: PAYMENT_NOTE,
     accentColor: BRAND.orange,
     banner: '¡Ideal si ya tenés tu invitación digital de otro proveedor y solo querés la pantalla en vivo para tu fiesta!',
