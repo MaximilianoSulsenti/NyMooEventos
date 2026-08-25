@@ -152,6 +152,15 @@ function PremiumGuestsPanel({ eventSlug, eventName, token, guests, onGuestsChang
                 : ''
             const message = `¡Hola ${guest.name}! 🎉 Los invitamos con mucho cariño a acompañarnos en ${eventName}. Esta es tu invitación personalizada${companionsText}, confirmá tu asistencia acá:\n${link}`
 
+            // Si este evento tiene una Invitación Dúo vinculada, el mismo
+            // invitado se cargó automáticamente ahí también (ver
+            // buildPremiumGuest en guestController.js) -- se arma su link
+            // aparte para que elijas cuál mandarle según corresponda.
+            const duoLink =
+              guest.duoEventSlug && guest.duoPasscode
+                ? `${origin}/evento/${encodeURIComponent(guest.duoEventSlug)}?guest=${encodeURIComponent(guest.duoPasscode)}`
+                : null
+
             return (
               <div key={guest._id} className="rounded-2xl bg-white/5 border border-white/10 p-4 space-y-2">
                 <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -179,14 +188,33 @@ function PremiumGuestsPanel({ eventSlug, eventName, token, guests, onGuestsChang
                     {confirmDeleteId === guest._id ? '¿Seguro?' : ''}
                   </button>
                 </div>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                  <p className="w-full min-w-0 truncate rounded-lg bg-neutral-800 border border-white/10 px-3 py-1.5 text-xs text-white/60">
-                    {link}
-                  </p>
-                  <div className="flex gap-2 w-full sm:w-auto">
-                    <CopyButton text={message} label="Copiar mensaje" icon={MessageSquareText} />
-                    <CopyButton text={link} label="Copiar link" icon={Copy} />
+                <div className="space-y-2">
+                  <div>
+                    {duoLink && <p className="text-[10px] uppercase tracking-wide text-white/30 mb-1">Link original</p>}
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                      <p className="w-full min-w-0 truncate rounded-lg bg-neutral-800 border border-white/10 px-3 py-1.5 text-xs text-white/60">
+                        {link}
+                      </p>
+                      <div className="flex gap-2 w-full sm:w-auto">
+                        <CopyButton text={message} label="Copiar mensaje" icon={MessageSquareText} />
+                        <CopyButton text={link} label="Copiar link" icon={Copy} />
+                      </div>
+                    </div>
                   </div>
+
+                  {duoLink && (
+                    <div>
+                      <p className="text-[10px] uppercase tracking-wide text-white/30 mb-1">Link Dúo</p>
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                        <p className="w-full min-w-0 truncate rounded-lg bg-neutral-800 border border-white/10 px-3 py-1.5 text-xs text-white/60">
+                          {duoLink}
+                        </p>
+                        <div className="flex gap-2 w-full sm:w-auto">
+                          <CopyButton text={duoLink} label="Copiar link" icon={Copy} />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )
