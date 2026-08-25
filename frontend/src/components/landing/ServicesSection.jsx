@@ -7,6 +7,7 @@ import { shadeColor } from '../../utils/color'
 import { BRAND } from '../../utils/brand'
 import { LANDING_PACKS } from '../../utils/landingConfig'
 import { PACK_VISUALS } from './PackVisuals'
+import DuoPromo from './DuoPromo'
 
 const BRAND_GRADIENT = `linear-gradient(90deg, ${BRAND.blue}, ${BRAND.violet}, ${BRAND.pink})`
 const GOLD_GRADIENT = 'linear-gradient(90deg, #F2C94C, #F2994A, #F2C94C)'
@@ -126,6 +127,8 @@ function ServicesSection() {
           <PackCard key={pack.id} pack={pack} index={index} />
         ))}
       </div>
+
+      <DuoPromo />
     </section>
   )
 }
