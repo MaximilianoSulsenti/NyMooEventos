@@ -28,16 +28,30 @@ function DuoAddonToggle({ selectedPacks, selected, onToggle }) {
         className="w-9 h-9 rounded-xl shrink-0 flex items-center justify-center"
         style={{ background: `${BRAND.lime}22`, color: BRAND.lime }}
       >
-        {selected ? <Check className="w-4 h-4" /> : <Zap className="w-4 h-4" />}
+        <Zap className="w-4 h-4" />
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex items-center justify-between gap-2 flex-wrap">
           <span className="font-semibold text-sm">Invitación Dúo</span>
-          {available && (
-            <span className="font-extrabold text-sm shrink-0" style={{ color: BRAND.lime }}>
-              +${duoPrice.toLocaleString('es-AR')}
+          {/* Checkbox explícito además del click en toda la card -- mismo
+              lenguaje visual que las cards de pack en PackPicker.jsx, para
+              que quede claro que se puede tildar como algo aparte. */}
+          <span className="flex items-center gap-2 shrink-0">
+            {available && (
+              <span className="font-extrabold text-sm" style={{ color: BRAND.lime }}>
+                +${duoPrice.toLocaleString('es-AR')}
+              </span>
+            )}
+            <span
+              className={cn(
+                'w-5 h-5 rounded-md flex items-center justify-center border transition',
+                selected ? 'border-transparent' : 'border-white/20 bg-white/[0.03]'
+              )}
+              style={selected ? { background: BRAND.lime } : undefined}
+            >
+              {selected && <Check className="w-3 h-3 text-neutral-900" />}
             </span>
-          )}
+          </span>
         </span>
         <span className="text-white/50 text-xs block mt-0.5 leading-relaxed">
           {available
