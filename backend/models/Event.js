@@ -125,6 +125,13 @@ const eventSchema = new mongoose.Schema(
       guestCardAdultPrice: { type: String, default: '' },
       guestCardMinorPrice: { type: String, default: '' },
       guestCardDescription: { type: String, default: '' },
+      // Cuando este evento es una Invitación Dúo (isDuo=true) Y el original
+      // tiene invitaciones VIP activas, la sección de RSVP no vuelve a
+      // pedirle confirmación al invitado (ya confirmó en la invitación
+      // principal) -- en su lugar, después de identificarse con su nombre
+      // o su link, ve esta descripción como una card informativa sobre el
+      // brindis/fiesta (ver RSVPSection.jsx / PremiumRsvpGate.jsx).
+      duoInfoDescription: { type: String, default: '' },
     },
     musicSettings: {
       enabled: { type: Boolean, default: false },

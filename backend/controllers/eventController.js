@@ -219,6 +219,7 @@ async function updateRsvpSettings(req, res) {
     guestCardAdultPrice,
     guestCardMinorPrice,
     guestCardDescription,
+    duoInfoDescription,
   } = req.body;
 
   if (rsvpType !== undefined) {
@@ -233,6 +234,7 @@ async function updateRsvpSettings(req, res) {
   if (guestCardAdultPrice !== undefined) event.rsvpSettings.guestCardAdultPrice = String(guestCardAdultPrice).slice(0, 120);
   if (guestCardMinorPrice !== undefined) event.rsvpSettings.guestCardMinorPrice = String(guestCardMinorPrice).slice(0, 120);
   if (guestCardDescription !== undefined) event.rsvpSettings.guestCardDescription = String(guestCardDescription).slice(0, 500);
+  if (duoInfoDescription !== undefined) event.rsvpSettings.duoInfoDescription = String(duoInfoDescription).slice(0, 800);
 
   await event.save();
   res.json(event);
