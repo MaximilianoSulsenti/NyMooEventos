@@ -10,6 +10,7 @@ import UploadPageStylePanel from '../components/editor/UploadPageStylePanel'
 import GallerySettingsPanel from '../components/editor/GallerySettingsPanel'
 import MusicSettingsPanel from '../components/editor/MusicSettingsPanel'
 import RsvpSettingsPanel from '../components/editor/RsvpSettingsPanel'
+import DuoLabelModal from '../components/editor/DuoLabelModal'
 import SectionsPanel from '../components/editor/SectionsPanel'
 import SectionRenderer from '../sections/SectionRenderer'
 import GlobalBackground from '../sections/GlobalBackground'
@@ -27,6 +28,7 @@ function EventEditor() {
   const navigate = useNavigate()
   const isAdmin = Boolean(getStoredUser()?.isAdmin)
   const [duoState, setDuoState] = useState('idle') // idle | creating | error
+  const [duoModalOpen, setDuoModalOpen] = useState(false)
   const [event, setEvent] = useState(null)
   const [appearance, setAppearance] = useState(null)
   const [envelopeSettings, setEnvelopeSettings] = useState(null)
@@ -137,14 +139,16 @@ function EventEditor() {
   // Invitación Dúo: clona este evento completo (diseño, fondos, playlist,
   // secciones) bajo un slug propio y lleva directo a su editor, para armar
   // la segunda versión (cena vs. fiesta, con/sin tarjeta, etc.) sin
-  // rehacer nada de cero.
-  async function handleCreateDuo() {
+  // rehacer nada de cero. Antes de crearla se pregunta para qué es (brindis,
+  // fiesta, u otro texto propio) -- ver DuoLabelModal.
+  async function handleCreateDuo(label) {
     setDuoState('creating')
     try {
-      const { data } = await api.post(`/events/${eventId}/duplicate-duo`)
+      const { data } = await api.post(`/events/${eventId}/duplicate-duo`, { label })
       navigate(`/dashboard/${data._id}/editor`)
     } catch {
       setDuoState('error')
+      setDuoModalOpen(false)
       setTimeout(() => setDuoState('idle'), 2000)
     }
   }
@@ -223,7 +227,7 @@ function EventEditor() {
 
         <button
           type="button"
-          onClick={handleCreateDuo}
+          onClick={() => setDuoModalOpen(true)}
           disabled={duoState === 'creating'}
           className="w-full flex items-center justify-center gap-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 px-3 py-2.5 text-sm text-neutral-300 hover:text-white transition disabled:opacity-40"
         >
@@ -325,6 +329,14 @@ function EventEditor() {
           <SectionRenderer event={previewEvent} />
         </div>
       </main>
+
+      {duoModalOpen && (
+        <DuoLabelModal
+          onClose={() => setDuoModalOpen(false)}
+          onConfirm={handleCreateDuo}
+          submitting={duoState === 'creating'}
+        />
+      )}
     </div>
   )
 }
