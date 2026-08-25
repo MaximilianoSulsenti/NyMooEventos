@@ -87,7 +87,6 @@ function LiveGallery({ event, config, appearance, styles }) {
           title="Galería en vivo"
           paragraphs={PREVIEW_PARAGRAPHS}
           primaryColor={appearance.primaryColor}
-          eventName={event.eventName}
           onClose={() => setShowPreview(false)}
         />
       )}

@@ -46,7 +46,7 @@ function UploadPage() {
           <p className="text-white/50 text-sm max-w-xs">
             {moduleActive
               ? 'Van a aparecer en la pantalla en vivo para que todos las vean.'
-              : 'Este espacio todavía no está activo -- va a estar listo para subir y compartir las fotos del evento en tiempo real.'}
+              : 'Este espacio todavía no está activo para tu evento. ¡Se habilitará el día del evento!'}
           </p>
         </div>
 

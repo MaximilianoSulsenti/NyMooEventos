@@ -1,9 +1,6 @@
 import { motion, AnimatePresence } from 'motion/react'
 import { X, Sparkles } from 'lucide-react'
-import Button from './ui/Button'
-import { WhatsappIcon } from './icons/BrandIcons'
 import useLockBodyScroll from '../hooks/useLockBodyScroll'
-import { LANDING_CONTACT, buildWhatsappUrl } from '../utils/landingConfig'
 
 // Se muestra en vez del formulario real cuando el invitado toca "Subir
 // fotos"/"Compartir mis fotos" en una sección que el organizador dejó
@@ -11,9 +8,8 @@ import { LANDING_CONTACT, buildWhatsappUrl } from '../utils/landingConfig'
 // todavía no está activo para el evento (ver activeModules en
 // backend/models/Event.js). Antes esto directamente ocultaba la sección
 // entera; ahora se ve, y al usarla explica la función en vez de un error.
-function ModulePreviewModal({ title, paragraphs, primaryColor, eventName, onClose }) {
+function ModulePreviewModal({ title, paragraphs, primaryColor, onClose }) {
   useLockBodyScroll()
-  const message = `¡Hola Nymoo! Quiero activar "${title}" para mi evento${eventName ? ` (${eventName})` : ''}.`
 
   return (
     <AnimatePresence>
@@ -54,19 +50,7 @@ function ModulePreviewModal({ title, paragraphs, primaryColor, eventName, onClos
             ))}
           </div>
 
-          <p className="text-white/40 text-xs mb-4">Este espacio todavía no está activo para tu evento -- escribinos para sumarlo.</p>
-
-          <Button
-            as="a"
-            href={buildWhatsappUrl(message, LANDING_CONTACT.whatsappNumber)}
-            target="_blank"
-            rel="noreferrer"
-            primaryColor={primaryColor}
-            className="w-full justify-center"
-          >
-            <WhatsappIcon className="w-4 h-4" />
-            Consultar por WhatsApp
-          </Button>
+          <p className="text-white/40 text-xs">Este espacio todavía no está activo para tu evento. ¡Se habilitará el día del evento!</p>
         </motion.div>
       </motion.div>
     </AnimatePresence>

@@ -8,7 +8,7 @@ import { CARD_REVEAL } from '../utils/motionPresets'
 
 const PREVIEW_PARAGRAPHS = [
   'En este espacio van a poder revivir los momentos más especiales del evento a través de las fotos que suban los invitados.',
-  'El día de la fiesta vas a tener un código QR para imprimir o mostrar en las pantallas del salón, para que todos puedan acceder fácilmente y subir sus fotos.',
+  'El día de la fiesta vas a tener un código QR para escanear en la pantalla del salón, para que todos puedan acceder fácilmente y subir sus fotos.',
   'Así, cada sonrisa, cada abrazo y cada detalle queda guardado para siempre. ¡Un recuerdo único hecho entre todos!',
 ]
 
@@ -60,7 +60,6 @@ function DigitalAlbumButton({ event, config, appearance, styles }) {
           title="Álbum digital por QR"
           paragraphs={PREVIEW_PARAGRAPHS}
           primaryColor={appearance.primaryColor}
-          eventName={event.eventName}
           onClose={() => setShowPreview(false)}
         />
       )}
