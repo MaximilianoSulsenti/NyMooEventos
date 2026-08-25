@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { MessageCircle, Database, Check, Crown } from 'lucide-react'
+import { MessageCircle, Database, Check, Crown, CreditCard } from 'lucide-react'
 import api from '../../services/api'
 import { BRAND } from '../../utils/brand'
 
@@ -112,6 +112,73 @@ function RsvpSettingsPanel({ eventId, settings, onChange }) {
           </div>
         </div>
       )}
+
+      <div className="space-y-3 pt-3 border-t border-white/10">
+        <button
+          type="button"
+          onClick={() => update({ guestCardEnabled: !settings.guestCardEnabled })}
+          className="w-full text-left rounded-xl border p-3 transition flex items-start gap-3"
+          style={{
+            background: settings.guestCardEnabled ? `${BRAND.blue}14` : 'rgba(255,255,255,0.03)',
+            borderColor: settings.guestCardEnabled ? `${BRAND.blue}80` : 'rgba(255,255,255,0.1)',
+          }}
+        >
+          <span
+            className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+            style={{
+              background: settings.guestCardEnabled ? `${BRAND.blue}22` : 'rgba(255,255,255,0.06)',
+              color: settings.guestCardEnabled ? BRAND.blue : 'rgba(255,255,255,0.5)',
+            }}
+          >
+            <CreditCard className="w-4 h-4" />
+          </span>
+          <span className="min-w-0">
+            <span className="block text-sm font-medium">Mostrar "Ver valor de la tarjeta"</span>
+            <span className="block text-xs text-neutral-500 mt-0.5">
+              Agrega un botón dentro del RSVP para que el invitado vea cuánto cuesta su lugar, sin tener que
+              preguntarles directo a ustedes.
+            </span>
+          </span>
+        </button>
+
+        {settings.guestCardEnabled && (
+          <div className="space-y-3 pl-1">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm text-neutral-400 mb-1">Precio adultos</label>
+                <input
+                  type="text"
+                  value={settings.guestCardAdultPrice || ''}
+                  onChange={(e) => update({ guestCardAdultPrice: e.target.value })}
+                  placeholder="Ej: $15.000"
+                  className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-neutral-400 mb-1">Precio menores</label>
+                <input
+                  type="text"
+                  value={settings.guestCardMinorPrice || ''}
+                  onChange={(e) => update({ guestCardMinorPrice: e.target.value })}
+                  placeholder="Ej: $7.500"
+                  className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm text-neutral-400 mb-1">Descripción (opcional)</label>
+              <textarea
+                value={settings.guestCardDescription || ''}
+                onChange={(e) => update({ guestCardDescription: e.target.value })}
+                rows={2}
+                placeholder="Ej: Incluye menú de 3 pasos, barra libre y torta."
+                className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+              />
+            </div>
+            <p className="text-xs text-neutral-500">Dejá un campo vacío si no aplica (ej: sin costo para menores).</p>
+          </div>
+        )}
+      </div>
 
       <p className="text-xs text-neutral-500 bg-white/5 border border-white/10 rounded-xl p-3 flex items-start gap-2">
         <Crown className="w-3.5 h-3.5 mt-0.5 shrink-0" />

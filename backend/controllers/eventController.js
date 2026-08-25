@@ -211,7 +211,15 @@ async function updateMusicSettings(req, res) {
 
 async function updateRsvpSettings(req, res) {
   const event = req.event;
-  const { rsvpType, whatsappNumber, whatsappMessage } = req.body;
+  const {
+    rsvpType,
+    whatsappNumber,
+    whatsappMessage,
+    guestCardEnabled,
+    guestCardAdultPrice,
+    guestCardMinorPrice,
+    guestCardDescription,
+  } = req.body;
 
   if (rsvpType !== undefined) {
     if (!Event.RSVP_TYPES.includes(rsvpType)) {
@@ -221,6 +229,10 @@ async function updateRsvpSettings(req, res) {
   }
   if (whatsappNumber !== undefined) event.rsvpSettings.whatsappNumber = whatsappNumber;
   if (whatsappMessage !== undefined) event.rsvpSettings.whatsappMessage = whatsappMessage;
+  if (guestCardEnabled !== undefined) event.rsvpSettings.guestCardEnabled = Boolean(guestCardEnabled);
+  if (guestCardAdultPrice !== undefined) event.rsvpSettings.guestCardAdultPrice = String(guestCardAdultPrice).slice(0, 120);
+  if (guestCardMinorPrice !== undefined) event.rsvpSettings.guestCardMinorPrice = String(guestCardMinorPrice).slice(0, 120);
+  if (guestCardDescription !== undefined) event.rsvpSettings.guestCardDescription = String(guestCardDescription).slice(0, 500);
 
   await event.save();
   res.json(event);

@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { motion } from 'motion/react'
-import { HeartHandshake } from 'lucide-react'
+import { HeartHandshake, CreditCard } from 'lucide-react'
 import RsvpForm from '../components/RsvpForm'
 import PremiumRsvpGate from '../components/PremiumRsvpGate'
+import GuestCardPriceModal from '../components/GuestCardPriceModal'
 import Button from '../components/ui/Button'
 import AnimatedIcon from '../components/AnimatedIcon'
 import { WhatsappIcon } from '../components/icons/BrandIcons'
@@ -14,8 +15,12 @@ const WHATSAPP_GREEN = '#25D366'
 
 function RSVPSection({ event, config, appearance, styles }) {
   const [isOpen, setIsOpen] = useState(false)
+  const [showPrice, setShowPrice] = useState(false)
   const primaryColor = appearance?.primaryColor
   const rsvpType = event.rsvpSettings?.rsvpType || 'intermedio_db'
+  const guestCardEnabled = Boolean(
+    event.rsvpSettings?.guestCardEnabled && (event.rsvpSettings?.guestCardAdultPrice || event.rsvpSettings?.guestCardMinorPrice)
+  )
   // Las invitaciones VIP son un módulo aparte (se vende y se activa por su
   // cuenta), no una opción más del selector de plan -- cuando está prendido
   // manda por encima de básico/intermedio.
@@ -63,7 +68,28 @@ function RSVPSection({ event, config, appearance, styles }) {
           {isWhatsapp && <WhatsappIcon className="w-4 h-4" />}
           {isWhatsapp ? 'Confirmar por WhatsApp' : 'Confirmar asistencia'}
         </Button>
+
+        {guestCardEnabled && (
+          <button
+            type="button"
+            onClick={() => setShowPrice(true)}
+            className="flex items-center gap-1.5 text-xs text-white/50 hover:text-white transition"
+          >
+            <CreditCard className="w-3.5 h-3.5" />
+            Ver valor de la tarjeta
+          </button>
+        )}
       </motion.div>
+
+      {showPrice && (
+        <GuestCardPriceModal
+          adultPrice={event.rsvpSettings?.guestCardAdultPrice}
+          minorPrice={event.rsvpSettings?.guestCardMinorPrice}
+          description={event.rsvpSettings?.guestCardDescription}
+          primaryColor={accentColor}
+          onClose={() => setShowPrice(false)}
+        />
+      )}
 
       {isOpen && vipEnabled && (
         <PremiumRsvpGate

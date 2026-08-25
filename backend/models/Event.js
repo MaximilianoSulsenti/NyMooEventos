@@ -115,6 +115,16 @@ const eventSchema = new mongoose.Schema(
       rsvpType: { type: String, enum: RSVP_TYPES, default: 'intermedio_db' },
       whatsappNumber: { type: String, default: '' },
       whatsappMessage: { type: String, default: '' },
+      // "Ver valor de la tarjeta": botón opcional dentro del RSVP para que
+      // el invitado vea cuánto cuesta su lugar (cuando la tarjeta del
+      // salón tiene costo) sin tener que preguntarle directo a los
+      // anfitriones. Precios en texto libre a propósito, igual que
+      // guestCardDetails.pricePerCard en Order.js -- no siempre hay un
+      // número cerrado (puede ser "a confirmar", "USD 20", etc.).
+      guestCardEnabled: { type: Boolean, default: false },
+      guestCardAdultPrice: { type: String, default: '' },
+      guestCardMinorPrice: { type: String, default: '' },
+      guestCardDescription: { type: String, default: '' },
     },
     musicSettings: {
       enabled: { type: Boolean, default: false },
