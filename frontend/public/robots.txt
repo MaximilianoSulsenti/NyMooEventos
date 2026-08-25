@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /nymoo-portal-interno-login
+Disallow: /eventos
+Disallow: /dashboard/
+Disallow: /evento/
+Disallow: /checkout
+Disallow: /completar-pedido
+Disallow: /pedidos
+
+Sitemap: https://www.nymoo.com.ar/sitemap.xml
