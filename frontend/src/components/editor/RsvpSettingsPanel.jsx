@@ -18,7 +18,7 @@ const RSVP_TYPE_OPTIONS = [
   },
 ]
 
-function RsvpSettingsPanel({ eventId, settings, onChange }) {
+function RsvpSettingsPanel({ eventId, event, settings, onChange }) {
   const rsvpType = settings.rsvpType || 'intermedio_db'
   const [saveState, setSaveState] = useState('idle') // idle | saving | saved | error
 
@@ -179,6 +179,26 @@ function RsvpSettingsPanel({ eventId, settings, onChange }) {
           </div>
         )}
       </div>
+
+      {event?.isDuo && event?.activeModules?.vipInvitations && (
+        <div className="space-y-2 pt-3 border-t border-white/10">
+          <label className="flex items-center gap-1.5 text-sm text-neutral-300">
+            <Crown className="w-3.5 h-3.5" style={{ color: BRAND.blue }} />
+            Card del {event.duoLabel || 'Dúo'} (reemplaza el formulario de RSVP)
+          </label>
+          <p className="text-xs text-neutral-500">
+            Como es una Invitación Dúo con invitaciones VIP, el invitado ya confirmó en la invitación principal --
+            acá, al identificarse, ve este texto en vez de tener que confirmar de nuevo.
+          </p>
+          <textarea
+            value={settings.duoInfoDescription || ''}
+            onChange={(e) => update({ duoInfoDescription: e.target.value })}
+            rows={4}
+            placeholder={`Ej: El ${(event.duoLabel || 'brindis').toLowerCase()} es a las 20hs en el jardín principal, después de la ceremonia.`}
+            className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+          />
+        </div>
+      )}
 
       <p className="text-xs text-neutral-500 bg-white/5 border border-white/10 rounded-xl p-3 flex items-start gap-2">
         <Crown className="w-3.5 h-3.5 mt-0.5 shrink-0" />

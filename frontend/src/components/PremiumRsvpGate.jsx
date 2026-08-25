@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { X, Search } from 'lucide-react'
 import api from '../services/api'
 import RsvpForm from './RsvpForm'
+import DuoGuestInfoCard from './DuoGuestInfoCard'
 import Button from './ui/Button'
 import { shadeColor } from '../utils/color'
 import useLockBodyScroll from '../hooks/useLockBodyScroll'
@@ -54,6 +55,21 @@ function PremiumRsvpGate({ event, primaryColor = '#a855f7', dietaryOptions, extr
   }
 
   if (status === 'found' && guest) {
+    // Invitación Dúo de un original con invitaciones VIP: el invitado ya
+    // confirmó su asistencia en la invitación principal, así que acá no se
+    // le vuelve a pedir RSVP -- se le muestra la info que cargó el
+    // organizador en su lugar (ver rsvpSettings.duoInfoDescription).
+    if (event.isDuo) {
+      return (
+        <DuoGuestInfoCard
+          guestName={guest.name}
+          title={event.duoLabel || 'Información'}
+          description={event.rsvpSettings?.duoInfoDescription}
+          primaryColor={primaryColor}
+          onClose={onClose}
+        />
+      )
+    }
     return (
       <RsvpForm
         eventSlug={event.eventSlug}
