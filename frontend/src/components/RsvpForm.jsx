@@ -9,11 +9,19 @@ import useLockBodyScroll from '../hooks/useLockBodyScroll'
 const inputClass =
   'w-full rounded-lg bg-neutral-800 border border-white/10 px-3 py-2 outline-none transition-colors focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30'
 
+// Si el organizador no cargó sus propias opciones en el editor (campo
+// "Opciones de restricciones alimentarias" de la sección RSVP), el
+// desplegable arranca con estas por defecto en vez de caer a un input de
+// texto libre -- cubren los casos más comunes sin que haya que configurar
+// nada. "Ninguna" ya está siempre como primera opción del <select>.
+const DEFAULT_DIETARY_OPTIONS = ['Vegano', 'Vegetariano', 'Celíaco', 'Diabético', 'Hipertenso', 'Intolerante a la lactosa']
+
 function parseDietaryOptions(raw = '') {
-  return raw
+  const custom = raw
     .split('\n')
     .map((line) => line.trim())
     .filter(Boolean)
+  return custom.length > 0 ? custom : DEFAULT_DIETARY_OPTIONS
 }
 
 // Plan básico: arma el texto del mensaje con todo lo que completó el
@@ -190,45 +198,37 @@ function RsvpForm({
               <div>
                 <label className="block text-sm text-neutral-400 mb-1">¿Asistís?</label>
                 <select value={attending} onChange={(e) => setAttending(e.target.value)} className={inputClass}>
-                  <option value="confirmado">Sí, voy a asistir</option>
-                  <option value="declinado">No podré asistir</option>
+                  <option value="confirmado" className="text-white bg-neutral-800">
+                    Sí, voy a asistir
+                  </option>
+                  <option value="declinado" className="text-white bg-neutral-800">
+                    No podré asistir
+                  </option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-sm text-neutral-400 mb-1">Alergias o restricciones alimentarias</label>
-                {dietaryPresets.length > 0 ? (
-                  <>
-                    <select
-                      value={dietaryRestrictions}
-                      onChange={(e) => setDietaryRestrictions(e.target.value)}
-                      className={inputClass}
-                    >
-                      <option value="">Ninguna</option>
-                      {dietaryPresets.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                      <option value="__otra__">Otra (especificar)</option>
-                    </select>
-                    {dietaryRestrictions === '__otra__' && (
-                      <input
-                        type="text"
-                        value={customDietary}
-                        onChange={(e) => setCustomDietary(e.target.value)}
-                        placeholder="Especificá tu restricción"
-                        className={`${inputClass} mt-2`}
-                      />
-                    )}
-                  </>
-                ) : (
+                <select value={dietaryRestrictions} onChange={(e) => setDietaryRestrictions(e.target.value)} className={inputClass}>
+                  <option value="" className="text-white bg-neutral-800">
+                    Ninguna
+                  </option>
+                  {dietaryPresets.map((option) => (
+                    <option key={option} value={option} className="text-white bg-neutral-800">
+                      {option}
+                    </option>
+                  ))}
+                  <option value="__otra__" className="text-white bg-neutral-800">
+                    Otra (especificar)
+                  </option>
+                </select>
+                {dietaryRestrictions === '__otra__' && (
                   <input
                     type="text"
-                    value={dietaryRestrictions}
-                    onChange={(e) => setDietaryRestrictions(e.target.value)}
-                    placeholder="Opcional"
-                    className={inputClass}
+                    value={customDietary}
+                    onChange={(e) => setCustomDietary(e.target.value)}
+                    placeholder="Especificá tu restricción"
+                    className={`${inputClass} mt-2`}
                   />
                 )}
               </div>
