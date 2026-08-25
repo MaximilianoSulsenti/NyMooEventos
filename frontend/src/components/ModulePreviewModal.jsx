@@ -50,7 +50,7 @@ function ModulePreviewModal({ title, paragraphs, primaryColor, onClose }) {
             ))}
           </div>
 
-          <p className="text-white/40 text-xs">Este espacio todavía no está activo para tu evento. ¡Se habilitará el día del evento!</p>
+          <p className="text-white/40 text-xs">Todavía no está activo, pero se habilita solo el día del evento -- ¡no tenés que hacer nada!</p>
         </motion.div>
       </motion.div>
     </AnimatePresence>
