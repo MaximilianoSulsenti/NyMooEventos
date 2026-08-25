@@ -1,14 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const AdminSession = require('../models/AdminSession');
 const { isAdminEmail } = require('../middleware/admin');
-
-// Cuánto tiempo sin actividad se considera que una sesión quedó "abandonada"
-// (pestaña cerrada sin cerrar sesión, corte de luz, etc) y libera el lock
-// para que el otro admin pueda entrar sin tener que esperar a que alguien
-// cierre sesión a mano.
-const SESSION_IDLE_MS = 30 * 60 * 1000;
 
 function issueToken(user) {
   return jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
@@ -71,32 +64,11 @@ async function login(req, res) {
     return res.status(401).json({ message: 'Credenciales inválidas' });
   }
 
-  // Un solo admin conectado a la vez: si hay otra sesión activa (con
-  // actividad reciente) y es de un email distinto, no dejamos entrar para
-  // que los dos no terminen editando el mismo evento al mismo tiempo.
-  const activeSession = await AdminSession.findOne({ key: 'lock' });
-  if (
-    activeSession &&
-    activeSession.email !== user.email.toLowerCase() &&
-    Date.now() - activeSession.lastActivity.getTime() < SESSION_IDLE_MS
-  ) {
-    return res.status(409).json({
-      message: `Hay una sesión activa de ${activeSession.name || activeSession.email}. Esperá a que cierre sesión o quede inactiva unos minutos.`,
-    });
-  }
-
-  await AdminSession.findOneAndUpdate(
-    { key: 'lock' },
-    { email: user.email.toLowerCase(), name: user.name, lastActivity: new Date() },
-    { upsert: true }
-  );
-
   const token = issueToken(user);
   res.json({ token, user: sanitizeUser(user) });
 }
 
 async function logout(req, res) {
-  await AdminSession.deleteOne({ key: 'lock', email: req.user.email.toLowerCase() });
   res.json({ message: 'Sesión cerrada' });
 }
 
