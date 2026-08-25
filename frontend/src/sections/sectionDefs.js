@@ -199,7 +199,11 @@ export const SECTION_FIELD_DEFS = {
   ],
   LiveGallery: [
     { key: 'title', label: 'Título', type: 'text' },
+    { key: 'subtitle', label: 'Subtítulo', type: 'text' },
+    { key: 'description', label: 'Texto descriptivo (opcional, más largo)', type: 'textarea' },
+    { key: 'buttonText', label: 'Texto del botón', type: 'text' },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
+    { key: 'fontSizeSubtitle', label: 'Tamaño del subtítulo', type: 'select', options: FONT_SIZE_OPTIONS },
   ],
   DigitalAlbumButton: [
     { key: 'title', label: 'Título', type: 'text' },

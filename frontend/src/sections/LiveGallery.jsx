@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { motion } from 'motion/react'
-import api from '../services/api'
+import { Camera } from 'lucide-react'
 import Button from '../components/ui/Button'
 import UploadPhotosModal from '../components/UploadPhotosModal'
 import ModulePreviewModal from '../components/ModulePreviewModal'
-import { cloudinaryThumb } from '../utils/cloudinary'
+import { CARD_REVEAL } from '../utils/motionPresets'
 
 const PREVIEW_PARAGRAPHS = [
   'Acá vas a poder ver en tiempo real, proyectadas en la pantalla del salón, las fotos y videos que vayan subiendo tus invitados durante la fiesta.',
@@ -12,67 +12,43 @@ const PREVIEW_PARAGRAPHS = [
   '¡Una forma única de vivir la fiesta, todos conectados al mismo momento!',
 ]
 
+// Misma estructura que DigitalAlbumButton.jsx a propósito -- la única
+// diferencia real entre los dos módulos es que acá las fotos también se
+// proyectan en la pantalla del salón el día del evento, no solo quedan
+// guardadas. Antes esta sección mostraba una previa de las últimas fotos
+// subidas (miniaturas), pero el <video> usaba una URL de imagen como src
+// (cloudinaryThumb no genera un video real), lo que rompía el thumbnail de
+// cualquier video -- se saca esa previa entera, igual que el álbum por QR
+// nunca la tuvo.
 function LiveGallery({ event, config, appearance, styles }) {
-  const [photos, setPhotos] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
   const titleSize = config.fontSizeTitle || 'text-2xl'
+  const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const moduleActive = Boolean(event.activeModules?.liveGallery)
 
-  useEffect(() => {
-    if (!moduleActive) return
-    api
-      .get(`/photos/slug/${event.eventSlug}`)
-      .then(({ data }) => setPhotos(data))
-      .catch(() => {})
-  }, [event.eventSlug, moduleActive])
-
-  // Antes esta sección se ocultaba entera (return null) si el módulo no
-  // estaba activo, aunque el organizador la hubiera dejado habilitada en
-  // el editor. Ahora se ve siempre, y al tocar el botón muestra el flujo
-  // real (si el módulo está pago) o un preview explicando la función.
   return (
     <section className={`text-center px-6 ${styles.fontClass}`}>
-      <h2 className={`${titleSize} mb-3 ${styles.heading}`} style={{ color: config.textColor || undefined }}>
-        {config.title || 'Galería en vivo'}
-      </h2>
-      <p className="text-white/70 mb-6">Compartí tus fotos del evento y miralas en la pantalla del salón.</p>
+      <motion.div {...CARD_REVEAL}>
+        <h2 className={`${titleSize} mb-2 ${styles.heading}`} style={{ color: config.textColor || undefined }}>
+          {config.title || 'Galería en vivo'}
+        </h2>
+        {config.subtitle && (
+          <p className={`text-white/70 mb-2 ${subtitleSize}`}>{config.subtitle}</p>
+        )}
+        <p className="text-white/60 text-sm mb-6 max-w-sm mx-auto break-words">
+          {config.description || 'Compartí tus fotos del evento y miralas en vivo en la pantalla del salón el día de la fiesta.'}
+        </p>
 
-      {photos.length > 0 && (
-        <div className="flex gap-2 justify-center flex-wrap max-w-md mx-auto mb-6">
-          {photos.slice(0, 6).map((photo) =>
-            photo.assetType === 'video' ? (
-              <motion.video
-                key={photo._id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                src={cloudinaryThumb(photo.cloudinaryUrl, 120)}
-                muted
-                className="w-16 h-16 object-cover rounded-lg"
-              />
-            ) : (
-              <motion.img
-                key={photo._id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                src={cloudinaryThumb(photo.cloudinaryUrl, 120)}
-                alt=""
-                className="w-16 h-16 object-cover rounded-lg"
-              />
-            )
-          )}
-        </div>
-      )}
-
-      <Button
-        type="button"
-        onClick={() => (moduleActive ? setIsModalOpen(true) : setShowPreview(true))}
-        primaryColor={appearance.primaryColor}
-      >
-        Subir fotos
-      </Button>
+        <Button
+          type="button"
+          onClick={() => (moduleActive ? setIsModalOpen(true) : setShowPreview(true))}
+          primaryColor={appearance.primaryColor}
+        >
+          <Camera className="w-4 h-4" />
+          {config.buttonText || 'Subir fotos'}
+        </Button>
+      </motion.div>
 
       {isModalOpen && (
         <UploadPhotosModal
