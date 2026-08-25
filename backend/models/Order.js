@@ -40,12 +40,26 @@ const orderSchema = new mongoose.Schema(
       bankDetails: { type: String, default: '' },
       importantTips: { type: String, default: '' },
     },
-    packDetails: {
-      packName: { type: String, required: true },
-      // Nunca se toma del cliente -- lo calcula el backend a partir de
-      // packName contra la lista de precios vigente (ver orderController).
-      price: { type: Number, required: true },
+    // Uno o más productos por pedido -- hoy son los 4 packs, pero está
+    // pensado para que a futuro se puedan sumar herramientas o juegos
+    // independientes que se compren sueltos o combinados con un pack. El
+    // precio de cada item nunca se toma del cliente, se recalcula acá
+    // contra la lista de precios vigente (ver orderController).
+    items: {
+      type: [
+        {
+          _id: false,
+          name: { type: String, required: true },
+          price: { type: Number, required: true },
+        },
+      ],
+      required: true,
+      validate: {
+        validator: (arr) => Array.isArray(arr) && arr.length > 0,
+        message: 'El pedido debe tener al menos un producto',
+      },
     },
+    totalPrice: { type: Number, required: true },
     paymentMethod: { type: String, enum: PAYMENT_METHODS, required: true },
     paymentStatus: { type: String, enum: PAYMENT_STATUSES, default: 'Pendiente' },
     source: { type: String, enum: SOURCES, default: 'landing_page' },

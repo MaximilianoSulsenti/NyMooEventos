@@ -3,9 +3,11 @@ const Counter = require('../models/Counter');
 
 // Lista de precios vigente -- fuente de verdad del lado del servidor. El
 // precio NUNCA se toma de lo que manda el cliente (se podría manipular
-// desde las devtools); se recalcula acá a partir del nombre del pack, igual
-// que los 4 packs reales de la landing (ver frontend/src/utils/landingConfig.js).
-const PACK_PRICES = {
+// desde las devtools); se recalcula acá a partir del nombre de cada
+// producto. Hoy son los 4 packs de la landing (ver
+// frontend/src/utils/landingConfig.js), pero el mapa está pensado para
+// crecer con herramientas/juegos independientes más adelante.
+const ITEM_PRICES = {
   'Nymoo INVITA': 50000,
   'Nymoo CONECTA': 70000,
   'Nymoo VIVE': 100000,
@@ -50,19 +52,17 @@ async function createMercadoPagoRedirect(order) {
     const clientUrl = getClientUrl();
     const result = await mpPreferenceClient.create({
       body: {
-        items: [
-          {
-            title: `${order.packDetails.packName} - Nymoo Eventos Digitales`,
-            quantity: 1,
-            unit_price: order.packDetails.price,
-            currency_id: 'ARS',
-          },
-        ],
+        items: order.items.map((item) => ({
+          title: `${item.name} - Nymoo Eventos Digitales`,
+          quantity: 1,
+          unit_price: item.price,
+          currency_id: 'ARS',
+        })),
         external_reference: order.orderNumber,
         back_urls: {
           success: `${clientUrl}/checkout/success?pedido=${encodeURIComponent(order.orderNumber)}`,
           pending: `${clientUrl}/checkout/success?pedido=${encodeURIComponent(order.orderNumber)}`,
-          failure: `${clientUrl}/checkout?pack=${encodeURIComponent(order.packDetails.packName)}`,
+          failure: `${clientUrl}/checkout`,
         },
         auto_return: 'approved',
       },
@@ -75,13 +75,26 @@ async function createMercadoPagoRedirect(order) {
 }
 
 function buildOrderPayload(body) {
-  const { clientData, eventData, designPresets, guestCardDetails, additionalInfo, packDetails, paymentMethod } = body;
+  const { clientData, eventData, designPresets, guestCardDetails, additionalInfo, items, paymentMethod } = body;
 
-  const packName = packDetails?.packName;
-  const price = PACK_PRICES[packName];
-  if (!price) {
-    return { error: 'El pack elegido no es válido' };
+  // El cliente solo manda nombres -- el precio de cada uno se recalcula acá
+  // contra ITEM_PRICES, nunca se toma de lo que venga en el body.
+  const requestedNames = Array.isArray(items) ? items.map((item) => item?.name).filter(Boolean) : [];
+  const uniqueNames = [...new Set(requestedNames)];
+  if (uniqueNames.length === 0) {
+    return { error: 'Elegí al menos un producto' };
   }
+
+  const resolvedItems = [];
+  for (const name of uniqueNames) {
+    const price = ITEM_PRICES[name];
+    if (!price) {
+      return { error: `El producto "${name}" no es válido` };
+    }
+    resolvedItems.push({ name, price });
+  }
+  const totalPrice = resolvedItems.reduce((sum, item) => sum + item.price, 0);
+
   if (!clientData?.name?.trim()) {
     return { error: 'El nombre es requerido' };
   }
@@ -122,7 +135,8 @@ function buildOrderPayload(body) {
         bankDetails: additionalInfo?.bankDetails || '',
         importantTips: additionalInfo?.importantTips || '',
       },
-      packDetails: { packName, price },
+      items: resolvedItems,
+      totalPrice,
       paymentMethod,
     },
   };
@@ -223,5 +237,5 @@ module.exports = {
   listOrders,
   updateOrderStatus,
   updateOrderArchive,
-  PACK_PRICES,
+  ITEM_PRICES,
 };
