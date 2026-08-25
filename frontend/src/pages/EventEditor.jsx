@@ -188,7 +188,23 @@ function EventEditor() {
     )
   }
 
-  const previewEvent = { ...event, appearance, sections }
+  // Antes solo appearance/sections se reflejaban acá -- el resto (RSVP,
+  // galería, música, sobre, marca, página de subida) se editaba en estado
+  // local pero la vista previa seguía mostrando el `event` original tal
+  // como se cargó, así que un cambio (ej. activar "Ver valor de la
+  // tarjeta") no se veía hasta guardar y recargar. Ahora la preview usa
+  // siempre el estado local editado, guardado o no.
+  const previewEvent = {
+    ...event,
+    appearance,
+    envelopeSettings,
+    brandingSettings: branding,
+    uploadPageSettings,
+    gallerySettings,
+    musicSettings,
+    rsvpSettings,
+    sections,
+  }
   const previewStyles = getThemeStyles(appearance.theme, appearance.fontFamily)
 
   return (
