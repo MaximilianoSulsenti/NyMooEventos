@@ -97,7 +97,13 @@ function PackCard({ pack, index }) {
               <CreditCard className="w-4 h-4" />
               Comprar por WhatsApp o Mercado Pago
             </span>
-            <span className="text-[11px] font-medium opacity-80">En 3 cuotas</span>
+            {/* Aclaración a propósito: las cuotas las financia el banco del
+                cliente, no Nymoo -- por eso el texto lo dice explícito y no
+                promete "sin interés". Tipografía chica y liviana a propósito,
+                que quede como aclaración legal discreta, no como promesa. */}
+            <span className="text-[10px] font-normal tracking-wide opacity-55 italic">
+              En 3 cuotas con tarjetas bancarias
+            </span>
           </span>
         </Button>
       </div>
