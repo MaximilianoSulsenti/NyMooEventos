@@ -22,9 +22,10 @@ import Button from '../components/ui/Button'
 import GlassPanel from '../components/ui/GlassPanel'
 import OrderForm from '../components/orders/OrderForm'
 import PackPicker from '../components/orders/PackPicker'
+import DuoAddonToggle from '../components/orders/DuoAddonToggle'
 import useLockBodyScroll from '../hooks/useLockBodyScroll'
 import { BRAND } from '../utils/brand'
-import { LANDING_PACKS, LANDING_CONTACT } from '../utils/landingConfig'
+import { LANDING_PACKS, LANDING_CONTACT, DUO_ADDON_NAME, computeDuoAddonPrice } from '../utils/landingConfig'
 import { EMPTY_ORDER_FORM } from '../utils/orderForm'
 
 const PAYMENT_STATUSES = ['Pendiente', 'Señado (50%)', 'Pagado Completo']
@@ -129,13 +130,16 @@ function ManualOrderModal({ onClose, onCreated }) {
   useLockBodyScroll()
   const [form, setForm] = useState(EMPTY_ORDER_FORM)
   const [packIds, setPackIds] = useState([LANDING_PACKS[0].id])
+  const [duoSelected, setDuoSelected] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState('whatsapp_coordinar')
   const [paymentStatus, setPaymentStatus] = useState('Pagado Completo')
   const [status, setStatus] = useState('idle')
   const [errorMessage, setErrorMessage] = useState('')
 
   const packs = LANDING_PACKS.filter((p) => packIds.includes(p.id))
-  const total = packs.reduce((sum, p) => sum + p.priceValue, 0)
+  const duoPrice = computeDuoAddonPrice(packs)
+  const duoActive = duoSelected && duoPrice > 0
+  const total = packs.reduce((sum, p) => sum + p.priceValue, 0) + (duoActive ? duoPrice : 0)
 
   function togglePack(id) {
     setPackIds((prev) => (prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]))
@@ -160,7 +164,7 @@ function ManualOrderModal({ onClose, onCreated }) {
           ...form.guestCardDetails,
           pricePerCard: form.guestCardDetails.hasCost ? form.guestCardDetails.pricePerCard : '',
         },
-        items: packs.map((p) => ({ name: p.name })),
+        items: [...packs.map((p) => ({ name: p.name })), ...(duoActive ? [{ name: DUO_ADDON_NAME }] : [])],
         paymentMethod,
         paymentStatus,
       })
@@ -208,6 +212,9 @@ function ManualOrderModal({ onClose, onCreated }) {
               )}
             </div>
             <PackPicker selectedIds={packIds} onToggle={togglePack} />
+            <div className="mt-3">
+              <DuoAddonToggle selectedPacks={packs} selected={duoActive} onToggle={() => setDuoSelected((v) => !v)} />
+            </div>
           </div>
 
           <div>

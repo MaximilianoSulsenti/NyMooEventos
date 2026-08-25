@@ -122,3 +122,24 @@ export const LANDING_PACKS = [
     ],
   },
 ]
+
+// Invitación Dúo: clon de la invitación con datos propios (ver
+// isDuo/duoOf en backend/models/Event.js), promocionada en la landing
+// (ver DUO_INFO en components/landing/faqData.js) con 50% off sobre el
+// pack principal contratado. VISIÓN queda afuera a propósito, no es un
+// pack de invitación de pareja/festejo. Estas constantes deben coincidir
+// EXACTO con DUO_ADDON_NAME/DUO_ELIGIBLE_PACKS/DUO_DISCOUNT en
+// backend/controllers/orderController.js -- el precio real siempre lo
+// recalcula el servidor, esto es solo para mostrar el total en vivo.
+export const DUO_ADDON_NAME = 'Invitación Dúo (50%)'
+export const DUO_ELIGIBLE_PACK_IDS = ['invita', 'conecta', 'vive']
+export const DUO_DISCOUNT = 0.5
+
+// Dado un array de packs ya seleccionados (objetos de LANDING_PACKS), calcula
+// el precio del add-on Dúo: 50% del pack elegible más caro entre los
+// seleccionados. Devuelve 0 si ninguno de los seleccionados habilita el Dúo.
+export function computeDuoAddonPrice(selectedPacks) {
+  const eligiblePrices = selectedPacks.filter((p) => DUO_ELIGIBLE_PACK_IDS.includes(p.id)).map((p) => p.priceValue)
+  if (eligiblePrices.length === 0) return 0
+  return Math.round(Math.max(...eligiblePrices) * DUO_DISCOUNT)
+}

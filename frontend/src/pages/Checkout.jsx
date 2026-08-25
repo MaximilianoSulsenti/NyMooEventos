@@ -6,10 +6,11 @@ import api from '../services/api'
 import Button from '../components/ui/Button'
 import OrderForm from '../components/orders/OrderForm'
 import PackPicker from '../components/orders/PackPicker'
+import DuoAddonToggle from '../components/orders/DuoAddonToggle'
 import { WhatsappIcon } from '../components/icons/BrandIcons'
 import { BRAND } from '../utils/brand'
 import { cn } from '../utils/cn'
-import { LANDING_CONTACT, LANDING_PACKS, buildWhatsappUrl } from '../utils/landingConfig'
+import { LANDING_CONTACT, LANDING_PACKS, buildWhatsappUrl, DUO_ADDON_NAME, computeDuoAddonPrice } from '../utils/landingConfig'
 import { EMPTY_ORDER_FORM } from '../utils/orderForm'
 
 const WELCOME_MESSAGE =
@@ -34,6 +35,7 @@ function Checkout() {
   const initialPack = LANDING_PACKS.find((p) => p.id === initialPackId) || null
 
   const [selectedPackIds, setSelectedPackIds] = useState(initialPack ? [initialPack.id] : [LANDING_PACKS[1].id])
+  const [duoSelected, setDuoSelected] = useState(false)
   const [form, setForm] = useState(EMPTY_ORDER_FORM)
   const [paymentMethod, setPaymentMethod] = useState(null)
   const [status, setStatus] = useState('idle') // idle | submitting | error
@@ -47,7 +49,9 @@ function Checkout() {
   }, [])
 
   const selectedPacks = LANDING_PACKS.filter((p) => selectedPackIds.includes(p.id))
-  const total = selectedPacks.reduce((sum, p) => sum + p.priceValue, 0)
+  const duoPrice = computeDuoAddonPrice(selectedPacks)
+  const duoActive = duoSelected && duoPrice > 0
+  const total = selectedPacks.reduce((sum, p) => sum + p.priceValue, 0) + (duoActive ? duoPrice : 0)
 
   function togglePack(id) {
     setSelectedPackIds((prev) => (prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]))
@@ -78,7 +82,7 @@ function Checkout() {
           ...form.guestCardDetails,
           pricePerCard: form.guestCardDetails.hasCost ? form.guestCardDetails.pricePerCard : '',
         },
-        items: selectedPacks.map((p) => ({ name: p.name })),
+        items: [...selectedPacks.map((p) => ({ name: p.name })), ...(duoActive ? [{ name: DUO_ADDON_NAME }] : [])],
         paymentMethod,
       })
 
@@ -93,7 +97,7 @@ function Checkout() {
       const message = buildOrderWhatsappMessage(
         data.order.orderNumber,
         form,
-        selectedPacks.map((p) => p.name),
+        [...selectedPacks.map((p) => p.name), ...(duoActive ? [DUO_ADDON_NAME] : [])],
         total
       )
       window.location.href = buildWhatsappUrl(message, LANDING_CONTACT.whatsappNumber)
@@ -134,6 +138,9 @@ function Checkout() {
             )}
           </div>
           <PackPicker selectedIds={selectedPackIds} onToggle={togglePack} />
+          <div className="mt-3">
+            <DuoAddonToggle selectedPacks={selectedPacks} selected={duoActive} onToggle={() => setDuoSelected((v) => !v)} />
+          </div>
         </div>
 
         <OrderForm form={form} onField={updateField} />

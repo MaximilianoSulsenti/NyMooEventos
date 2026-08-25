@@ -14,6 +14,17 @@ const ITEM_PRICES = {
   'Nymoo VISIÓN': 60000,
 };
 
+// Invitación Dúo: clon de la invitación con datos propios (ver isDuo/duoOf
+// en backend/models/Event.js), promocionada en la landing (ver DUO_INFO en
+// frontend/src/components/landing/faqData.js) como "50% off sobre el pack
+// principal contratado". No tiene precio propio en ITEM_PRICES porque
+// depende de qué pack se compró junto -- se resuelve aparte en
+// buildOrderPayload. VISIÓN queda afuera a propósito: no es un pack de
+// invitación de pareja/festejo, es el módulo de pantalla en vivo suelto.
+const DUO_ADDON_NAME = 'Invitación Dúo (50%)';
+const DUO_ELIGIBLE_PACKS = ['Nymoo INVITA', 'Nymoo CONECTA', 'Nymoo VIVE'];
+const DUO_DISCOUNT = 0.5;
+
 async function nextOrderNumber() {
   const year = new Date().getFullYear();
   const counter = await Counter.findOneAndUpdate(
@@ -87,12 +98,22 @@ function buildOrderPayload(body) {
 
   const resolvedItems = [];
   for (const name of uniqueNames) {
+    if (name === DUO_ADDON_NAME) continue; // se resuelve aparte, depende del pack base
     const price = ITEM_PRICES[name];
     if (!price) {
       return { error: `El producto "${name}" no es válido` };
     }
     resolvedItems.push({ name, price });
   }
+
+  if (uniqueNames.includes(DUO_ADDON_NAME)) {
+    const basePrices = resolvedItems.filter((item) => DUO_ELIGIBLE_PACKS.includes(item.name)).map((item) => item.price);
+    if (basePrices.length === 0) {
+      return { error: 'La Invitación Dúo necesita que también elijas Nymoo INVITA, CONECTA o VIVE' };
+    }
+    resolvedItems.push({ name: DUO_ADDON_NAME, price: Math.round(Math.max(...basePrices) * DUO_DISCOUNT) });
+  }
+
   const totalPrice = resolvedItems.reduce((sum, item) => sum + item.price, 0);
 
   if (!clientData?.name?.trim()) {

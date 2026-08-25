@@ -6,8 +6,9 @@ import api from '../services/api'
 import Button from '../components/ui/Button'
 import OrderForm from '../components/orders/OrderForm'
 import PackPicker from '../components/orders/PackPicker'
+import DuoAddonToggle from '../components/orders/DuoAddonToggle'
 import { BRAND } from '../utils/brand'
-import { LANDING_PACKS } from '../utils/landingConfig'
+import { LANDING_PACKS, DUO_ADDON_NAME, computeDuoAddonPrice } from '../utils/landingConfig'
 import { EMPTY_ORDER_FORM } from '../utils/orderForm'
 
 const WELCOME_MESSAGE =
@@ -38,6 +39,7 @@ function SharedOrderForm() {
   const initialPack = LANDING_PACKS.find((p) => p.id === initialPackId) || null
 
   const [selectedPackIds, setSelectedPackIds] = useState(initialPack ? [initialPack.id] : [LANDING_PACKS[1].id])
+  const [duoSelected, setDuoSelected] = useState(false)
   const [form, setForm] = useState(EMPTY_ORDER_FORM)
   const [status, setStatus] = useState('idle') // idle | submitting | done | error
   const [errorMessage, setErrorMessage] = useState('')
@@ -47,7 +49,9 @@ function SharedOrderForm() {
   }, [])
 
   const selectedPacks = LANDING_PACKS.filter((p) => selectedPackIds.includes(p.id))
-  const total = selectedPacks.reduce((sum, p) => sum + p.priceValue, 0)
+  const duoPrice = computeDuoAddonPrice(selectedPacks)
+  const duoActive = duoSelected && duoPrice > 0
+  const total = selectedPacks.reduce((sum, p) => sum + p.priceValue, 0) + (duoActive ? duoPrice : 0)
 
   function togglePack(id) {
     setSelectedPackIds((prev) => (prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]))
@@ -74,7 +78,7 @@ function SharedOrderForm() {
           ...form.guestCardDetails,
           pricePerCard: form.guestCardDetails.hasCost ? form.guestCardDetails.pricePerCard : '',
         },
-        items: selectedPacks.map((p) => ({ name: p.name })),
+        items: [...selectedPacks.map((p) => ({ name: p.name })), ...(duoActive ? [{ name: DUO_ADDON_NAME }] : [])],
       })
       setStatus('done')
     } catch (err) {
@@ -117,6 +121,9 @@ function SharedOrderForm() {
               )}
             </div>
             <PackPicker selectedIds={selectedPackIds} onToggle={togglePack} />
+            <div className="mt-3">
+              <DuoAddonToggle selectedPacks={selectedPacks} selected={duoActive} onToggle={() => setDuoSelected((v) => !v)} />
+            </div>
           </div>
 
           <OrderForm form={form} onField={updateField} />
