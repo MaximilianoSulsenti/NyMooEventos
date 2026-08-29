@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { FileSpreadsheet, Plus, X, Search, Loader2, Music2 } from 'lucide-react'
+import { FileSpreadsheet, Plus, X, Search, Loader2, Music2, ExternalLink } from 'lucide-react'
 import { BRAND } from '../../utils/brand'
 import { cn } from '../../utils/cn'
 import { parsePlaylistFromFile } from '../../utils/playlistOrganizer'
@@ -104,19 +104,33 @@ function SongBankPanel({ songBank, onAddTracks, onRemoveFromBank }) {
           dueño inicie sesión (cambio de política de la API, feb. 2026) --
           la única forma de traer una playlist de Spotify acá es que el
           cliente la exporte él mismo a Excel (ej. con Exportify, gratis) y
-          suba ese archivo con el dropzone de arriba. */}
-      <p className="text-white/30 text-[11px] -mt-2">
-        ¿Tenés tu playlist en Spotify? Exportala a Excel con{' '}
-        <a
-          href="https://exportify.net"
-          target="_blank"
-          rel="noreferrer"
-          className="underline hover:text-white/50 transition"
+          suba ese archivo con el dropzone de arriba. Antes esto era un
+          simple link de texto con "exportify.net" subrayado -- confundía a
+          más de uno pensando que los iba a llevar directo a la app de
+          Spotify (en vez de una web donde inician sesión con su cuenta) --
+          ahora es una tarjeta clickeable con ícono de link externo y la
+          aclaración explícita de que es una web. */}
+      <a
+        href="https://exportify.net"
+        target="_blank"
+        rel="noreferrer"
+        className="flex items-center gap-2.5 rounded-xl bg-white/[0.03] border border-white/10 px-3 py-2.5 -mt-2 hover:bg-white/[0.06] transition group"
+      >
+        <span
+          className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+          style={{ background: `${BRAND.lime}22`, color: BRAND.lime }}
         >
-          exportify.net
-        </a>{' '}
-        y subila acá arriba.
-      </p>
+          <Music2 className="w-4 h-4" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-xs text-white/70">¿Tenés tu playlist en Spotify?</span>
+          <span className="block text-[11px] text-white/40 mt-0.5">
+            Exportala a Excel en <span className="text-white/60 underline">exportify.net</span> -- es una página web,
+            iniciás sesión ahí con tu cuenta de Spotify (no hace falta abrir la app) y subís el archivo acá arriba.
+          </span>
+        </span>
+        <ExternalLink className="w-3.5 h-3.5 text-white/25 group-hover:text-white/60 transition shrink-0" />
+      </a>
 
       {importMessage && (
         <p className={cn('text-xs', importState === 'error' ? 'text-red-400' : 'text-white/50')}>{importMessage}</p>
