@@ -271,10 +271,38 @@ function Envelope({ settings, appearance, guestName, welcomeMessage, onOpen }) {
             style={{
               clipPath: FLAP_CLIP_PATH,
               backfaceVisibility: 'hidden',
-              background: `linear-gradient(160deg, ${flapFrontShade}, ${bgColor})`,
+              background: bgColor,
               boxShadow: 'inset 0 -1px 0 rgba(255,255,255,0.15)',
             }}
           >
+            {/* Antes la solapa SIEMPRE mostraba un degradado calculado del
+                color, ignorando por completo bgUrl -- si alguien elegía
+                imagen/video de fondo, se veía en el cuerpo del sobre pero la
+                solapa de arriba quedaba igual, como si no hubiera pasado
+                nada. Este div interno mide 100%/54% = ~185% de la solapa a
+                propósito: la solapa mide el 54% de la tarjeta completa
+                (FLAP_HEIGHT_PERCENT), así que agrandarlo a esa proporción
+                hace que bg-cover/bg-center calcule el recorte igual que en
+                el cuerpo (que sí mide el 100%) -- mismo punto de origen
+                (top:0 de la tarjeta), misma imagen, sin que se note la
+                costura entre las dos partes. */}
+            {settings.bgType !== 'color' && (
+              <div className="absolute inset-x-0 top-0" style={{ height: `${10000 / FLAP_HEIGHT_PERCENT}%` }}>
+                <EnvelopeBackground settings={settings} />
+              </div>
+            )}
+            {/* Matiz de "doblez" -- degradado sólido para un fondo de color
+                plano (como antes), pero semitransparente sobre una imagen
+                para no taparla, solo sugerir la sombra del pliegue. */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  settings.bgType === 'color'
+                    ? `linear-gradient(160deg, ${flapFrontShade}, ${bgColor})`
+                    : `linear-gradient(160deg, ${flapFrontShade}33, ${bgColor}55)`,
+              }}
+            />
             {settings.titleText && (
               <p
                 className={cn(settings.fontSizeTitle || 'text-base', 'tracking-wide leading-snug drop-shadow')}
