@@ -3,6 +3,7 @@ import AnnounceBar from '../components/landing/AnnounceBar'
 import LandingNavbar from '../components/landing/LandingNavbar'
 import HeroSection from '../components/landing/HeroSection'
 import ServicesSection from '../components/landing/ServicesSection'
+import ToolsSection from '../components/landing/ToolsSection'
 import FeaturesSection from '../components/landing/FeaturesSection'
 import BenefitsSection from '../components/landing/BenefitsSection'
 import FaqSection from '../components/landing/FaqSection'
@@ -15,6 +16,12 @@ import WelcomeIntro from '../components/landing/WelcomeIntro'
 function LandingPage() {
   const headerRef = useRef(null)
   const [headerHeight, setHeaderHeight] = useState(0)
+  // El saludo se muestra una sola vez por pestaña (ver WelcomeIntro.jsx) --
+  // se decide acá, no adentro de WelcomeIntro, para que directamente no se
+  // monte en las veces siguientes (si montara y devolviera null igual
+  // dispararía su useLockBodyScroll() al montarse, bloqueando el scroll de
+  // la página sin nada que lo desbloquee después).
+  const [showIntro] = useState(() => !sessionStorage.getItem('nymoo_welcomed'))
 
   // Cintillo + navbar van en un bloque "fixed" propio (no "sticky") para que
   // acompañen el scroll siempre, sin depender de que ningún ancestro tenga
@@ -40,7 +47,7 @@ function LandingPage() {
 
   return (
     <div className="min-h-screen w-full bg-neutral-950 text-white">
-      <WelcomeIntro />
+      {showIntro && <WelcomeIntro />}
 
       <div ref={headerRef} className="fixed inset-x-0 top-0 z-40">
         <AnnounceBar />
@@ -51,6 +58,7 @@ function LandingPage() {
         <main>
           <HeroSection />
           <ServicesSection />
+          <ToolsSection />
           <FeaturesSection />
           <BenefitsSection />
           <FaqSection />

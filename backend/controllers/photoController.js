@@ -10,7 +10,15 @@ const MAX_VIDEO_SECONDS = 15.5; // pequeño margen sobre el límite de 15s del f
 // gratis de Cloudinary (compartida entre storage/banda/transformaciones) si
 // alguien sube de más o hace spam. Es un límite blando pensado para el caso
 // raro, no para una boda real -- ninguna debería acercarse a esto.
-const MAX_PHOTOS_PER_EVENT = 600;
+//
+// El de fotos se subió de 600 a 3000 al pasar la landing a publicitar "fotos
+// ilimitadas" (ver landingConfig.js) -- con 600 real, esa promesa hubiera
+// sido falsa (un cliente real podía chocarse con el tope). 3000 sigue siendo
+// un límite blando anti-abuso, no algo que una boda real vaya a rozar, así
+// que "ilimitadas" queda siendo cierto en la práctica. Si en algún momento
+// se quiere ajustar el techo real (por costo de Cloudinary o lo que sea),
+// es este único número.
+const MAX_PHOTOS_PER_EVENT = 3000;
 const MAX_VIDEOS_PER_EVENT = 80;
 
 function getUploadCapMessage(assetType) {

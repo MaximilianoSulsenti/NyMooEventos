@@ -143,10 +143,18 @@ function TypographyField({ value, onChange }) {
   )
 }
 
-// Formulario compartido entre el checkout público (Checkout.jsx) y la carga
-// manual del admin (OrdersDashboard.jsx) -- misma data, dos contextos. El
-// que llama maneja el estado (`form`) y recibe los cambios por `onField`.
-function OrderForm({ form, onField }) {
+// Formulario compartido entre el checkout público (Checkout.jsx), el
+// autocompletado (SharedOrderForm.jsx) y la carga manual del admin
+// (OrdersDashboard.jsx) -- misma data, tres contextos. El que llama maneja
+// el estado (`form`) y recibe los cambios por `onField`.
+//
+// showDesignFields=false oculta Estética / tarjeta con costo / información
+// extra -- para cuando el pedido es SOLO una herramienta como Nymoo
+// Organiza (el organizador de mesas), que no arma una invitación nueva y
+// no necesita nada de eso (ver isToolOnlyOrder en Checkout.jsx). "Datos
+// básicos" queda siempre visible porque el evento igual se crea con esos
+// datos.
+function OrderForm({ form, onField, showDesignFields = true }) {
   function update(section, field, val) {
     onField(section, field, val)
   }
@@ -236,6 +244,15 @@ function OrderForm({ form, onField }) {
         </div>
       </SectionCard>
 
+      <AnimatePresence initial={false}>
+        {showDesignFields && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-5 overflow-hidden"
+          >
       <SectionCard title="Estética" subtitle="Un punto de partida -- lo terminamos de definir juntos por WhatsApp.">
         <div className="grid sm:grid-cols-2 gap-4">
           <Field label="Tema">
@@ -388,6 +405,9 @@ function OrderForm({ form, onField }) {
           </div>
         </div>
       </SectionCard>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

@@ -14,12 +14,19 @@ const {
   updateMusicSettings,
   updateRsvpSettings,
   updateSections,
+  updateTables,
+  updateTablesForClient,
+  getTablesForClient,
+  updatePlaylist,
+  updatePlaylistForClient,
+  getPlaylistForClient,
   signAppearanceUpload,
   updateModerationModeForClient,
   updatePlaybackSpeedForClient,
   updateMaxLivePhotosForClient,
   updateLiveControlsForClient,
   duplicateDuo,
+  regenerateClientToken,
   deleteEvent,
 } = require('../controllers/eventController');
 const { requireAuth } = require('../middleware/auth');
@@ -44,12 +51,19 @@ router.patch('/:eventId/gallery-settings', requireAuth, requireEventOwnership, u
 router.patch('/:eventId/music', requireAuth, requireEventOwnership, updateMusicSettings);
 router.patch('/:eventId/rsvp-settings', requireAuth, requireEventOwnership, updateRsvpSettings);
 router.patch('/:eventId/sections', requireAuth, requireEventOwnership, updateSections);
+router.put('/:eventId/tables', requireAuth, requireEventOwnership, updateTables);
+router.put('/:eventId/playlist', requireAuth, requireEventOwnership, updatePlaylist);
 router.get('/:eventId/appearance/sign', requireAuth, requireEventOwnership, signAppearanceUpload);
 router.post('/:eventId/duplicate-duo', requireAuth, requireEventOwnership, duplicateDuo);
+router.post('/:eventId/regenerate-token', requireAuth, requireEventOwnership, regenerateClientToken);
 router.delete('/:eventId', requireAuth, requireEventOwnership, deleteEvent);
 router.patch('/client/:eventSlug/moderation-mode', requireClientToken, updateModerationModeForClient);
 router.patch('/client/:eventSlug/playback-speed', requireClientToken, updatePlaybackSpeedForClient);
 router.patch('/client/:eventSlug/max-live-photos', requireClientToken, updateMaxLivePhotosForClient);
 router.patch('/client/:eventSlug/live-controls', requireClientToken, updateLiveControlsForClient);
+router.get('/client/:eventSlug/tables', requireClientToken, getTablesForClient);
+router.put('/client/:eventSlug/tables', requireClientToken, updateTablesForClient);
+router.get('/client/:eventSlug/playlist', requireClientToken, getPlaylistForClient);
+router.put('/client/:eventSlug/playlist', requireClientToken, updatePlaylistForClient);
 
 module.exports = router;

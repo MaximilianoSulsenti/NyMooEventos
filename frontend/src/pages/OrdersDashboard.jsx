@@ -15,6 +15,8 @@ import {
   Check as CheckIcon,
   Receipt,
   Printer,
+  CloudUpload,
+  AlertTriangle,
 } from 'lucide-react'
 import api from '../services/api'
 import { getStoredUser } from '../services/auth'
@@ -25,7 +27,14 @@ import PackPicker from '../components/orders/PackPicker'
 import DuoAddonToggle from '../components/orders/DuoAddonToggle'
 import useLockBodyScroll from '../hooks/useLockBodyScroll'
 import { BRAND } from '../utils/brand'
-import { LANDING_PACKS, LANDING_CONTACT, DUO_ADDON_NAME, computeDuoAddonPrice } from '../utils/landingConfig'
+import {
+  LANDING_PACKS,
+  LANDING_TOOLS,
+  LANDING_CONTACT,
+  DUO_ADDON_NAME,
+  computeDuoAddonPrice,
+  computeToolsPricing,
+} from '../utils/landingConfig'
 import { EMPTY_ORDER_FORM } from '../utils/orderForm'
 
 const PAYMENT_STATUSES = ['Pendiente', 'Señado (50%)', 'Pagado Completo']
@@ -59,6 +68,38 @@ function StatCard({ icon: Icon, label, value, color }) {
         <p className="text-white/50 text-xs uppercase tracking-wide">{label}</p>
       </div>
       <p className="text-2xl font-extrabold">{value}</p>
+    </div>
+  )
+}
+
+// Aviso de uso del plan de Cloudinary (fotos/videos de los álbumes) --
+// discreto cuando está todo bien (nivel 'ok'), pero se pone amarillo/rojo
+// solo cuando se acerca al límite del plan gratuito (ver
+// backend/controllers/systemController.js para los cortes de 70%/90%), así
+// el admin lo nota apenas entra al panel sin tener que ir a buscarlo a otro
+// lado ni depender de un mensaje de WhatsApp aparte.
+const CLOUDINARY_LEVEL_STYLE = {
+  ok: { bg: 'rgba(255,255,255,0.03)', border: 'rgba(255,255,255,0.1)', text: 'rgba(255,255,255,0.5)', icon: 'rgba(255,255,255,0.35)' },
+  warning: { bg: '#f59e0b1a', border: '#f59e0b55', text: '#f59e0b', icon: '#f59e0b' },
+  critical: { bg: '#ef44441a', border: '#ef444455', text: '#ef4444', icon: '#ef4444' },
+}
+
+function CloudinaryUsageBar({ usage }) {
+  if (!usage) return null
+  const style = CLOUDINARY_LEVEL_STYLE[usage.level] || CLOUDINARY_LEVEL_STYLE.ok
+  const Icon = usage.level === 'ok' ? CloudUpload : AlertTriangle
+
+  return (
+    <div
+      className="rounded-xl px-4 py-2.5 flex items-center gap-3 text-xs"
+      style={{ background: style.bg, border: `1px solid ${style.border}` }}
+    >
+      <Icon className="w-3.5 h-3.5 shrink-0" style={{ color: style.icon }} />
+      <span style={{ color: style.text }}>
+        Almacenamiento de fotos/videos (Cloudinary):{' '}
+        <span className="font-semibold">{usage.usedPercent.toFixed(1)}% del plan gratuito usado este mes</span>
+        {usage.level !== 'ok' && ' -- puede que haya que pasar a un plan pago pronto'}
+      </span>
     </div>
   )
 }
@@ -130,6 +171,7 @@ function ManualOrderModal({ onClose, onCreated }) {
   useLockBodyScroll()
   const [form, setForm] = useState(EMPTY_ORDER_FORM)
   const [packIds, setPackIds] = useState([LANDING_PACKS[0].id])
+  const [toolIds, setToolIds] = useState([])
   const [duoSelected, setDuoSelected] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState('whatsapp_coordinar')
   const [paymentStatus, setPaymentStatus] = useState('Pagado Completo')
@@ -137,12 +179,26 @@ function ManualOrderModal({ onClose, onCreated }) {
   const [errorMessage, setErrorMessage] = useState('')
 
   const packs = LANDING_PACKS.filter((p) => packIds.includes(p.id))
+  const tools = LANDING_TOOLS.filter((t) => toolIds.includes(t.id))
+  const items = [...packs, ...tools]
   const duoPrice = computeDuoAddonPrice(packs)
   const duoActive = duoSelected && duoPrice > 0
-  const total = packs.reduce((sum, p) => sum + p.priceValue, 0) + (duoActive ? duoPrice : 0)
+  // Mismo motor de descuentos por combo que Checkout.jsx (ver
+  // computeToolsPricing en landingConfig.js) -- importa especialmente acá
+  // porque este modal es para cargar pedidos ya cobrados: si el total en
+  // pantalla no coincide con lo que realmente calcula el backend, queda un
+  // desfasaje contable real, no solo visual.
+  const packsTotal = packs.reduce((sum, p) => sum + p.priceValue, 0)
+  const { toolsTotal } = computeToolsPricing(packs, tools)
+  const total = packsTotal + toolsTotal + (duoActive ? duoPrice : 0)
+  const isToolOnlyOrder = items.length > 0 && items.every((item) => item.id === 'vision' || LANDING_TOOLS.some((t) => t.id === item.id))
 
   function togglePack(id) {
     setPackIds((prev) => (prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]))
+  }
+
+  function toggleTool(id) {
+    setToolIds((prev) => (prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]))
   }
 
   function updateField(section, field, value) {
@@ -151,8 +207,8 @@ function ManualOrderModal({ onClose, onCreated }) {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    if (packs.length === 0) {
-      setErrorMessage('Elegí al menos un pack')
+    if (items.length === 0) {
+      setErrorMessage('Elegí al menos un producto')
       return
     }
     setStatus('submitting')
@@ -164,7 +220,7 @@ function ManualOrderModal({ onClose, onCreated }) {
           ...form.guestCardDetails,
           pricePerCard: form.guestCardDetails.hasCost ? form.guestCardDetails.pricePerCard : '',
         },
-        items: [...packs.map((p) => ({ name: p.name })), ...(duoActive ? [{ name: DUO_ADDON_NAME }] : [])],
+        items: [...items.map((item) => ({ name: item.name })), ...(duoActive ? [{ name: DUO_ADDON_NAME }] : [])],
         paymentMethod,
         paymentStatus,
       })
@@ -205,7 +261,7 @@ function ManualOrderModal({ onClose, onCreated }) {
           <div>
             <div className="flex items-center justify-between mb-1.5 gap-3 flex-wrap">
               <label className="block text-sm text-white/60">Pack(s)</label>
-              {packs.length > 0 && (
+              {items.length > 0 && (
                 <p className="text-xs text-white/50">
                   Total: <span className="font-semibold text-white">{currency(total)}</span>
                 </p>
@@ -215,6 +271,11 @@ function ManualOrderModal({ onClose, onCreated }) {
             <div className="mt-3">
               <DuoAddonToggle selectedPacks={packs} selected={duoActive} onToggle={() => setDuoSelected((v) => !v)} />
             </div>
+          </div>
+
+          <div>
+            <label className="block text-sm text-white/60 mb-1.5">Herramientas</label>
+            <PackPicker items={LANDING_TOOLS} selectedIds={toolIds} onToggle={toggleTool} />
           </div>
 
           <div>
@@ -232,7 +293,12 @@ function ManualOrderModal({ onClose, onCreated }) {
             </select>
           </div>
 
-          <OrderForm form={form} onField={updateField} />
+          {isToolOnlyOrder && (
+            <p className="text-white/40 text-xs">
+              Como es solo herramientas, no hace falta el diseño de la tarjeta -- alcanza con los datos básicos.
+            </p>
+          )}
+          <OrderForm form={form} onField={updateField} showDesignFields={!isToolOnlyOrder} />
 
           <div>
             <label className="block text-sm text-white/60 mb-1.5">Método de pago</label>
@@ -459,6 +525,7 @@ function OrdersDashboard() {
   const [activeTab, setActiveTab] = useState('activos') // activos | archivados
   const [linkCopied, setLinkCopied] = useState(false)
   const [invoiceOrder, setInvoiceOrder] = useState(null)
+  const [cloudinaryUsage, setCloudinaryUsage] = useState(null)
 
   async function handleCopyShareLink() {
     try {
@@ -480,6 +547,17 @@ function OrdersDashboard() {
         setLoadState('ready')
       })
       .catch(() => setLoadState('error'))
+  }, [isAdmin])
+
+  // Solo informativo -- si falla (token vencido, Cloudinary caído, etc.) no
+  // pasa nada, la barra simplemente no se muestra, sin romper el resto del
+  // panel de pedidos.
+  useEffect(() => {
+    if (!isAdmin) return
+    api
+      .get('/system/cloudinary-usage')
+      .then(({ data }) => setCloudinaryUsage(data))
+      .catch(() => setCloudinaryUsage(null))
   }, [isAdmin])
 
   async function handleStatusChange(orderId, paymentStatus) {
@@ -561,6 +639,8 @@ function OrdersDashboard() {
           <StatCard icon={Clock} label="Pedidos pendientes" value={stats.pendientes} color="#f59e0b" />
           <StatCard icon={PieChart} label="Pack más vendido" value={stats.topPack ? stats.topPack[0] : '—'} color={BRAND.pink} />
         </div>
+
+        <CloudinaryUsageBar usage={cloudinaryUsage} />
 
         <div className="flex items-center gap-2">
           <button

@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { ExternalLink } from 'lucide-react'
+import { ExternalLink, RefreshCw } from 'lucide-react'
 import QrCode from './QrCode'
+import api from '../../services/api'
 import { BRAND } from '../../utils/brand'
 import { getContrastTextColor } from '../../utils/color'
 
@@ -55,7 +56,52 @@ function CopyField({ label, url }) {
   )
 }
 
-function QuickAccessLinks({ eventSlug, clientAccessToken }) {
+function RegenerateTokenButton({ eventId, onTokenRegenerated }) {
+  const [confirming, setConfirming] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  async function handleClick() {
+    if (!confirming) {
+      setConfirming(true)
+      setTimeout(() => setConfirming(false), 3000)
+      return
+    }
+    setConfirming(false)
+    setLoading(true)
+    try {
+      const { data } = await api.post(`/events/${eventId}/regenerate-token`)
+      onTokenRegenerated?.(data.clientAccessToken)
+    } catch {
+      // Si falla, los links de abajo simplemente no cambian -- el usuario puede reintentar.
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      disabled={loading}
+      className={`flex items-center gap-1.5 text-xs py-1.5 px-3 rounded-lg transition shrink-0 disabled:opacity-60 ${
+        confirming ? 'bg-red-600 text-white' : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
+      }`}
+    >
+      <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+      {confirming ? '¿Seguro? Esto invalida todos los links de arriba' : 'Regenerar link'}
+    </button>
+  )
+}
+
+function QuickAccessLinks({
+  eventId,
+  eventSlug,
+  clientAccessToken,
+  tableOrganizerEnabled,
+  playlistOrganizerEnabled,
+  smartAgendaEnabled,
+  onTokenRegenerated,
+}) {
   const origin = window.location.origin
   // encodeURIComponent es necesario porque hay eventos viejos con espacios
   // u otros caracteres en el slug -- sin esto, al pegar el link en WhatsApp
@@ -67,6 +113,9 @@ function QuickAccessLinks({ eventSlug, clientAccessToken }) {
   const uploadUrl = `${origin}/evento/${slug}/upload`
   const statsUrl = `${origin}/evento/${slug}/stats-dashboard?token=${token}`
   const galleryControlUrl = `${origin}/evento/${slug}/gallery-control?token=${token}`
+  const tablesUrl = `${origin}/evento/${slug}/mesas?token=${token}`
+  const playlistUrl = `${origin}/evento/${slug}/playlist?token=${token}`
+  const agendaUrl = `${origin}/evento/${slug}/agenda?token=${token}`
 
   return (
     <div className="space-y-6">
@@ -82,11 +131,17 @@ function QuickAccessLinks({ eventSlug, clientAccessToken }) {
       </div>
 
       <div className="rounded-2xl bg-white/5 border border-white/10 p-5 flex flex-col gap-4">
-        <p className="text-white/40 text-sm">
-          Links exclusivos para el cliente (sin necesidad de iniciar sesión):
-        </p>
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <p className="text-white/40 text-sm">
+            Links exclusivos para el cliente (sin necesidad de iniciar sesión):
+          </p>
+          {eventId && <RegenerateTokenButton eventId={eventId} onTokenRegenerated={onTokenRegenerated} />}
+        </div>
         <CopyField label="Panel de estadísticas del cliente" url={statsUrl} />
         <CopyField label="Panel de moderación de galería" url={galleryControlUrl} />
+        {tableOrganizerEnabled && <CopyField label="Organizador de mesas" url={tablesUrl} />}
+        {playlistOrganizerEnabled && <CopyField label="Planificador de playlist" url={playlistUrl} />}
+        {smartAgendaEnabled && <CopyField label="Agenda inteligente" url={agendaUrl} />}
       </div>
     </div>
   )

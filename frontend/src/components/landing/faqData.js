@@ -1,10 +1,12 @@
 import { BRAND } from '../../utils/brand'
-import { LANDING_PACKS } from '../../utils/landingConfig'
+import { LANDING_PACKS, LANDING_TOOLS } from '../../utils/landingConfig'
 
-// Colores de cada pack tomados de LANDING_PACKS (una sola fuente de verdad)
-// en vez de repetir hex sueltos acá -- si el color de un pack cambia en
-// ServicesSection, el FAQ se actualiza solo.
+// Colores de cada pack/herramienta tomados de LANDING_PACKS/LANDING_TOOLS
+// (una sola fuente de verdad) en vez de repetir hex sueltos acá -- si el
+// color de un pack o herramienta cambia en ServicesSection/ToolsSection, el
+// FAQ se actualiza solo.
 const PACK_COLOR = Object.fromEntries(LANDING_PACKS.map((p) => [p.id, p.accentColor]))
+const TOOL_COLOR = Object.fromEntries(LANDING_TOOLS.map((t) => [t.id, t.accentColor]))
 
 // Los textos usan **negrita** y *cursiva* estilo markdown liviano -- los
 // parsea <FaqAnswer> en FaqSection.jsx, así el contenido queda como texto
@@ -28,7 +30,7 @@ export const FAQ_CATEGORIES = [
               {
                 label: 'Nymoo CONECTA ($70.000) · 🌟 El más elegido',
                 color: PACK_COLOR.conecta,
-                text: 'Es nuestro plan estrella porque introduce la interactividad total con los invitados mediante el álbum digital colectivo por QR (hasta 400 fotos) e integra las confirmaciones en nuestra base de datos con estadísticas en vivo.',
+                text: 'Es nuestro plan estrella porque introduce la interactividad total con los invitados mediante el Álbum Digital Colaborativo con FOTOS ILIMITADAS por QR e integra las confirmaciones en nuestra base de datos con estadísticas en vivo.',
               },
               {
                 label: 'Nymoo VIVE ($100.000) · La experiencia premium',
@@ -57,7 +59,7 @@ export const FAQ_CATEGORIES = [
               {
                 label: 'Nymoo CONECTA y VIVE',
                 color: PACK_COLOR.conecta,
-                text: 'Permiten fotos de los anfitriones en secciones y carruseles premium, sumando además la carga masiva y colectiva de los invitados por QR el día de la fiesta (400 y 600 fotos respectivamente).',
+                text: 'Permiten fotos de los anfitriones en secciones y carruseles premium, sumando además la carga masiva y colectiva de los invitados por QR el día de la fiesta con FOTOS ILIMITADAS.',
               },
             ],
           },
@@ -170,6 +172,55 @@ export const FAQ_CATEGORIES = [
           {
             type: 'text',
             text: 'Sí, totalmente. Si querés asegurar los precios vigentes ante cualquier ajuste futuro, podés reservar tu cupo ahora y comenzar con el diseño más adelante. El precio actual **se congela por completo trabajando con una seña del 50%**, y el saldo restante se mantendrá intacto al momento de la entrega final, sin importar la fecha de tu celebración.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: 'Herramientas complementarias: ORGANIZA, RITMO y AGENDA',
+    color: BRAND.orange,
+    items: [
+      {
+        question: '¿Qué hace cada una de las herramientas Nymoo ORGANIZA, RITMO y AGENDA?',
+        blocks: [
+          {
+            type: 'list',
+            items: [
+              {
+                label: 'Nymoo ORGANIZA ($30.000) · Organizador de mesas',
+                color: TOOL_COLOR.mesas,
+                text: 'Importás tu lista de invitados desde Excel y armás la distribución de mesas con control de capacidad y estadísticas en vivo. Al terminar, descargás el reporte final listo para imprimir y entregar en el salón.',
+              },
+              {
+                label: 'Nymoo RITMO ($30.000) · Cronograma musical',
+                color: TOOL_COLOR.playlist,
+                text: 'Armás el cronograma musical del evento por bloques (Recepción, Cena, Hora Loca, Cierre, etc.). Podés importar canciones desde Excel -- incluso exportando tu propia playlist de Spotify -- y escuchar cada bloque con el reproductor de Spotify embebido, sin salir de la app.',
+              },
+              {
+                label: 'Nymoo AGENDA ($30.000) · Agenda inteligente',
+                color: TOOL_COLOR.agenda,
+                text: 'Un calendario con todas las tareas y vencimientos previos al evento (pruebas, pagos, proveedores), organizado por urgencia. Te manda un **recordatorio automático por WhatsApp** en la fecha y hora que elijas para cada pendiente, así no se te pasa nada.',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        question: '¿Puedo comprar las herramientas solas, sin contratar un pack de invitación?',
+        blocks: [
+          {
+            type: 'text',
+            text: 'Sí, las tres se venden por separado y funcionan de forma independiente a la invitación. Además tenés descuentos por combo: si las combinás con cualquier Pack de Invitación (Nymoo INVITA, CONECTA o VIVE), cada herramienta extra suma descuento hasta **30% OFF en la suite completa**. Si comprás solo las herramientas sin pack, el descuento es **10% OFF llevando dos** y **20% OFF llevando las tres**.',
+          },
+        ],
+      },
+      {
+        question: '¿Los recordatorios de Nymoo AGENDA me llegan a mí o al invitado?',
+        blocks: [
+          {
+            type: 'text',
+            text: 'Te llegan a vos (o al número de WhatsApp que cargues como responsable de cada tarea) -- son para que el organizador del evento no se olvide de sus propios pendientes, no una notificación para los invitados.',
           },
         ],
       },

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
-import { Download, Users, UserCheck, UserX, Clock } from 'lucide-react'
+import { motion } from 'motion/react'
+import { Download, Users, UserCheck, UserX, Clock, Armchair, Music4, CalendarClock } from 'lucide-react'
 import api from '../services/api'
 import PageBackground from '../components/PageBackground'
 import BrandLogos from '../components/BrandLogos'
@@ -109,15 +110,74 @@ function StatsDashboard() {
       <GlassPanel accentColor={primaryColor} className="max-w-3xl mx-auto px-4 sm:px-6 py-6 space-y-6">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <h1 className="text-xl sm:text-2xl font-semibold break-words">{event.eventName}</h1>
-          <button
-            type="button"
-            onClick={handleExport}
-            className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition hover:brightness-110 shadow-lg"
-            style={{ background: primaryColor, color: getContrastTextColor(primaryColor) }}
-          >
-            <Download className="w-4 h-4" />
-            Exportar CSV
-          </button>
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <button
+              type="button"
+              onClick={handleExport}
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition hover:brightness-110 shadow-lg"
+              style={{ background: primaryColor, color: getContrastTextColor(primaryColor) }}
+            >
+              <Download className="w-4 h-4" />
+              Exportar CSV
+            </button>
+
+            {event.activeModules?.tableOrganizer && (
+              <motion.a
+                href={`/evento/${encodeURIComponent(eventSlug)}/mesas?token=${encodeURIComponent(token)}`}
+                target="_blank"
+                rel="noreferrer"
+                whileHover={{ scale: 1.02, translateY: -1 }}
+                whileTap={{ scale: 0.97 }}
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border border-white/10 backdrop-blur-sm transition"
+                style={{
+                  background: `linear-gradient(135deg, ${BRAND.lime}22, ${BRAND.blue}14)`,
+                  color: '#ffffff',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 20px -10px rgba(0,0,0,0.5)',
+                }}
+              >
+                <Armchair className="w-4 h-4" style={{ color: BRAND.lime }} />
+                Organizador de mesas
+              </motion.a>
+            )}
+
+            {event.activeModules?.playlistOrganizer && (
+              <motion.a
+                href={`/evento/${encodeURIComponent(eventSlug)}/playlist?token=${encodeURIComponent(token)}`}
+                target="_blank"
+                rel="noreferrer"
+                whileHover={{ scale: 1.02, translateY: -1 }}
+                whileTap={{ scale: 0.97 }}
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border border-white/10 backdrop-blur-sm transition"
+                style={{
+                  background: `linear-gradient(135deg, ${BRAND.violet}22, ${BRAND.blue}14)`,
+                  color: '#ffffff',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 20px -10px rgba(0,0,0,0.5)',
+                }}
+              >
+                <Music4 className="w-4 h-4" style={{ color: BRAND.violet }} />
+                Planificador de playlist
+              </motion.a>
+            )}
+
+            {event.activeModules?.smartAgenda && (
+              <motion.a
+                href={`/evento/${encodeURIComponent(eventSlug)}/agenda?token=${encodeURIComponent(token)}`}
+                target="_blank"
+                rel="noreferrer"
+                whileHover={{ scale: 1.02, translateY: -1 }}
+                whileTap={{ scale: 0.97 }}
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border border-white/10 backdrop-blur-sm transition"
+                style={{
+                  background: `linear-gradient(135deg, ${BRAND.orange}22, ${BRAND.pink}14)`,
+                  color: '#ffffff',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 20px -10px rgba(0,0,0,0.5)',
+                }}
+              >
+                <CalendarClock className="w-4 h-4" style={{ color: BRAND.orange }} />
+                Agenda inteligente
+              </motion.a>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

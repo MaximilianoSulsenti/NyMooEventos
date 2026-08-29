@@ -17,6 +17,9 @@ const guestRoutes = require('./routes/guestRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const backupRoutes = require('./routes/backupRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const taskRoutes = require('./routes/taskRoutes');
+const systemRoutes = require('./routes/systemRoutes');
+const { startReminderCron } = require('./jobs/reminderCron');
 
 validateEnv();
 
@@ -53,6 +56,8 @@ app.use('/api/guests', guestRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/backup', backupRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/tasks', taskRoutes);
+app.use('/api/system', systemRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Ruta no encontrada' });
@@ -121,6 +126,7 @@ const PORT = process.env.PORT || 4000;
 
 async function start() {
   await connectDB();
+  startReminderCron();
   server.listen(PORT, () => {
     console.log(`[Server] Escuchando en el puerto ${PORT}`);
   });

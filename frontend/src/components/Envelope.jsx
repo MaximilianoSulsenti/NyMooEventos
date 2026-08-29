@@ -61,10 +61,14 @@ function Envelope({ settings, appearance, guestName, onOpen }) {
       transition={{ duration: 0.5, delay: opening ? 0.7 : 0 }}
     >
       {/* La tarjeta tiene proporciones fijas (no el viewport crudo), así el
-          efecto se ve simétrico en cualquier celular. perspective acá arriba
-          es lo que le da profundidad real al giro de la solapa de abajo. */}
+          efecto se ve simétrico en cualquier celular. Proporción apaisada
+          (más ancha que alta, aspect-[3/2]) para que se sienta como un
+          sobre de verdad apoyado sobre una superficie, no como una tarjeta
+          vertical -- referencia: foto de sobre de papel envejecido con
+          sello de lacre. perspective acá arriba es lo que le da profundidad
+          real al giro de la solapa de abajo. */}
       <motion.div
-        className="relative w-full max-w-sm aspect-[4/5] max-h-[85vh] rounded-2xl shadow-2xl"
+        className="relative w-full max-w-md aspect-[3/2] max-h-[85vh] rounded-lg shadow-2xl"
         style={{ perspective: 1400 }}
         initial={false}
         animate={{ scale: opening ? 0.96 : 1 }}
@@ -73,7 +77,7 @@ function Envelope({ settings, appearance, guestName, onOpen }) {
         {/* Cuerpo del sobre: fondo (color/imagen/video) + las costuras +
             el botón, solo y centrado en el bolsillo debajo de la solapa. */}
         <div
-          className="absolute inset-0 rounded-2xl overflow-hidden border border-white/10"
+          className="absolute inset-0 rounded-lg overflow-hidden border border-white/10"
           style={{ backgroundColor: bgColor }}
         >
           <EnvelopeBackground settings={settings} />
@@ -88,8 +92,13 @@ function Envelope({ settings, appearance, guestName, onOpen }) {
             viewBox="0 0 100 100"
             preserveAspectRatio="none"
           >
-            <line x1="0" y1="100" x2="50" y2={FLAP_TIP_Y} stroke="rgba(255,255,255,0.35)" strokeWidth="0.5" vectorEffect="non-scaling-stroke" />
-            <line x1="100" y1="100" x2="50" y2={FLAP_TIP_Y} stroke="rgba(255,255,255,0.35)" strokeWidth="0.5" vectorEffect="non-scaling-stroke" />
+            {/* Cada costura es un par de líneas (sombra + brillo) en vez de
+                una sola línea plana, para que se lea como un doblez real
+                del papel y no como un rayón. */}
+            <line x1="0.6" y1="100" x2="50.6" y2={FLAP_TIP_Y} stroke="rgba(0,0,0,0.35)" strokeWidth="0.6" vectorEffect="non-scaling-stroke" />
+            <line x1="0" y1="100" x2="50" y2={FLAP_TIP_Y} stroke="rgba(255,255,255,0.4)" strokeWidth="0.5" vectorEffect="non-scaling-stroke" />
+            <line x1="99.4" y1="100" x2="49.4" y2={FLAP_TIP_Y} stroke="rgba(0,0,0,0.35)" strokeWidth="0.6" vectorEffect="non-scaling-stroke" />
+            <line x1="100" y1="100" x2="50" y2={FLAP_TIP_Y} stroke="rgba(255,255,255,0.4)" strokeWidth="0.5" vectorEffect="non-scaling-stroke" />
           </svg>
 
           {/* El botón queda solo, cerca de la punta de la solapa (no
@@ -99,7 +108,7 @@ function Envelope({ settings, appearance, guestName, onOpen }) {
               brillo al hover), con un flote suave para que invite a
               tocarlo. */}
           <motion.div
-            className="absolute inset-x-0 z-10 flex flex-col items-center px-6 pt-8 sm:pt-9"
+            className="absolute inset-x-0 z-10 flex flex-col items-center px-6 pt-12 sm:pt-14"
             style={{ top: `${FLAP_TIP_Y}%`, bottom: 0 }}
             animate={{ opacity: opening ? 0 : 1, y: opening ? 10 : 0 }}
             transition={{ duration: 0.3, delay: opening ? 0 : 0.2 }}
@@ -134,30 +143,110 @@ function Envelope({ settings, appearance, guestName, onOpen }) {
           </motion.div>
         </div>
 
-        {/* Sello de cera sobre la punta de la solapa -- discreto, más marca
-            en el papel que botón, para no competirle protagonismo al de
-            "Abrir invitación". Se "rompe" (achica, gira un poco y se
-            desvanece) apenas se toca el botón real. */}
+        {/* Sello de cera con borde de soga retorcida (referencia: sello de
+            lacre clásico sobre sobre envejecido) -- silueta de cera
+            irregular hecha a mano, aro de "cordón" trenzado sobre el borde
+            (segmentos claro/oscuro alternados, el detalle que más vende que
+            es un sello prensado y no un botón), óvalo grabado al centro con
+            un pequeño patrón de puntos (sin letras) y una grieta fina, como
+            cera envejecida de verdad. Tamaño acotado a propósito para que
+            nunca invada el botón real de abajo (ver pt-12/pt-14 del
+            contenedor del botón). Se "rompe" (achica, gira un poco y se
+            desvanece) apenas se toca ese botón. */}
         <motion.div
-          className="absolute z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full -translate-x-1/2 -translate-y-1/2"
-          style={{
-            left: '50%',
-            top: `${FLAP_TIP_Y}%`,
-            opacity: 0.88,
-            background: `radial-gradient(circle at 35% 30%, ${shadeColor(appearance.primaryColor, 12)}, ${appearance.primaryColor} 65%, ${shadeColor(appearance.primaryColor, -15)})`,
-            boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 6px -2px rgba(0,0,0,0.35)',
-          }}
-          animate={opening ? { scale: 0, opacity: 0, rotate: 25 } : { scale: 1, opacity: 0.88, rotate: 0 }}
+          className="absolute z-20 w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem] -translate-x-1/2 -translate-y-1/2"
+          style={{ left: '50%', top: `${FLAP_TIP_Y}%`, filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.45))' }}
+          animate={opening ? { scale: 0, opacity: 0, rotate: 25 } : { scale: 1, opacity: 1, rotate: 0 }}
           transition={{ duration: 0.35, ease: 'easeIn' }}
         >
-          <div className="absolute inset-1.5 rounded-full border border-white/15" />
+          <svg viewBox="0 0 100 100" className="w-full h-full">
+            <defs>
+              <radialGradient id="waxBody" cx="34%" cy="26%" r="78%">
+                <stop offset="0%" stopColor={shadeColor(appearance.primaryColor, 30)} />
+                <stop offset="45%" stopColor={appearance.primaryColor} />
+                <stop offset="100%" stopColor={shadeColor(appearance.primaryColor, -30)} />
+              </radialGradient>
+              <radialGradient id="waxCenter" cx="50%" cy="42%" r="65%">
+                <stop offset="0%" stopColor={shadeColor(appearance.primaryColor, -6)} />
+                <stop offset="100%" stopColor={shadeColor(appearance.primaryColor, -24)} />
+              </radialGradient>
+            </defs>
+
+            {/* Goterones de cera sobre el borde -- el detalle que más vende
+                que esto se derramó y se prensó a mano. */}
+            <circle cx="12" cy="64" r="5" fill="url(#waxBody)" />
+            <circle cx="88" cy="38" r="4.5" fill="url(#waxBody)" />
+            <circle cx="58" cy="92" r="4" fill="url(#waxBody)" />
+
+            {/* Cuerpo de cera: silueta orgánica hecha a mano (radio
+                irregular en cada punto, suavizado con curvas), no un
+                círculo ni un blob genérico de CSS. */}
+            <path
+              d="M90.75,60.25 Q85.5,70.5 79.5,80.6 Q73.5,90.7 61.75,91.85 Q50,93 38,92.3 Q26,91.6 19.8,81.3 Q13.6,71 8.8,60.5 Q4,50 7.95,39 Q11.9,28 18.7,17.8 Q25.5,7.6 37.75,8.3 Q50,9 61.75,9.15 Q73.5,9.3 80.35,18.9 Q87.2,28.5 91.6,39.25 Q96,50 90.75,60.25 Z"
+              fill="url(#waxBody)"
+              stroke={shadeColor(appearance.primaryColor, -30)}
+              strokeWidth="0.6"
+              strokeOpacity="0.5"
+            />
+
+            {/* Aro de soga retorcida: segmentos alternados claro/oscuro
+                revolviendo el centro, cada uno con su propia inclinación
+                para simular el trenzado del cordón -- así se lee como un
+                sello prensado con matriz de verdad. */}
+            <g>
+              {Array.from({ length: 28 }).map((_, i) => {
+                const angle = (360 / 28) * i
+                return (
+                  <rect
+                    key={i}
+                    x="48.7"
+                    y="9.5"
+                    width="2.6"
+                    height="7.5"
+                    rx="1.3"
+                    fill={i % 2 === 0 ? shadeColor(appearance.primaryColor, 18) : shadeColor(appearance.primaryColor, -26)}
+                    transform={`rotate(${angle} 50 50) rotate(20 50 13.25)`}
+                  />
+                )
+              })}
+            </g>
+
+            {/* Óvalo central grabado (recesado, un tono más oscuro) con un
+                patrón simétrico de puntos en relieve adentro -- motivo
+                abstracto universal, sin ninguna letra. */}
+            <ellipse cx="50" cy="50" rx="21" ry="17.5" fill="url(#waxCenter)" stroke={shadeColor(appearance.primaryColor, -36)} strokeWidth="0.5" strokeOpacity="0.5" />
+            <g fill={shadeColor(appearance.primaryColor, 22)} fillOpacity="0.85">
+              {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => {
+                const rad = (angle * Math.PI) / 180
+                return <circle key={angle} cx={50 + 7 * Math.cos(rad)} cy={50 + 6 * Math.sin(rad)} r="1.15" />
+              })}
+              <circle cx="50" cy="50" r="1.7" />
+            </g>
+
+            {/* Grieta fina en la cera -- cera envejecida de verdad rara vez
+                queda perfecta. */}
+            <path
+              d="M 30 22 L 34 30 L 31 36 L 35 44"
+              fill="none"
+              stroke={shadeColor(appearance.primaryColor, -40)}
+              strokeWidth="0.5"
+              strokeOpacity="0.4"
+              strokeLinecap="round"
+            />
+
+            {/* Brillo: uno chico y bien marcado (el "punto caliente" de la
+                cera pulida) más uno amplio y suave debajo, para que se
+                sienta vidriosa y no plana. */}
+            <ellipse cx="36" cy="30" rx="18" ry="12" fill="rgba(255,255,255,0.14)" />
+            <ellipse cx="33" cy="24" rx="7" ry="4" fill="rgba(255,255,255,0.4)" />
+          </svg>
         </motion.div>
 
         {/* Sombra que se profundiza a medida que la solapa se levanta, para
             que el papel de abajo se sienta "adentro" del sobre en vez de
             plano. */}
         <motion.div
-          className="absolute inset-x-0 top-0 pointer-events-none rounded-t-2xl"
+          className="absolute inset-x-0 top-0 pointer-events-none rounded-t-lg"
           style={{ height: `${FLAP_HEIGHT_PERCENT}%`, background: 'radial-gradient(ellipse at top, rgba(0,0,0,0.4), transparent 70%)' }}
           animate={{ opacity: opening ? 1 : 0 }}
           transition={{ duration: 0.5, delay: opening ? 0.1 : 0 }}
@@ -180,7 +269,7 @@ function Envelope({ settings, appearance, guestName, onOpen }) {
               arriba del todo. */}
           <div
             className={cn(
-              'absolute inset-0 rounded-t-2xl flex flex-col items-center justify-center text-center px-8 pb-[26%]',
+              'absolute inset-0 rounded-t-lg flex flex-col items-center justify-center text-center px-8 pb-[20%]',
               fontClass
             )}
             style={{

@@ -60,12 +60,14 @@ function CurtainSheen({ delay = 0 }) {
   )
 }
 
-// Intro de marca: aparece cada vez que se entra o se recarga la landing (no
-// se guarda en localStorage a propósito -- el pedido fue que se vea siempre,
-// no solo la primera vez). Se sostiene un instante con el mensaje, el ícono
-// de los ojitos y algunos íconos de lo que ofrece Nymoo flotando alrededor,
-// y después se abre como un telón de teatro (dos paneles que se separan
-// desde el centro) revelando la landing de atrás.
+// Intro de marca: se sostiene un instante con el mensaje, el ícono de los
+// ojitos y algunos íconos de lo que ofrece Nymoo flotando alrededor, y
+// después se abre como un telón de teatro (dos paneles que se separan desde
+// el centro) revelando la landing de atrás. Se muestra una sola vez por
+// pestaña -- LandingPage.jsx decide si este componente se monta o no según
+// sessionStorage; acá simplemente se marca la bandera apenas arranca a
+// reproducirse, para que un back/forward del navegador dentro de la misma
+// pestaña no la dispare de nuevo.
 function WelcomeIntro() {
   const [stage, setStage] = useState('hold') // hold -> curtain -> done
   const reduceMotion = useReducedMotion()
@@ -73,6 +75,7 @@ function WelcomeIntro() {
   useLockBodyScroll()
 
   useEffect(() => {
+    sessionStorage.setItem('nymoo_welcomed', 'true')
     const timer = setTimeout(() => setStage('curtain'), reduceMotion ? 700 : HOLD_MS)
     return () => clearTimeout(timer)
   }, [reduceMotion])

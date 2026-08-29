@@ -25,6 +25,9 @@ const Checkout = lazy(() => import('./pages/Checkout'))
 const CheckoutSuccess = lazy(() => import('./pages/CheckoutSuccess'))
 const SharedOrderForm = lazy(() => import('./pages/SharedOrderForm'))
 const OrdersDashboard = lazy(() => import('./pages/OrdersDashboard'))
+const TableOrganizer = lazy(() => import('./pages/TableOrganizer'))
+const PlaylistOrganizer = lazy(() => import('./pages/PlaylistOrganizer'))
+const SmartAgenda = lazy(() => import('./pages/SmartAgenda'))
 
 function NotFound() {
   return (
@@ -74,6 +77,30 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/dashboard/:eventId/mesas"
+          element={
+            <ProtectedRoute>
+              <TableOrganizer />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/:eventId/playlist-manager"
+          element={
+            <ProtectedRoute>
+              <PlaylistOrganizer />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/:eventId/agenda"
+          element={
+            <ProtectedRoute>
+              <SmartAgenda />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/evento/:eventSlug" element={<DigitalCard />} />
         <Route path="/evento/:eventSlug/upload" element={<UploadPage />} />
         <Route path="/evento/:eventSlug/live-feed" element={<LiveScreen />} />
@@ -81,6 +108,9 @@ function App() {
         <Route path="/evento/:eventSlug/gallery-control" element={<GalleryControl />} />
         <Route path="/evento/:eventSlug/album-publico" element={<PublicAlbum />} />
         <Route path="/evento/:eventSlug/libro-de-firmas" element={<MessageBookPrint />} />
+        <Route path="/evento/:eventSlug/mesas" element={<TableOrganizer />} />
+        <Route path="/evento/:eventSlug/playlist" element={<PlaylistOrganizer />} />
+        <Route path="/evento/:eventSlug/agenda" element={<SmartAgenda />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/checkout/success" element={<CheckoutSuccess />} />
         <Route path="/completar-pedido" element={<SharedOrderForm />} />

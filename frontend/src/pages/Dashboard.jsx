@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { LayoutDashboard, ToggleLeft, Link2, Pencil, ChevronLeft, Users, UserCheck, UserX, Clock } from 'lucide-react'
+import { motion } from 'motion/react'
+import { LayoutDashboard, ToggleLeft, Link2, Pencil, ChevronLeft, Users, UserCheck, UserX, Clock, Armchair, Music4, CalendarClock } from 'lucide-react'
 import api from '../services/api'
 import { getStoredUser } from '../services/auth'
 import PageBackground from '../components/PageBackground'
@@ -49,6 +50,24 @@ const MODULE_FIELDS = [
     label: 'Invitaciones VIP personalizadas',
     description:
       'Cada invitado tiene un link único con su nombre bloqueado y cupo de acompañantes fijo. El cliente carga la lista desde su panel de estadísticas.',
+  },
+  {
+    key: 'tableOrganizer',
+    label: 'Organizador de mesas',
+    description:
+      'Importa la lista de invitados desde Excel y arma la distribución de mesas, con exportación a Excel/PDF lista para imprimir.',
+  },
+  {
+    key: 'playlistOrganizer',
+    label: 'Planificador de playlist',
+    description:
+      'Importa canciones desde Excel y arma el cronograma musical por momento del evento (cena, hora loca, etc.), con exportación lista para el DJ.',
+  },
+  {
+    key: 'smartAgenda',
+    label: 'Agenda inteligente',
+    description:
+      'Calendario de tareas y pendientes del evento (pruebas, pagos, proveedores) con recordatorios automáticos por WhatsApp.',
   },
 ]
 
@@ -170,6 +189,60 @@ function Dashboard() {
               <Pencil className="w-3 h-3" />
               Editar invitación
             </Link>
+            {event.activeModules.tableOrganizer && (
+              <motion.a
+                href={`/dashboard/${eventId}/mesas`}
+                target="_blank"
+                rel="noreferrer"
+                whileHover={{ scale: 1.02, translateY: -1 }}
+                whileTap={{ scale: 0.97 }}
+                className="flex items-center gap-1.5 mt-3 px-3 py-2 rounded-xl text-xs font-medium border border-white/10 backdrop-blur-sm transition w-fit"
+                style={{
+                  background: `linear-gradient(135deg, ${BRAND.lime}22, ${BRAND.blue}14)`,
+                  color: '#ffffff',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)',
+                }}
+              >
+                <Armchair className="w-3.5 h-3.5" style={{ color: BRAND.lime }} />
+                Organizador de mesas
+              </motion.a>
+            )}
+            {event.activeModules.playlistOrganizer && (
+              <motion.a
+                href={`/dashboard/${eventId}/playlist-manager`}
+                target="_blank"
+                rel="noreferrer"
+                whileHover={{ scale: 1.02, translateY: -1 }}
+                whileTap={{ scale: 0.97 }}
+                className="flex items-center gap-1.5 mt-2 px-3 py-2 rounded-xl text-xs font-medium border border-white/10 backdrop-blur-sm transition w-fit"
+                style={{
+                  background: `linear-gradient(135deg, ${BRAND.violet}22, ${BRAND.blue}14)`,
+                  color: '#ffffff',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)',
+                }}
+              >
+                <Music4 className="w-3.5 h-3.5" style={{ color: BRAND.violet }} />
+                Planificador de playlist
+              </motion.a>
+            )}
+            {event.activeModules.smartAgenda && (
+              <motion.a
+                href={`/dashboard/${eventId}/agenda`}
+                target="_blank"
+                rel="noreferrer"
+                whileHover={{ scale: 1.02, translateY: -1 }}
+                whileTap={{ scale: 0.97 }}
+                className="flex items-center gap-1.5 mt-2 px-3 py-2 rounded-xl text-xs font-medium border border-white/10 backdrop-blur-sm transition w-fit"
+                style={{
+                  background: `linear-gradient(135deg, ${BRAND.orange}22, ${BRAND.pink}14)`,
+                  color: '#ffffff',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)',
+                }}
+              >
+                <CalendarClock className="w-3.5 h-3.5" style={{ color: BRAND.orange }} />
+                Agenda inteligente
+              </motion.a>
+            )}
           </div>
           <nav className="flex flex-col gap-1">
             {NAV_SECTIONS.map((section) => {
@@ -251,7 +324,17 @@ function Dashboard() {
 
           {activeSection === 'links' && (
             <section className="max-w-2xl">
-              <QuickAccessLinks eventSlug={event.eventSlug} clientAccessToken={event.clientAccessToken} />
+              <QuickAccessLinks
+                eventId={eventId}
+                eventSlug={event.eventSlug}
+                clientAccessToken={event.clientAccessToken}
+                tableOrganizerEnabled={event.activeModules.tableOrganizer}
+                playlistOrganizerEnabled={event.activeModules.playlistOrganizer}
+                smartAgendaEnabled={event.activeModules.smartAgenda}
+                onTokenRegenerated={(newToken) =>
+                  setEvent((prev) => ({ ...prev, clientAccessToken: newToken }))
+                }
+              />
             </section>
           )}
         </GlassPanel>

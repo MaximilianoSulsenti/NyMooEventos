@@ -1,5 +1,6 @@
 const Order = require('../models/Order');
 const Counter = require('../models/Counter');
+const { sendAdminOrderAlert } = require('../services/whatsappAdminAlert');
 
 // Lista de precios vigente -- fuente de verdad del lado del servidor. El
 // precio NUNCA se toma de lo que manda el cliente (se podría manipular
@@ -12,6 +13,19 @@ const ITEM_PRICES = {
   'Nymoo CONECTA': 70000,
   'Nymoo VIVE': 100000,
   'Nymoo VISIÓN': 60000,
+  // Primera "herramienta" vendible sola o combinada con un pack (ver
+  // LANDING_TOOLS en frontend/src/utils/landingConfig.js) -- entrega
+  // inmediata porque no requiere diseño de invitación, solo activar
+  // activeModules.tableOrganizer en el evento del cliente. El nombre
+  // comercial es "Nymoo ORGANIZA" (organizador de mesas) -- ORGANIZA en
+  // mayúsculas a propósito, mismo patrón que INVITA/CONECTA/VIVE/VISIÓN.
+  'Nymoo ORGANIZA': 30000,
+  // Segunda herramienta independiente: planificador de playlist y
+  // cronograma musical -- activa activeModules.playlistOrganizer.
+  'Nymoo RITMO': 30000,
+  // Tercera herramienta independiente: agenda inteligente con recordatorios
+  // automáticos por WhatsApp -- activa activeModules.smartAgenda.
+  'Nymoo AGENDA': 30000,
 };
 
 // Invitación Dúo: clon de la invitación con datos propios (ver isDuo/duoOf
@@ -24,6 +38,25 @@ const ITEM_PRICES = {
 const DUO_ADDON_NAME = 'Invitación Dúo (50%)';
 const DUO_ELIGIBLE_PACKS = ['Nymoo INVITA', 'Nymoo CONECTA', 'Nymoo VIVE'];
 const DUO_DISCOUNT = 0.5;
+
+// Motor de descuentos por combo de herramientas (ver ComboPromoBanner.jsx en
+// el front para el copy comercial). Mismo trío de packs que DUO_ELIGIBLE_PACKS
+// -- Nymoo VISIÓN queda afuera a propósito, no es "Pack de Invitación".
+const COMBO_ELIGIBLE_PACKS = DUO_ELIGIBLE_PACKS;
+const TOOL_NAMES = ['Nymoo ORGANIZA', 'Nymoo RITMO', 'Nymoo AGENDA'];
+const TOOL_BASE_PRICE = 30000;
+
+// Tasa de descuento sobre el precio base de CADA herramienta, según cuántas
+// se compren juntas y si el pedido incluye algún pack de invitación:
+//   Con pack:  1 herramienta = 10% | 2 = 20% | 3 = 30%
+//   Sin pack:  1 herramienta = 0%  | 2 = 10% | 3 = 20%
+// Para más de 3 (no existe hoy, pero por si se suma una 4ta más adelante)
+// se mantiene la tasa del tramo más alto en vez de romper.
+function toolsDiscountRate(toolCount, hasPack) {
+  if (toolCount <= 0) return 0;
+  const tiers = hasPack ? [0, 0.1, 0.2, 0.3] : [0, 0, 0.1, 0.2];
+  return tiers[Math.min(toolCount, tiers.length - 1)];
+}
 
 async function nextOrderNumber() {
   const year = new Date().getFullYear();
@@ -99,11 +132,28 @@ function buildOrderPayload(body) {
   const resolvedItems = [];
   for (const name of uniqueNames) {
     if (name === DUO_ADDON_NAME) continue; // se resuelve aparte, depende del pack base
+    if (TOOL_NAMES.includes(name)) continue; // se resuelven aparte con su descuento de combo
     const price = ITEM_PRICES[name];
     if (!price) {
       return { error: `El producto "${name}" no es válido` };
     }
     resolvedItems.push({ name, price });
+  }
+
+  // Herramientas: el precio unitario final ya sale con el descuento de combo
+  // aplicado (ver toolsDiscountRate) -- así el resto del flujo (totalPrice,
+  // el line item que recibe Mercado Pago, lo que ve el admin en el panel de
+  // pedidos) no necesita saber nada de la lógica de combos, solo suma
+  // precios como siempre. El pack, si hay, ya quedó resuelto arriba a precio
+  // de lista completo, intacto.
+  const selectedTools = uniqueNames.filter((name) => TOOL_NAMES.includes(name));
+  if (selectedTools.length > 0) {
+    const hasPack = resolvedItems.some((item) => COMBO_ELIGIBLE_PACKS.includes(item.name));
+    const rate = toolsDiscountRate(selectedTools.length, hasPack);
+    const discountedUnitPrice = Math.round(TOOL_BASE_PRICE * (1 - rate));
+    for (const name of selectedTools) {
+      resolvedItems.push({ name, price: discountedUnitPrice });
+    }
   }
 
   if (uniqueNames.includes(DUO_ADDON_NAME)) {
@@ -170,6 +220,12 @@ async function createOrder(req, res) {
 
   const orderNumber = await nextOrderNumber();
   const order = await Order.create({ ...payload, orderNumber, source: 'landing_page' });
+
+  // Fire-and-forget a propósito -- sin await: la alerta al admin no debe
+  // frenar ni arriesgar la respuesta del checkout al cliente. Si Meta tarda
+  // o falla, sendAdminOrderAlert ya atrapa sus propios errores y solo
+  // loguea, nunca tira (ver whatsappAdminAlert.js).
+  sendAdminOrderAlert(order).catch((err) => console.error('[WhatsApp] Alerta de pedido nuevo:', err.message));
 
   const redirectUrl = order.paymentMethod === 'mercado_pago' ? await createMercadoPagoRedirect(order) : null;
 

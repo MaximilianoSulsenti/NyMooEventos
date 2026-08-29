@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const Event = require('../models/Event');
 const Guest = require('../models/Guest');
 const Photo = require('../models/Photo');
@@ -112,7 +113,17 @@ async function getEventById(req, res) {
 
 async function updateEventModules(req, res) {
   const { eventId } = req.params;
-  const { interactiveCard, liveGallery, guestControl, photoCollection, messageBook, vipInvitations } = req.body;
+  const {
+    interactiveCard,
+    liveGallery,
+    guestControl,
+    photoCollection,
+    messageBook,
+    vipInvitations,
+    tableOrganizer,
+    playlistOrganizer,
+    smartAgenda,
+  } = req.body;
 
   const event = await Event.findById(eventId);
   if (!event) {
@@ -125,6 +136,9 @@ async function updateEventModules(req, res) {
   if (photoCollection !== undefined) event.activeModules.photoCollection = photoCollection;
   if (messageBook !== undefined) event.activeModules.messageBook = messageBook;
   if (vipInvitations !== undefined) event.activeModules.vipInvitations = vipInvitations;
+  if (tableOrganizer !== undefined) event.activeModules.tableOrganizer = Boolean(tableOrganizer);
+  if (playlistOrganizer !== undefined) event.activeModules.playlistOrganizer = Boolean(playlistOrganizer);
+  if (smartAgenda !== undefined) event.activeModules.smartAgenda = Boolean(smartAgenda);
 
   await event.save();
 
@@ -332,6 +346,250 @@ async function updateSections(req, res) {
   res.json(event);
 }
 
+// Organizador de mesas: valida y reemplaza tableOrganizerGuests[] + tables[]
+// enteros de una (mismo patrón que updateSections). Queda en un helper
+// porque este endpoint se llama tanto desde el panel del dueño del evento
+// como desde el link exclusivo del cliente (requireClientToken) -- los dos
+// wrappers de abajo solo difieren en de dónde sale `event`.
+function buildTablesUpdate(body) {
+  const { guests, tables } = body;
+
+  if (!Array.isArray(guests) || !guests.every((g) => typeof g === 'string')) {
+    return { error: 'guests debe ser un array de nombres' };
+  }
+  if (!Array.isArray(tables)) {
+    return { error: 'tables debe ser un array' };
+  }
+
+  const cleanGuests = [...new Set(guests.map((g) => g.trim()).filter(Boolean))];
+  const guestSet = new Set(cleanGuests);
+
+  const seenNumbers = new Set();
+  const cleanTables = [];
+
+  for (const table of tables) {
+    const tableNumber = Number(table?.tableNumber);
+    const tableName = String(table?.tableName || '').trim();
+    const maxSeats = Number(table?.maxSeats);
+    const assignedGuests = Array.isArray(table?.assignedGuests)
+      ? [...new Set(table.assignedGuests.map((g) => String(g).trim()).filter(Boolean))]
+      : [];
+
+    if (!Number.isInteger(tableNumber) || tableNumber < 1) {
+      return { error: 'Cada mesa necesita un número válido' };
+    }
+    if (seenNumbers.has(tableNumber)) {
+      return { error: `Hay más de una mesa con el número ${tableNumber}` };
+    }
+    seenNumbers.add(tableNumber);
+
+    if (!tableName) {
+      return { error: 'Cada mesa necesita un nombre' };
+    }
+    if (!Number.isInteger(maxSeats) || maxSeats < 1 || maxSeats > 100) {
+      return { error: `La mesa "${tableName}" tiene una capacidad inválida` };
+    }
+    if (assignedGuests.length > maxSeats) {
+      return {
+        error: `La mesa "${tableName}" tiene más invitados asignados (${assignedGuests.length}) que asientos (${maxSeats})`,
+      };
+    }
+    // Cualquier invitado asignado a una mesa tiene que existir en el pool --
+    // evita que quede una mesa con un invitado "fantasma" que ya se sacó de
+    // la lista general (ej. por un reimport de Excel que no lo incluía).
+    const unknownGuest = assignedGuests.find((name) => !guestSet.has(name));
+    if (unknownGuest) {
+      return { error: `"${unknownGuest}" no está en la lista de invitados` };
+    }
+
+    cleanTables.push({ tableNumber, tableName: tableName.slice(0, 80), maxSeats, assignedGuests });
+  }
+
+  return { tableOrganizerGuests: cleanGuests, tables: cleanTables };
+}
+
+async function updateTables(req, res) {
+  const { eventId } = req.params;
+  const event = await Event.findById(eventId);
+  if (!event) {
+    return res.status(404).json({ message: 'Evento no encontrado' });
+  }
+
+  const result = buildTablesUpdate(req.body);
+  if (result.error) return res.status(400).json({ message: result.error });
+
+  event.tableOrganizerGuests = result.tableOrganizerGuests;
+  event.tables = result.tables;
+  await event.save();
+
+  res.json({ tableOrganizerGuests: event.tableOrganizerGuests, tables: event.tables });
+}
+
+// El link de cliente es la puerta de entrada comercial a este módulo (el
+// botón del panel admin ya queda oculto si el módulo no está activo, pero
+// alguien podría guardarse el link directo) -- acá sí se valida
+// explícitamente activeModules.tableOrganizer, igual que el resto de los
+// módulos pagos (galería, RSVP, etc.).
+async function updateTablesForClient(req, res) {
+  const event = req.event;
+  if (!event.activeModules.tableOrganizer) {
+    return res.status(403).json({ message: 'El organizador de mesas no está activo para este evento' });
+  }
+
+  const result = buildTablesUpdate(req.body);
+  if (result.error) return res.status(400).json({ message: result.error });
+
+  event.tableOrganizerGuests = result.tableOrganizerGuests;
+  event.tables = result.tables;
+  await event.save();
+
+  res.json({ tableOrganizerGuests: event.tableOrganizerGuests, tables: event.tables });
+}
+
+// El resto de las páginas públicas (getEventBySlug) no exponen datos de
+// invitados -- este endpoint sí, pero queda gateado por el token de cliente
+// (mismo mecanismo que el panel de estadísticas), para que la lista de
+// invitados/mesas nunca quede accesible desde el link público del evento.
+async function getTablesForClient(req, res) {
+  const event = req.event;
+  if (!event.activeModules.tableOrganizer) {
+    return res.status(403).json({ message: 'El organizador de mesas no está activo para este evento' });
+  }
+  res.json({
+    eventName: event.eventName,
+    tableOrganizerGuests: event.tableOrganizerGuests,
+    tables: event.tables,
+    // No es info sensible (ya se expone públicamente en getEventBySlug) --
+    // se manda para que la pantalla pueda mostrar un botón cruzado hacia el
+    // planificador de playlist cuando el cliente también compró esa
+    // herramienta, sin tener que depender de que tenga activo el panel de
+    // estadísticas (que no viene incluido en todos los planes).
+    activeModules: event.activeModules,
+  });
+}
+
+// Planificador de playlist: valida y reemplaza playlistSongBank[] +
+// playlistTracks[] enteros de una (mismo patrón que buildTablesUpdate). Un
+// tema es válido si tiene título; artista y notas son opcionales.
+function sanitizeTrack(track) {
+  const title = String(track?.title || '').trim();
+  if (!title) return null;
+  return {
+    title: title.slice(0, 200),
+    artist: String(track?.artist || '').trim().slice(0, 120),
+    notes: String(track?.notes || '').trim().slice(0, 300),
+  };
+}
+
+function buildPlaylistUpdate(body) {
+  const { songBank, tracks } = body;
+
+  if (!Array.isArray(songBank)) {
+    return { error: 'songBank debe ser un array' };
+  }
+  if (!Array.isArray(tracks)) {
+    return { error: 'tracks debe ser un array' };
+  }
+
+  const cleanSongBank = [];
+  for (const raw of songBank) {
+    const track = sanitizeTrack(raw);
+    if (!track) {
+      return { error: 'Cada canción del banco necesita un título' };
+    }
+    cleanSongBank.push(track);
+  }
+
+  // momentType es texto libre a propósito (el desplegable del front sugiere
+  // momentos típicos pero el usuario puede agregar uno propio) -- solo se
+  // valida que no esté vacío y que no haya dos bloques para el mismo momento.
+  const seenMoments = new Set();
+  const cleanMoments = [];
+
+  for (const moment of tracks) {
+    const momentType = String(moment?.momentType || '').trim();
+    if (!momentType) {
+      return { error: 'Cada bloque necesita un momento del evento' };
+    }
+    if (seenMoments.has(momentType)) {
+      return { error: `Hay más de un bloque para "${momentType}"` };
+    }
+    seenMoments.add(momentType);
+
+    const momentTracks = Array.isArray(moment?.tracks) ? moment.tracks : [];
+    const cleanTracks = [];
+    for (const raw of momentTracks) {
+      const track = sanitizeTrack(raw);
+      if (!track) {
+        return { error: `Una canción del bloque "${momentType}" no tiene título` };
+      }
+      cleanTracks.push(track);
+    }
+
+    // Texto libre, sin validar que sea realmente un link de Spotify -- esa
+    // validación (y la extracción del ID para el embed) vive en el
+    // frontend; acá solo se sanitiza longitud, igual que el resto de los
+    // campos de texto libre de este mismo endpoint.
+    const spotifyUrl = String(moment?.spotifyUrl || '').trim().slice(0, 300);
+
+    cleanMoments.push({ momentType: momentType.slice(0, 80), tracks: cleanTracks, spotifyUrl });
+  }
+
+  return { playlistSongBank: cleanSongBank, playlistTracks: cleanMoments };
+}
+
+async function updatePlaylist(req, res) {
+  const { eventId } = req.params;
+  const event = await Event.findById(eventId);
+  if (!event) {
+    return res.status(404).json({ message: 'Evento no encontrado' });
+  }
+
+  const result = buildPlaylistUpdate(req.body);
+  if (result.error) return res.status(400).json({ message: result.error });
+
+  event.playlistSongBank = result.playlistSongBank;
+  event.playlistTracks = result.playlistTracks;
+  await event.save();
+
+  res.json({ playlistSongBank: event.playlistSongBank, playlistTracks: event.playlistTracks });
+}
+
+// Mismo criterio que updateTablesForClient: el botón del panel admin ya
+// queda oculto si el módulo no está activo, pero el link directo se valida
+// igual acá por si alguien se lo guardó de antes.
+async function updatePlaylistForClient(req, res) {
+  const event = req.event;
+  if (!event.activeModules.playlistOrganizer) {
+    return res.status(403).json({ message: 'El planificador de playlist no está activo para este evento' });
+  }
+
+  const result = buildPlaylistUpdate(req.body);
+  if (result.error) return res.status(400).json({ message: result.error });
+
+  event.playlistSongBank = result.playlistSongBank;
+  event.playlistTracks = result.playlistTracks;
+  await event.save();
+
+  res.json({ playlistSongBank: event.playlistSongBank, playlistTracks: event.playlistTracks });
+}
+
+async function getPlaylistForClient(req, res) {
+  const event = req.event;
+  if (!event.activeModules.playlistOrganizer) {
+    return res.status(403).json({ message: 'El planificador de playlist no está activo para este evento' });
+  }
+  res.json({
+    eventName: event.eventName,
+    playlistSongBank: event.playlistSongBank,
+    playlistTracks: event.playlistTracks,
+    // Mismo criterio que getTablesForClient: permite mostrar un botón
+    // cruzado hacia el organizador de mesas si el cliente también compró
+    // esa herramienta, sin depender del panel de estadísticas.
+    activeModules: event.activeModules,
+  });
+}
+
 async function signAppearanceUpload(req, res) {
   const event = req.event;
   const folder = `${event.gallerySettings?.cloudinaryFolder || `eventos/${event.eventSlug}`}/appearance`;
@@ -408,6 +666,19 @@ async function updateMaxLivePhotosForClient(req, res) {
   await event.save();
 
   res.json(event);
+}
+
+// Invalida todos los links de cliente vigentes (panel de estadísticas,
+// moderación de galería, organizador de mesas) generando un token nuevo --
+// pensado como salida de emergencia si un link se compartió de más y se
+// quiere cortar el acceso sin tener que borrar ni recrear el evento. Los
+// links viejos con el token anterior dejan de funcionar al instante.
+async function regenerateClientToken(req, res) {
+  const event = req.event;
+  event.clientAccessToken = crypto.randomBytes(16).toString('hex');
+  await event.save();
+
+  res.json({ clientAccessToken: event.clientAccessToken });
 }
 
 // Borra el evento por completo: invitados, fotos/videos (registro en Mongo
@@ -494,11 +765,18 @@ module.exports = {
   updateMusicSettings,
   updateRsvpSettings,
   updateSections,
+  updateTables,
+  updateTablesForClient,
+  getTablesForClient,
+  updatePlaylist,
+  updatePlaylistForClient,
+  getPlaylistForClient,
   signAppearanceUpload,
   updateModerationModeForClient,
   updatePlaybackSpeedForClient,
   updateMaxLivePhotosForClient,
   updateLiveControlsForClient,
   duplicateDuo,
+  regenerateClientToken,
   deleteEvent,
 };

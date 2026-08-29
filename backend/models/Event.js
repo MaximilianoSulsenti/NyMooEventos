@@ -47,6 +47,59 @@ const sectionSchema = new mongoose.Schema(
   { _id: false }
 );
 
+// Organizador de mesas -- los invitados acá son texto libre (nombres),
+// desacoplados a propósito del modelo Guest/RSVP: el cliente puede armar la
+// distribución de mesas con una lista de Excel propia, sin que dependa de
+// que esos invitados hayan confirmado (o siquiera existan) en el módulo de
+// RSVP de la plataforma.
+const tableSchema = new mongoose.Schema(
+  {
+    tableNumber: { type: Number, required: true },
+    tableName: { type: String, required: true, trim: true },
+    maxSeats: { type: Number, required: true, min: 1, max: 100 },
+    assignedGuests: { type: [String], default: [] },
+  },
+  { _id: false }
+);
+
+// Planificador de playlist -- cada tema vive en un solo lugar a la vez: en
+// playlistSongBank (banco general, "pendientes de asignar") o ya movido
+// adentro de un bloque de playlistTracks. A diferencia de las mesas (donde
+// el invitado sigue existiendo en el pool aunque esté asignado), acá "asignar"
+// significa mover el tema del banco al bloque, porque un mismo tema no tiene
+// sentido que suene en dos momentos distintos de la fiesta. Cada tema guarda
+// su propio _id (a diferencia de tableSchema) para poder moverlo/borrarlo
+// desde el front sin depender de que título+artista sean únicos.
+const playlistTrackSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true, trim: true },
+    artist: { type: String, trim: true, default: '' },
+    notes: { type: String, trim: true, default: '' },
+  },
+  { timestamps: false }
+);
+
+const playlistMomentSchema = new mongoose.Schema(
+  {
+    // Texto libre a propósito: el desplegable del front sugiere los momentos
+    // típicos (Recepción, Cena, Hora Loca, etc.) pero el usuario puede
+    // agregar uno propio, así que acá no se fuerza un enum.
+    momentType: { type: String, required: true, trim: true },
+    tracks: { type: [playlistTrackSchema], default: [] },
+    // Link opcional a una playlist pública de Spotify para ESTE momento
+    // puntual (ej. una playlist propia para "Hora Loca") -- independiente
+    // del banco de canciones/tracks de arriba, y también independiente del
+    // config.playlistUrl de la sección MusicPlaylist de la invitación (esa
+    // es una sola playlist de fondo para toda la tarjeta; esta es por
+    // bloque, pensada como referencia rápida para quien arma el cronograma
+    // o para el DJ). Se guarda como texto libre, la validación de que sea
+    // realmente un link de Spotify y la extracción del ID para el embed
+    // viven en el frontend (ver utils/playlistOrganizer.js).
+    spotifyUrl: { type: String, trim: true, default: '' },
+  },
+  { _id: false }
+);
+
 const eventSchema = new mongoose.Schema(
   {
     organizerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -60,6 +113,9 @@ const eventSchema = new mongoose.Schema(
       photoCollection: { type: Boolean, default: false },
       messageBook: { type: Boolean, default: false },
       vipInvitations: { type: Boolean, default: false },
+      tableOrganizer: { type: Boolean, default: false },
+      playlistOrganizer: { type: Boolean, default: false },
+      smartAgenda: { type: Boolean, default: false },
     },
     gallerySettings: {
       cloudinaryFolder: { type: String },
@@ -162,6 +218,17 @@ const eventSchema = new mongoose.Schema(
     // evento clonado y, cuando el original tiene invitaciones VIP, para la
     // card final que reemplaza al formulario de RSVP (ver RSVPSection.jsx).
     duoLabel: { type: String, default: '' },
+    // Pool completo de nombres para el organizador de mesas (importados de
+    // Excel o agregados a mano) -- los "pendientes de asignar" que se ven en
+    // el panel se derivan restando los que ya aparecen en tables[].assignedGuests,
+    // así el estado no se duplica ni puede desincronizarse entre las dos listas.
+    tableOrganizerGuests: { type: [String], default: [] },
+    tables: { type: [tableSchema], default: [] },
+    // Planificador de playlist: banco de temas sin asignar todavía a un
+    // momento de la fiesta (importados de Excel o agregados a mano).
+    playlistSongBank: { type: [playlistTrackSchema], default: [] },
+    // Bloques de tanda musical ya armados (uno por momento del evento).
+    playlistTracks: { type: [playlistMomentSchema], default: [] },
   },
   { timestamps: true }
 );

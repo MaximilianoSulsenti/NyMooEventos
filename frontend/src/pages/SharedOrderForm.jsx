@@ -8,7 +8,7 @@ import OrderForm from '../components/orders/OrderForm'
 import PackPicker from '../components/orders/PackPicker'
 import DuoAddonToggle from '../components/orders/DuoAddonToggle'
 import { BRAND } from '../utils/brand'
-import { LANDING_PACKS, DUO_ADDON_NAME, computeDuoAddonPrice } from '../utils/landingConfig'
+import { LANDING_PACKS, LANDING_TOOLS, DUO_ADDON_NAME, computeDuoAddonPrice, computeToolsPricing } from '../utils/landingConfig'
 import { EMPTY_ORDER_FORM } from '../utils/orderForm'
 
 const WELCOME_MESSAGE =
@@ -39,6 +39,7 @@ function SharedOrderForm() {
   const initialPack = LANDING_PACKS.find((p) => p.id === initialPackId) || null
 
   const [selectedPackIds, setSelectedPackIds] = useState(initialPack ? [initialPack.id] : [LANDING_PACKS[1].id])
+  const [selectedToolIds, setSelectedToolIds] = useState([])
   const [duoSelected, setDuoSelected] = useState(false)
   const [form, setForm] = useState(EMPTY_ORDER_FORM)
   const [status, setStatus] = useState('idle') // idle | submitting | done | error
@@ -49,12 +50,25 @@ function SharedOrderForm() {
   }, [])
 
   const selectedPacks = LANDING_PACKS.filter((p) => selectedPackIds.includes(p.id))
+  const selectedTools = LANDING_TOOLS.filter((t) => selectedToolIds.includes(t.id))
+  const selectedItems = [...selectedPacks, ...selectedTools]
   const duoPrice = computeDuoAddonPrice(selectedPacks)
   const duoActive = duoSelected && duoPrice > 0
-  const total = selectedPacks.reduce((sum, p) => sum + p.priceValue, 0) + (duoActive ? duoPrice : 0)
+  // Mismo motor de descuentos por combo que Checkout.jsx (ver
+  // computeToolsPricing en landingConfig.js) -- el backend aplica este
+  // descuento sin importar por cuál de los formularios entre el pedido, así
+  // que el total mostrado acá tiene que coincidir.
+  const packsTotal = selectedPacks.reduce((sum, p) => sum + p.priceValue, 0)
+  const { toolsTotal } = computeToolsPricing(selectedPacks, selectedTools)
+  const total = packsTotal + toolsTotal + (duoActive ? duoPrice : 0)
+  const isToolOnlyOrder = selectedItems.length > 0 && selectedItems.every((item) => item.id === 'vision' || LANDING_TOOLS.some((t) => t.id === item.id))
 
   function togglePack(id) {
     setSelectedPackIds((prev) => (prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]))
+  }
+
+  function toggleTool(id) {
+    setSelectedToolIds((prev) => (prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]))
   }
 
   function updateField(section, field, value) {
@@ -63,8 +77,8 @@ function SharedOrderForm() {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    if (selectedPacks.length === 0) {
-      setErrorMessage('Elegí al menos un pack para continuar')
+    if (selectedItems.length === 0) {
+      setErrorMessage('Elegí al menos un producto para continuar')
       return
     }
 
@@ -78,7 +92,7 @@ function SharedOrderForm() {
           ...form.guestCardDetails,
           pricePerCard: form.guestCardDetails.hasCost ? form.guestCardDetails.pricePerCard : '',
         },
-        items: [...selectedPacks.map((p) => ({ name: p.name })), ...(duoActive ? [{ name: DUO_ADDON_NAME }] : [])],
+        items: [...selectedItems.map((item) => ({ name: item.name })), ...(duoActive ? [{ name: DUO_ADDON_NAME }] : [])],
       })
       setStatus('done')
     } catch (err) {
@@ -114,7 +128,7 @@ function SharedOrderForm() {
           <div>
             <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
               <h2 className="text-base font-semibold">Tu(s) pack(s)</h2>
-              {selectedPacks.length > 0 && (
+              {selectedItems.length > 0 && (
                 <p className="text-sm text-white/60">
                   Total: <span className="font-bold text-white">${total.toLocaleString('es-AR')}</span>
                 </p>
@@ -126,14 +140,26 @@ function SharedOrderForm() {
             </div>
           </div>
 
-          <OrderForm form={form} onField={updateField} />
+          <div>
+            <h2 className="text-base font-semibold mb-3">Herramientas</h2>
+            <PackPicker items={LANDING_TOOLS} selectedIds={selectedToolIds} onToggle={toggleTool} />
+          </div>
+
+          {isToolOnlyOrder && (
+            <p className="text-white/50 text-xs -mt-2">
+              Como elegiste solo herramientas, no hace falta completar el diseño de la tarjeta -- alcanza con los
+              datos básicos del evento.
+            </p>
+          )}
+
+          <OrderForm form={form} onField={updateField} showDesignFields={!isToolOnlyOrder} />
 
           {errorMessage && <p className="text-red-400 text-sm text-center">{errorMessage}</p>}
 
           <Button
             type="submit"
             disabled={status === 'submitting'}
-            primaryColor={selectedPacks[0]?.accentColor || BRAND.blue}
+            primaryColor={selectedItems[0]?.accentColor || BRAND.blue}
             className="w-full py-3.5 text-base font-semibold disabled:opacity-40"
           >
             {status === 'submitting' ? 'Enviando...' : 'Enviar mis datos'}
