@@ -26,6 +26,7 @@ function TaskModal({ task, initialDate, accentColor = BRAND.orange, onSave, onDe
   const [dueDate, setDueDate] = useState(task?.dueDate || toDateInputValue(initialDate || new Date()))
   const [dueTime, setDueTime] = useState(task?.dueTime || '')
   const [clientPhone, setClientPhone] = useState(task?.clientPhone || '')
+  const [clientName, setClientName] = useState(task?.clientName || '')
   const [notes, setNotes] = useState(task?.notes || '')
   // Repetir solo aplica al crear -- editar una tarea que ya nació de una
   // serie repetida sería otra tarea (mover "todas las siguientes", "solo
@@ -42,7 +43,7 @@ function TaskModal({ task, initialDate, accentColor = BRAND.orange, onSave, onDe
     setSaving(true)
     setError('')
     try {
-      await onSave({ title: title.trim(), category, dueDate, dueTime, clientPhone, notes, recurrence })
+      await onSave({ title: title.trim(), category, dueDate, dueTime, clientPhone, clientName: clientName.trim(), notes, recurrence })
       onClose()
     } catch (err) {
       setError(err.response?.data?.message || 'No se pudo guardar la tarea')
@@ -169,15 +170,29 @@ function TaskModal({ task, initialDate, accentColor = BRAND.orange, onSave, onDe
             )}
 
             <div>
-              <label className="block text-xs text-white/40 mb-1">Teléfono para el recordatorio (WhatsApp)</label>
-              <input
-                type="tel"
-                value={clientPhone}
-                onChange={(e) => setClientPhone(e.target.value)}
-                placeholder="5493416151235"
-                style={{ '--accent': accentColor }}
-                className={inputClass}
-              />
+              <label className="block text-xs text-white/40 mb-1">Recordatorio por WhatsApp (opcional)</label>
+              <p className="text-white/30 text-[11px] mb-1.5 -mt-0.5">
+                No tiene que ser tu número: podés poner el de quien te esté ayudando a organizar esta tarea puntual
+                (tu prima, tu hermana, quien sea) y el recordatorio le llega directo a esa persona.
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <input
+                  type="text"
+                  value={clientName}
+                  onChange={(e) => setClientName(e.target.value)}
+                  placeholder="Nombre (ej. Sofía)"
+                  style={{ '--accent': accentColor }}
+                  className={inputClass}
+                />
+                <input
+                  type="tel"
+                  value={clientPhone}
+                  onChange={(e) => setClientPhone(e.target.value)}
+                  placeholder="Teléfono, ej. 3416151235"
+                  style={{ '--accent': accentColor }}
+                  className={inputClass}
+                />
+              </div>
             </div>
 
             <div>

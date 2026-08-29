@@ -41,6 +41,7 @@ function buildTaskInput(body) {
       dueDate,
       dueTime,
       clientPhone: cleanPhone(body?.clientPhone),
+      clientName: String(body?.clientName || '').trim().slice(0, 60),
       notes: String(body?.notes || '').trim().slice(0, 500),
     },
   };
@@ -98,7 +99,7 @@ async function updateTask(req, res) {
     return res.status(404).json({ message: 'Tarea no encontrada' });
   }
 
-  const { title, category, dueDate, dueTime, clientPhone, notes, status } = req.body;
+  const { title, category, dueDate, dueTime, clientPhone, clientName, notes, status } = req.body;
 
   if (status !== undefined) {
     if (!Task.STATUSES.includes(status)) {
@@ -130,6 +131,7 @@ async function updateTask(req, res) {
     task.dueTime = trimmed;
   }
   if (clientPhone !== undefined) task.clientPhone = cleanPhone(clientPhone);
+  if (clientName !== undefined) task.clientName = String(clientName).trim().slice(0, 60);
   if (notes !== undefined) task.notes = String(notes).trim().slice(0, 500);
 
   // Si se toca la fecha, la hora o el teléfono -- lo que determina CUÁNDO y

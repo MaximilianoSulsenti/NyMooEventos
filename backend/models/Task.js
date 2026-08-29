@@ -10,11 +10,18 @@ const TASK_STATUSES = ['Pendiente', 'Completada'];
 const taskSchema = new mongoose.Schema(
   {
     eventId: { type: mongoose.Schema.Types.ObjectId, ref: 'Event', required: true },
-    // Número con formato internacional (ej. 5493416151235) al que el cron de
-    // recordatorios le manda el aviso por WhatsApp -- ver
-    // services/whatsappReminder.js. Opcional: una tarea sin teléfono cargado
-    // simplemente no dispara recordatorio.
+    // Teléfono al que el cron de recordatorios le manda el aviso por
+    // WhatsApp -- ver services/whatsappReminder.js (normaliza el formato
+    // solo, no hace falta cargarlo de una forma exacta). Opcional: una
+    // tarea sin teléfono cargado simplemente no dispara recordatorio. No
+    // tiene por qué ser el teléfono de quien organiza -- cualquiera que
+    // esté ayudando (una hermana, una prima) puede recibir el recordatorio
+    // de una tarea puntual si se carga su número acá.
     clientPhone: { type: String, default: '', trim: true },
+    // Nombre de a quién le llega ESE recordatorio puntual -- solo para
+    // mostrarlo en la lista/el modal (ver TaskListPanel.jsx/TaskModal.jsx),
+    // no se usa para nada del envío en sí. Opcional.
+    clientName: { type: String, default: '', trim: true, maxlength: 60 },
     title: { type: String, required: true, trim: true },
     category: { type: String, enum: TASK_CATEGORIES, default: 'Otros' },
     // Texto plano "YYYY-MM-DD" a propósito, NO Date -- un objeto Date es un

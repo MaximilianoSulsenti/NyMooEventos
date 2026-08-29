@@ -95,7 +95,12 @@ function TaskRow({ task, onToggleStatus, onEdit, onDelete, selectMode, isSelecte
       {!selectMode && (
         <>
           {task.clientPhone && (
-            <span title={task.reminderSent ? 'Recordatorio ya enviado' : 'Recordatorio por WhatsApp programado'} className="shrink-0">
+            <span
+              title={`${task.reminderSent ? 'Recordatorio ya enviado' : 'Recordatorio por WhatsApp programado'}${
+                task.clientName ? ` a ${task.clientName}` : ''
+              }`}
+              className="shrink-0"
+            >
               <MessageCircle className="w-3.5 h-3.5" style={{ color: task.reminderSent ? 'rgba(255,255,255,0.2)' : BRAND.lime }} />
             </span>
           )}
