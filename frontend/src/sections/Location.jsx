@@ -19,9 +19,14 @@ function Location({ config, appearance, styles }) {
 
   return (
     <section className={`text-center px-6 ${styles.fontClass}`}>
-      <h2 className={`${titleSize} mb-6 ${styles.heading}`} style={{ color: config.textColor || undefined }}>
+      <h2 className={`${titleSize} ${config.subtitle ? 'mb-1' : 'mb-6'} ${styles.heading}`} style={{ color: config.textColor || undefined }}>
         {config.title || 'Ubicación'}
       </h2>
+      {config.subtitle && (
+        <p className="mb-6" style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+          {config.subtitle}
+        </p>
+      )}
       <div className={`grid gap-5 max-w-2xl mx-auto ${locations.length > 1 ? 'md:grid-cols-2' : ''}`}>
         {locations.map((location, index) => {
           const Icon = resolveIcon(location.icon, location.label)
@@ -53,11 +58,6 @@ function Location({ config, appearance, styles }) {
               />
 
               {location.label && <p className={`font-semibold ${fontSize}`}>{location.label}</p>}
-              {location.subtitle && (
-                <p className="text-sm" style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
-                  {location.subtitle}
-                </p>
-              )}
               {location.address && (
                 <p className="text-sm max-w-xs" style={{ color: secondaryTextColor(config.textColor, '99') }}>
                   {location.address}

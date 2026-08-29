@@ -272,6 +272,7 @@ export const SECTION_FIELD_DEFS = {
   ],
   Location: [
     { key: 'title', label: 'Título de la sección', type: 'text' },
+    { key: 'subtitle', label: 'Subtítulo de la sección (opcional)', type: 'text' },
     { key: 'mapsButtonText', label: 'Texto del botón del mapa', type: 'text' },
     {
       key: 'locations',
@@ -281,7 +282,6 @@ export const SECTION_FIELD_DEFS = {
       itemFields: [
         { key: 'icon', label: 'Ícono', type: 'select', options: AUTO_ICON_OPTIONS },
         { key: 'label', label: 'Nombre (ej. Ceremonia, Fiesta)' },
-        { key: 'subtitle', label: 'Subtítulo (opcional, ej. horario o una aclaración)' },
         { key: 'address', label: 'Dirección' },
         { key: 'mapUrl', label: 'Link de Google Maps (botón Compartir → Copiar enlace, o el src del iframe de inserción)' },
         { key: 'fontSize', label: 'Tamaño de fuente', type: 'select', options: FONT_SIZE_OPTIONS },
