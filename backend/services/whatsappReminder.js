@@ -43,19 +43,22 @@ function buildReminderMessage(task, eventName) {
   const dateLabel = `${day}/${month}/${year}`;
   const timeLabel = task.dueTime ? ` a las ${task.dueTime}` : '';
   const notesLabel = task.notes ? `\nNota: ${task.notes}` : '';
-  return `🔔 Recordatorio de Nymoo -- ${eventName}\n"${task.title}"${timeLabel} (${dateLabel}).${notesLabel}`;
+  const greeting = task.clientName ? `Hola ${task.clientName} -- ` : '';
+  return `🔔 Recordatorio de Nymoo -- ${eventName}\n${greeting}"${task.title}"${timeLabel} (${dateLabel}).${notesLabel}`;
 }
 
 // Arma los "components" del template message -- hello_world no lleva
 // variables, así que se manda sin components. La plantilla propia (una vez
 // aprobada) usa solo 2 variables -- Meta rechaza plantillas con muchas
 // variables en poco texto fijo (y variables pegadas sin nada en el medio,
-// tipo {{3}}{{4}}), así que acá título+fecha+hora (y la nota, si tiene)
-// se combinan en UN solo texto para {{1}}, dejando {{2}} para el nombre
-// del evento. Esto no toca la plantilla en sí (misma estructura aprobada
-// por Meta, sin re-revisión) -- solo cambia el valor que se manda en esa
-// variable en cada envío, igual que ya varía el título de la tarea. Body
-// aprobado:
+// tipo {{3}}{{4}}), así que acá el saludo con el nombre (si lo cargaron --
+// ver clientName en models/Task.js, para cuando el recordatorio va a otra
+// persona ayudando a organizar, no al dueño del evento), título+fecha+hora
+// y la nota (si tiene) se combinan en UN solo texto para {{1}}, dejando
+// {{2}} para el nombre del evento. Esto no toca la plantilla en sí (misma
+// estructura aprobada por Meta, sin re-revisión) -- solo cambia el valor
+// que se manda en esa variable en cada envío, igual que ya varía el título
+// de la tarea. Body aprobado:
 //   Tenés pendiente: *{{1}}*
 //   Evento: {{2}}
 //
@@ -67,7 +70,8 @@ function buildTemplateComponents(task, eventName) {
   const dateLabel = `${day}/${month}/${year}`;
   const timeLabel = task.dueTime ? ` a las ${task.dueTime}` : '';
   const notesLabel = task.notes ? ` — Nota: ${task.notes}` : '';
-  const taskLabel = `${task.title} (${dateLabel}${timeLabel})${notesLabel}`;
+  const greeting = task.clientName ? `Hola ${task.clientName} — ` : '';
+  const taskLabel = `${greeting}${task.title} (${dateLabel}${timeLabel})${notesLabel}`;
 
   return [
     {
