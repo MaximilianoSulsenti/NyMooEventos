@@ -74,6 +74,20 @@ export const STORY_LAYOUT_OPTIONS = [
   { value: 'horizontal', label: 'Línea de tiempo horizontal' },
 ]
 
+export const DETAIL_GROUP_LAYOUT_OPTIONS = [
+  { value: 'horizontal', label: 'Horizontal (tarjetas en fila, ej. Fecha / Hora / Lugar)' },
+  { value: 'vertical', label: 'Vertical (lista, un ítem debajo del otro)' },
+]
+
+// El sistema de campos no tiene un tipo "checkbox" propio -- un select
+// Sí/No hace lo mismo sin sumar un tipo de campo nuevo a FieldInput. El
+// value vacío ('') es el "No"/apagado, así una invitación vieja sin este
+// campo cargado (undefined) también cae del lado de "apagado".
+export const YES_NO_OPTIONS = [
+  { value: '', label: 'No' },
+  { value: 'si', label: 'Sí' },
+]
+
 // Campos comunes a toda sección (capas de fondo). Se editan aparte, en un bloque
 // compartido, en vez de repetirse en SECTION_FIELD_DEFS.
 export const BACKGROUND_FIELD_DEFS = [
@@ -150,6 +164,12 @@ export const SECTION_FIELD_DEFS = {
       label: 'Saludo VIP para invitados con link personalizado (usá {nombre} donde va su nombre)',
       type: 'text',
     },
+    {
+      key: 'showDate',
+      label: '¿Mostrar la fecha y hora en la portada? (chica, junto al subtítulo -- no reemplaza a Detalle del evento ni Cuenta regresiva)',
+      type: 'select',
+      options: YES_NO_OPTIONS,
+    },
     { key: 'title', label: 'Título', type: 'text' },
     { key: 'subtitle', label: 'Subtítulo', type: 'text' },
     { key: 'dedication', label: 'Dedicatoria o lema (opcional)', type: 'text' },
@@ -181,6 +201,29 @@ export const SECTION_FIELD_DEFS = {
     },
     { key: 'fontSizeBody', label: 'Tamaño del texto', type: 'select', options: FONT_SIZE_OPTIONS },
     { key: 'alignment', label: 'Alineación', type: 'select', options: ALIGNMENT_OPTIONS },
+    {
+      key: 'groups',
+      label:
+        'Grupos de detalles (opcional -- ej. "Ceremonia Religiosa" con Fecha/Hora/Lugar, "Fiesta en Salón" con los suyos). Si cargás uno o más, reemplazan el bloque de fecha simple de arriba.',
+      type: 'repeater',
+      addLabel: 'Agregar grupo',
+      itemFields: [
+        { key: 'title', label: 'Título del grupo (ej. Ceremonia Religiosa)' },
+        { key: 'subtitle', label: 'Subtítulo del grupo (ej. Detalles del evento de iglesia)' },
+        { key: 'layout', label: 'Diseño de los ítems', type: 'select', options: DETAIL_GROUP_LAYOUT_OPTIONS },
+        {
+          key: 'items',
+          label: 'Ítems del grupo (ej. Fecha, Hora, Lugar)',
+          type: 'repeater',
+          addLabel: 'Agregar ítem',
+          itemFields: [
+            { key: 'icon', label: 'Ícono', type: 'select', options: AUTO_ICON_OPTIONS },
+            { key: 'label', label: 'Etiqueta (ej. FECHA)' },
+            { key: 'text', label: 'Valor (ej. 20 de Noviembre 2026)' },
+          ],
+        },
+      ],
+    },
   ],
   Story: [
     { key: 'title', label: 'Título', type: 'text' },

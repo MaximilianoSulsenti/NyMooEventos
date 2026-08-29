@@ -1,5 +1,5 @@
 import { motion } from 'motion/react'
-import { Sparkles } from 'lucide-react'
+import { Sparkles, CalendarDays } from 'lucide-react'
 import usePremiumGuest from '../hooks/usePremiumGuest'
 import { secondaryTextColor } from '../utils/color'
 
@@ -10,6 +10,14 @@ function Hero({ event, config, appearance, styles }) {
   const titleSize = config.fontSizeTitle || 'text-4xl'
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const premiumGuest = usePremiumGuest(event)
+  // Fecha/hora sofisticada en la portada -- opcional (config.showDate),
+  // apagada por defecto para no cambiarle la cara a ninguna invitación ya
+  // armada. A propósito NO es un widget robusto tipo EventDetail (nada de
+  // número gigante ni tarjeta propia): es una línea chica, a la altura del
+  // subtítulo, como una aclaración más que un elemento aparte.
+  const eventDate = new Date(event.date)
+  const formattedDate = eventDate.toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' })
+  const formattedTime = eventDate.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })
   // {nombre} en el template se reemplaza por el nombre real del invitado VIP.
   const vipGreeting = (config.vipGreeting || '¡Hola, {nombre}! Están cordialmente invitados').replace(
     '{nombre}',
@@ -53,6 +61,15 @@ function Hero({ event, config, appearance, styles }) {
         {subtitle && (
           <p className={`mt-2 ${subtitleSize}`} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
             {subtitle}
+          </p>
+        )}
+        {config.showDate && (
+          <p
+            className="flex items-center justify-center gap-1.5 mt-2 text-xs sm:text-sm tracking-wide"
+            style={{ color: secondaryTextColor(config.textColor, '99') }}
+          >
+            <CalendarDays className="w-3.5 h-3.5 shrink-0" style={{ color: appearance.primaryColor }} />
+            {formattedDate} · {formattedTime} hs
           </p>
         )}
         <div className={`${styles.divider} my-6 mx-auto`} style={{ background: appearance.primaryColor }} />

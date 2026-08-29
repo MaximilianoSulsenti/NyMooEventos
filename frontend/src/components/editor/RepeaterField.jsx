@@ -17,6 +17,22 @@ function ItemInput({ field, value, onChange }) {
     )
   }
 
+  // Repetidor adentro de otro repetidor (ej. cada "grupo" de EventDetail
+  // trae su propia lista de ítems) -- función declarada más abajo en este
+  // mismo archivo, pero al ser "function" (no const) queda hoisteada, así
+  // que se puede usar acá arriba sin problema de orden.
+  if (field.type === 'repeater') {
+    return (
+      <RepeaterField
+        label={field.label}
+        items={value}
+        itemFields={field.itemFields}
+        onChange={onChange}
+        addLabel={field.addLabel}
+      />
+    )
+  }
+
   return (
     <input
       type="text"

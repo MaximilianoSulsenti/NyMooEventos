@@ -39,7 +39,6 @@ const SECTION_COMPONENTS = {
 function SectionRenderer({ event }) {
   const appearance = event.appearance || {}
   const styles = getThemeStyles(appearance.theme, appearance.fontFamily)
-  const usesGlobalBackground = Boolean(appearance.useGlobalBackground)
 
   const sections = [...(event.sections || [])]
     .filter((section) => section.enabled)
@@ -52,7 +51,13 @@ function SectionRenderer({ event }) {
         if (!Component) return null
 
         const config = section.config || {}
-        const hasBgImage = !usesGlobalBackground && config.bgType === 'imagen' && config.bgImageUrl
+        // Antes, con el fondo global activo, el fondo propio de CADA
+        // sección se ignoraba sin excepción -- si alguien elegía a
+        // propósito una imagen distinta para una sección puntual, no se
+        // veía. Ahora el fondo propio de la sección (si lo eligieron) gana
+        // siempre, esté o no activo el fondo global -- elegirlo a mano es
+        // una señal explícita de querer eso ahí.
+        const hasBgImage = config.bgType === 'imagen' && config.bgImageUrl
 
         return (
           <motion.div
