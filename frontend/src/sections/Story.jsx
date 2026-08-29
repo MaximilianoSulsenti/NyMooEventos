@@ -1,5 +1,6 @@
 import { motion } from 'motion/react'
 import { Heart } from 'lucide-react'
+import { secondaryTextColor } from '../utils/color'
 
 function Story({ config, appearance, styles }) {
   const milestones = Array.isArray(config.milestones) ? config.milestones : []
@@ -17,7 +18,14 @@ function Story({ config, appearance, styles }) {
         </h2>
       )}
       <div className={`${styles.divider} mx-auto mb-4`} style={{ background: appearance.primaryColor }} />
-      {config.body && <p className={`text-white/70 whitespace-pre-line mb-8 ${bodySize}`}>{config.body}</p>}
+      {config.body && (
+        <p
+          className={`whitespace-pre-line mb-8 ${bodySize}`}
+          style={{ color: secondaryTextColor(config.textColor, 'b3') }}
+        >
+          {config.body}
+        </p>
+      )}
 
       {milestones.length > 0 && (
         <div
@@ -55,7 +63,11 @@ function Story({ config, appearance, styles }) {
                   {milestone.title}
                 </p>
               )}
-              {milestone.subtitle && <p className="text-white/70 mt-1">{milestone.subtitle}</p>}
+              {milestone.subtitle && (
+                <p className="mt-1" style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+                  {milestone.subtitle}
+                </p>
+              )}
             </motion.div>
           ))}
         </div>

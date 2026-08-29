@@ -1,6 +1,7 @@
 import { motion } from 'motion/react'
 import { resolveIcon } from './eventIcons'
 import AnimatedIcon from '../components/AnimatedIcon'
+import { secondaryTextColor } from '../utils/color'
 
 function Timeline({ config, appearance, styles }) {
   const items = Array.isArray(config.items) ? config.items : []
@@ -35,7 +36,7 @@ function Timeline({ config, appearance, styles }) {
                 <span className="font-semibold text-sm" style={{ color: appearance.primaryColor }}>
                   {item.time}
                 </span>
-                <p className="text-white/70">{item.label}</p>
+                <p style={{ color: secondaryTextColor(config.textColor, 'b3') }}>{item.label}</p>
               </div>
             </motion.li>
           )

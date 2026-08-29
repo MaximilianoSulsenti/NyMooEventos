@@ -42,3 +42,14 @@ export function getContrastTextColor(hex) {
     return '#111111'
   }
 }
+
+// Color de un texto secundario (subtítulo, cuerpo, dedicatoria/lema) dentro
+// de una sección -- toma el MISMO color elegido para el título de esa
+// sección (textColor, ver TEXT_FIELD_DEFS en sectionDefs.js) con menos
+// opacidad para la jerarquía visual, en vez de quedar pegado en blanco fijo
+// sin importar el fondo. Sin textColor elegido, cae al blanco de siempre
+// (mismo comportamiento que había antes de este helper). opacityHex es el
+// sufijo alfa de dos dígitos en hex (ej. "b3" ~70%, "99" ~60%, "80" ~50%).
+export function secondaryTextColor(textColor, opacityHex) {
+  return `${textColor || '#ffffff'}${opacityHex}`
+}

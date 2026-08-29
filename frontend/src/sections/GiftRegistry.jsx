@@ -7,6 +7,7 @@ import AnimatedIcon from '../components/AnimatedIcon'
 import { glassStyle, glassBlurClass } from '../utils/glass'
 import { cn } from '../utils/cn'
 import { CARD_REVEAL } from '../utils/motionPresets'
+import { secondaryTextColor } from '../utils/color'
 
 function GiftRegistry({ config, appearance, styles }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -43,7 +44,7 @@ function GiftRegistry({ config, appearance, styles }) {
           {config.title || 'Lista de regalos'}
         </h2>
 
-        <p className={`text-white/70 max-w-sm ${subtitleSize}`}>
+        <p className={`max-w-sm ${subtitleSize}`} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
           {config.subtitle || 'Tu presencia ya es un regalo, pero si querés sumar un detalle para nuestra nueva etapa, esto te va a servir.'}
         </p>
 

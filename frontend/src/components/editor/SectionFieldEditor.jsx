@@ -13,6 +13,7 @@ import { BRAND } from '../../utils/brand'
 const SECTIONS_WITH_TITLE_COLOR = [
   'Hero',
   'EventDetail',
+  'RSVP',
   'Countdown',
   'Story',
   'Gallery',

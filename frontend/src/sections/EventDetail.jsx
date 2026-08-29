@@ -5,6 +5,7 @@ import { resolveIcon } from './eventIcons'
 import AnimatedIcon from '../components/AnimatedIcon'
 import { glassStyle, glassBlurClass } from '../utils/glass'
 import { CARD_REVEAL } from '../utils/motionPresets'
+import { secondaryTextColor } from '../utils/color'
 
 function EventDetail({ event, config, appearance, styles }) {
   const eventDate = new Date(event.date)
@@ -34,7 +35,11 @@ function EventDetail({ event, config, appearance, styles }) {
           {config.title}
         </h2>
       )}
-      {config.subtitle && <p className={`text-white/70 mb-5 ${subtitleSize}`}>{config.subtitle}</p>}
+      {config.subtitle && (
+        <p className={`mb-5 ${subtitleSize}`} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+          {config.subtitle}
+        </p>
+      )}
 
       <motion.div
         {...CARD_REVEAL}
@@ -66,7 +71,9 @@ function EventDetail({ event, config, appearance, styles }) {
               {formattedTime} hs
             </p>
             {config.description && (
-              <p className={`text-white/60 mt-1 max-w-sm ${bodySize}`}>{config.description}</p>
+              <p className={`mt-1 max-w-sm ${bodySize}`} style={{ color: secondaryTextColor(config.textColor, '99') }}>
+                {config.description}
+              </p>
             )}
           </div>
         </div>
@@ -86,7 +93,11 @@ function EventDetail({ event, config, appearance, styles }) {
                   />
                   <div>
                     {detail.label && <p className="text-sm font-semibold text-white/90">{detail.label}</p>}
-                    {detail.text && <p className={`text-white/60 ${bodySize}`}>{detail.text}</p>}
+                    {detail.text && (
+                      <p className={bodySize} style={{ color: secondaryTextColor(config.textColor, '99') }}>
+                        {detail.text}
+                      </p>
+                    )}
                   </div>
                 </div>
               )

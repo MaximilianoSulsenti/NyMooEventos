@@ -5,6 +5,7 @@ import { cn } from '../utils/cn'
 import { resolveIcon } from './eventIcons'
 import AnimatedIcon from '../components/AnimatedIcon'
 import { glassStyle, glassBlurClass } from '../utils/glass'
+import { secondaryTextColor } from '../utils/color'
 
 function InfoCard({ item, appearance, styles, config, isOpen, onToggle }) {
   const Icon = resolveIcon(item.icon, `${item.title || ''} ${item.body || ''}`)
@@ -46,7 +47,8 @@ function InfoCard({ item, appearance, styles, config, isOpen, onToggle }) {
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               exit={{ opacity: 0, filter: 'blur(4px)' }}
               transition={{ duration: 0.3, delay: 0.05 }}
-              className="px-4 pb-4 pl-16 text-white/60 text-sm leading-relaxed whitespace-pre-line"
+              className="px-4 pb-4 pl-16 text-sm leading-relaxed whitespace-pre-line"
+              style={{ color: secondaryTextColor(config.textColor, '99') }}
             >
               {item.body}
             </motion.p>

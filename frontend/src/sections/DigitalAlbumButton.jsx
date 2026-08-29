@@ -5,6 +5,7 @@ import Button from '../components/ui/Button'
 import UploadPhotosModal from '../components/UploadPhotosModal'
 import ModulePreviewModal from '../components/ModulePreviewModal'
 import { CARD_REVEAL } from '../utils/motionPresets'
+import { secondaryTextColor } from '../utils/color'
 
 const PREVIEW_PARAGRAPHS = [
   'En este espacio van a poder revivir los momentos más especiales del evento a través de las fotos que suban los invitados.',
@@ -31,9 +32,11 @@ function DigitalAlbumButton({ event, config, appearance, styles }) {
           {config.title || 'Álbum digital del evento'}
         </h2>
         {config.subtitle && (
-          <p className={`text-white/70 mb-2 ${subtitleSize}`}>{config.subtitle}</p>
+          <p className={`mb-2 ${subtitleSize}`} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+            {config.subtitle}
+          </p>
         )}
-        <p className="text-white/60 text-sm mb-6 max-w-sm mx-auto break-words">
+        <p className="text-sm mb-6 max-w-sm mx-auto break-words" style={{ color: secondaryTextColor(config.textColor, '99') }}>
           {config.description || 'Compartí tus fotos del evento y quedan guardadas en nuestro álbum digital.'}
         </p>
 

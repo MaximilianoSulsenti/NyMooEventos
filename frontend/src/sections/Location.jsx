@@ -4,6 +4,7 @@ import { resolveIcon } from './eventIcons'
 import AnimatedIcon from '../components/AnimatedIcon'
 import Button from '../components/ui/Button'
 import { glassStyle, glassBlurClass } from '../utils/glass'
+import { secondaryTextColor } from '../utils/color'
 
 function isEmbedUrl(url = '') {
   return url.includes('google.com/maps/embed')
@@ -52,7 +53,11 @@ function Location({ config, appearance, styles }) {
               />
 
               {location.label && <p className={`font-semibold ${fontSize}`}>{location.label}</p>}
-              {location.address && <p className="text-white/60 text-sm max-w-xs">{location.address}</p>}
+              {location.address && (
+                <p className="text-sm max-w-xs" style={{ color: secondaryTextColor(config.textColor, '99') }}>
+                  {location.address}
+                </p>
+              )}
 
               {location.mapUrl && isEmbedUrl(location.mapUrl) ? (
                 <iframe

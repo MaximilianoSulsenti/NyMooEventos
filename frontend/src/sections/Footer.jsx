@@ -1,6 +1,7 @@
 import { motion } from 'motion/react'
 import { Mail, Phone, Music2, Globe } from 'lucide-react'
 import { InstagramIcon, WhatsappIcon, FacebookIcon, TiktokIcon, SpotifyIcon, YoutubeIcon } from '../components/icons/BrandIcons'
+import { secondaryTextColor } from '../utils/color'
 
 const ICON_RULES = [
   { keywords: ['whatsapp', 'wsp'], icon: WhatsappIcon },
@@ -57,7 +58,8 @@ function Footer({ event, config, appearance, styles }) {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="text-white/60 text-sm italic max-w-md mx-auto"
+        className="text-sm italic max-w-md mx-auto"
+        style={{ color: secondaryTextColor(config.textColor, '99') }}
       >
         {config.text || `Con cariño, esperamos verte en ${event.eventName}.`}
       </motion.p>

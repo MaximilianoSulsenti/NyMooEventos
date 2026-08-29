@@ -5,6 +5,7 @@ import { InstagramIcon } from '../components/icons/BrandIcons'
 import { glassStyle, glassBlurClass } from '../utils/glass'
 import { cn } from '../utils/cn'
 import { CARD_REVEAL } from '../utils/motionPresets'
+import { secondaryTextColor } from '../utils/color'
 
 // Degradado clásico de Instagram, usado cuando el admin no eligió un color
 // de acento propio en el editor.
@@ -49,7 +50,7 @@ function InstagramSection({ config, styles }) {
           </h2>
         )}
 
-        <p className={`text-white/70 max-w-sm ${subtitleSize}`}>
+        <p className={`max-w-sm ${subtitleSize}`} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
           {config.subtitle || 'Compartí tus mejores momentos y etiquetanos para que no nos perdamos ninguna foto.'}
         </p>
 

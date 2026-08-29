@@ -111,8 +111,10 @@ export const BACKGROUND_FIELD_DEFS = [
   },
 ]
 
-// Campo compartido para el color del título de cada sección (por defecto blanco).
-export const TEXT_FIELD_DEFS = [{ key: 'textColor', label: 'Color del título', type: 'color' }]
+// Campo compartido para el color del texto de cada sección (por defecto
+// blanco) -- afecta título, subtítulo, cuerpo y demás texto de esa sección
+// (ver secondaryTextColor en utils/color.js), no solo el título.
+export const TEXT_FIELD_DEFS = [{ key: 'textColor', label: 'Color del texto', type: 'color' }]
 
 // Fondo vidriado (glassmorphism) editable, para las secciones con tarjetas de vidrio.
 export const GLASS_FIELD_DEFS = [

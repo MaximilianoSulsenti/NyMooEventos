@@ -1,6 +1,7 @@
 import { motion } from 'motion/react'
 import { Sparkles } from 'lucide-react'
 import usePremiumGuest from '../hooks/usePremiumGuest'
+import { secondaryTextColor } from '../utils/color'
 
 function Hero({ event, config, appearance, styles }) {
   const kicker = config.kicker || 'Te invitamos a celebrar'
@@ -49,10 +50,16 @@ function Hero({ event, config, appearance, styles }) {
         >
           {title}
         </h1>
-        {subtitle && <p className={`text-white/70 mt-2 ${subtitleSize}`}>{subtitle}</p>}
+        {subtitle && (
+          <p className={`mt-2 ${subtitleSize}`} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+            {subtitle}
+          </p>
+        )}
         <div className={`${styles.divider} my-6 mx-auto`} style={{ background: appearance.primaryColor }} />
         {config.dedication && (
-          <p className="text-white/50 text-sm italic mt-2 max-w-sm mx-auto">{config.dedication}</p>
+          <p className="text-sm italic mt-2 max-w-sm mx-auto" style={{ color: secondaryTextColor(config.textColor, '80') }}>
+            {config.dedication}
+          </p>
         )}
       </motion.div>
     </section>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import CarouselArrows from '../components/ui/CarouselArrows'
+import { secondaryTextColor } from '../utils/color'
 
 function SalonCarrousel({ config, styles }) {
   const images = [
@@ -34,7 +35,11 @@ function SalonCarrousel({ config, styles }) {
           {config.title}
         </h2>
       )}
-      {config.subtitle && <p className="text-white/60 text-sm mb-4">{config.subtitle}</p>}
+      {config.subtitle && (
+        <p className="text-sm mb-4" style={{ color: secondaryTextColor(config.textColor, '99') }}>
+          {config.subtitle}
+        </p>
+      )}
 
       <div className="relative max-w-md mx-auto h-72 overflow-hidden rounded-2xl">
         <AnimatePresence mode="wait">
@@ -52,7 +57,11 @@ function SalonCarrousel({ config, styles }) {
         {images.length > 1 && <CarouselArrows onPrev={() => goTo(-1)} onNext={() => goTo(1)} />}
       </div>
 
-      {config.caption && <p className="text-white/50 text-sm mt-3 italic">{config.caption}</p>}
+      {config.caption && (
+        <p className="text-sm mt-3 italic" style={{ color: secondaryTextColor(config.textColor, '80') }}>
+          {config.caption}
+        </p>
+      )}
     </section>
   )
 }
