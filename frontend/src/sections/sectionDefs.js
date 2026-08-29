@@ -281,6 +281,7 @@ export const SECTION_FIELD_DEFS = {
       itemFields: [
         { key: 'icon', label: 'Ícono', type: 'select', options: AUTO_ICON_OPTIONS },
         { key: 'label', label: 'Nombre (ej. Ceremonia, Fiesta)' },
+        { key: 'subtitle', label: 'Subtítulo (opcional, ej. horario o una aclaración)' },
         { key: 'address', label: 'Dirección' },
         { key: 'mapUrl', label: 'Link de Google Maps (botón Compartir → Copiar enlace, o el src del iframe de inserción)' },
         { key: 'fontSize', label: 'Tamaño de fuente', type: 'select', options: FONT_SIZE_OPTIONS },

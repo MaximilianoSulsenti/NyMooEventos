@@ -53,6 +53,11 @@ function Location({ config, appearance, styles }) {
               />
 
               {location.label && <p className={`font-semibold ${fontSize}`}>{location.label}</p>}
+              {location.subtitle && (
+                <p className="text-sm" style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+                  {location.subtitle}
+                </p>
+              )}
               {location.address && (
                 <p className="text-sm max-w-xs" style={{ color: secondaryTextColor(config.textColor, '99') }}>
                   {location.address}
