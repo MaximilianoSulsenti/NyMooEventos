@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import ThreeDPhotoCarousel from '../components/ui/ThreeDPhotoCarousel'
 import CarouselArrows from '../components/ui/CarouselArrows'
+import { secondaryTextColor } from '../utils/color'
 
 function BentoGrid({ images }) {
   const spanClasses = [
@@ -75,9 +76,14 @@ function Gallery({ config, styles }) {
 
   return (
     <section className={`text-center px-6 ${styles.fontClass}`}>
-      <h2 className={`${titleSize} mb-6 ${styles.heading}`} style={{ color: config.textColor || undefined }}>
+      <h2 className={`${titleSize} ${config.subtitle ? 'mb-1' : 'mb-6'} ${styles.heading}`} style={{ color: config.textColor || undefined }}>
         {config.title || 'Galería'}
       </h2>
+      {config.subtitle && (
+        <p className="mb-6" style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+          {config.subtitle}
+        </p>
+      )}
 
       {config.layout === 'carousel3d' && <ThreeDPhotoCarousel images={images} />}
       {config.layout === 'carousel' && <ClassicCarousel images={images} />}

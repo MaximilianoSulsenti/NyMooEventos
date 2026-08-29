@@ -38,7 +38,7 @@ async function generateUniquePasscode(eventId, name) {
 }
 
 async function submitRsvp(req, res) {
-  const { eventSlug, guestId, name, status, dietaryRestrictions, songRequest, companionsCount, extraAnswers } = req.body;
+  const { eventSlug, guestId, name, status, dietaryRestrictions, songRequest, companionsCount, companionNames, extraAnswers } = req.body;
 
   if (!eventSlug || !name) {
     return res.status(400).json({ message: 'eventSlug y name son requeridos' });
@@ -90,9 +90,16 @@ async function submitRsvp(req, res) {
     }
   }
 
+  const cleanCompanionNames = Array.isArray(companionNames)
+    ? companionNames
+        .slice(0, 30)
+        .map((n) => String(n || '').trim().slice(0, 100))
+        .filter(Boolean)
+    : null;
+
   if (isRealRsvp) {
     const maxAllowed = guest.maxCompanionsAllowed;
-    const requestedCompanions = companionsCount || 0;
+    const requestedCompanions = cleanCompanionNames ? cleanCompanionNames.length : companionsCount || 0;
     if (maxAllowed != null && requestedCompanions > maxAllowed) {
       return res.status(400).json({ message: `Tu cupo permite hasta ${maxAllowed} acompañante(s)` });
     }
@@ -100,6 +107,7 @@ async function submitRsvp(req, res) {
     guest.status = status;
     guest.dietaryRestrictions = dietaryRestrictions || '';
     guest.companionsCount = requestedCompanions;
+    if (cleanCompanionNames) guest.companionNames = cleanCompanionNames;
     if (Object.keys(cleanExtraAnswers).length > 0) guest.extraAnswers = cleanExtraAnswers;
     guest.rsvpCompleted = true;
   }
@@ -271,6 +279,7 @@ async function lookupGuestByPasscode(req, res) {
     maxCompanionsAllowed: guest.maxCompanionsAllowed,
     status: guest.status,
     companionsCount: guest.companionsCount,
+    companionNames: guest.companionNames,
   });
 }
 
@@ -308,6 +317,7 @@ async function searchGuestByName(req, res) {
     maxCompanionsAllowed: guest.maxCompanionsAllowed,
     status: guest.status,
     companionsCount: guest.companionsCount,
+    companionNames: guest.companionNames,
   });
 }
 

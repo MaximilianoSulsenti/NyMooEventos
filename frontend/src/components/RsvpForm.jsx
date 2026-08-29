@@ -28,14 +28,16 @@ function parseDietaryOptions(raw = '') {
 // invitado (nombre, asistencia, acompañantes, restricciones, preguntas
 // extra) para que llegue prolijo al WhatsApp del cliente -- nada de esto se
 // guarda en la base, es solo texto para el mensaje.
-function buildWhatsappMessage({ eventName, template, name, attending, dietaryRestrictions, companionsCount, extraAnswers }) {
+function buildWhatsappMessage({ eventName, template, name, attending, dietaryRestrictions, companionNames, extraAnswers }) {
   const intro = template?.trim() || `¡Hola! Quiero confirmar mi asistencia para el evento ${eventName}.`
+  const companionsLine =
+    companionNames.length > 0 ? `Acompañantes (${companionNames.length}): ${companionNames.join(', ')}` : 'Acompañantes: 0'
   const lines = [
     intro,
     '',
     `Nombre: ${name}`,
     `Asistencia: ${attending === 'confirmado' ? 'Sí, voy a asistir' : 'No podré asistir'}`,
-    `Acompañantes: ${companionsCount}`,
+    companionsLine,
     `Restricciones alimentarias: ${dietaryRestrictions || 'Ninguna'}`,
   ]
   Object.entries(extraAnswers || {}).forEach(([question, answer]) => {
@@ -53,6 +55,7 @@ function RsvpForm({
   guestId,
   lockedName,
   maxCompanions,
+  initialCompanionNames,
   mode = 'save', // 'save' (plan intermedio/premium) | 'whatsapp' (plan básico)
   eventName,
   whatsappNumber,
@@ -63,7 +66,15 @@ function RsvpForm({
   const [attending, setAttending] = useState('confirmado')
   const [dietaryRestrictions, setDietaryRestrictions] = useState('')
   const [customDietary, setCustomDietary] = useState('')
-  const [companionsCount, setCompanionsCount] = useState(0)
+  // VIP (maxCompanions viene de su cupo asignado): arranca con esa cantidad
+  // exacta de campos fijos, precargados si ya los había completado antes.
+  // Sin VIP: arranca vacío (o con lo que ya había cargado), los va
+  // agregando de a uno con el botón de abajo.
+  const [companionNames, setCompanionNames] = useState(() => {
+    const initial = Array.isArray(initialCompanionNames) ? initialCompanionNames : []
+    if (maxCompanions == null) return initial
+    return Array.from({ length: maxCompanions }, (_, i) => initial[i] || '')
+  })
   const [extraAnswers, setExtraAnswers] = useState({})
   const [status, setStatus] = useState('idle') // idle | sending | success | error
   const [errorMessage, setErrorMessage] = useState('')
@@ -82,11 +93,22 @@ function RsvpForm({
   const light = shadeColor(primaryColor, 25)
   const dark = shadeColor(primaryColor, -25)
 
+  function updateCompanionName(index, value) {
+    setCompanionNames((prev) => prev.map((n, i) => (i === index ? value : n)))
+  }
+  function addCompanion() {
+    setCompanionNames((prev) => [...prev, ''])
+  }
+  function removeCompanion(index) {
+    setCompanionNames((prev) => prev.filter((_, i) => i !== index))
+  }
+
   async function handleSubmit(event) {
     event.preventDefault()
     if (!name.trim()) return
 
     const finalDietary = dietaryRestrictions === '__otra__' ? customDietary : dietaryRestrictions
+    const finalCompanionNames = companionNames.map((n) => n.trim()).filter(Boolean)
 
     if (mode === 'whatsapp') {
       const message = buildWhatsappMessage({
@@ -95,7 +117,7 @@ function RsvpForm({
         name: name.trim(),
         attending,
         dietaryRestrictions: finalDietary,
-        companionsCount: Number(companionsCount) || 0,
+        companionNames: finalCompanionNames,
         extraAnswers,
       })
       const digits = (whatsappNumber || '').replace(/\D/g, '')
@@ -114,7 +136,8 @@ function RsvpForm({
         name: name.trim(),
         status: attending,
         dietaryRestrictions: finalDietary,
-        companionsCount: Number(companionsCount) || 0,
+        companionsCount: finalCompanionNames.length,
+        companionNames: finalCompanionNames,
         extraAnswers,
       })
       setStatus('success')
@@ -170,7 +193,9 @@ function RsvpForm({
               <p className="text-neutral-400">
                 {mode === 'whatsapp'
                   ? 'Se abrió WhatsApp con tu mensaje listo -- enviálo para confirmar tu asistencia.'
-                  : 'Tu confirmación fue registrada.'}
+                  : attending === 'confirmado'
+                    ? '¡Genial! Registramos tu asistencia -- te esperamos en el evento.'
+                    : 'Registramos que no vas a poder acompañarnos. ¡Gracias por avisarnos!'}
               </p>
             </motion.div>
           ) : (
@@ -233,23 +258,47 @@ function RsvpForm({
                 )}
               </div>
 
-              <div>
-                <label className="block text-sm text-neutral-400 mb-1">
-                  Cantidad de acompañantes
-                  {maxCompanions != null && <span className="text-neutral-500"> (cupo máximo: {maxCompanions})</span>}
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  max={maxCompanions ?? undefined}
-                  value={companionsCount}
-                  onChange={(e) => {
-                    const value = Number(e.target.value)
-                    setCompanionsCount(maxCompanions != null ? Math.min(value, maxCompanions) : value)
-                  }}
-                  className={inputClass}
-                />
-              </div>
+              {(maxCompanions == null || maxCompanions > 0) && (
+                <div>
+                  <label className="block text-sm text-neutral-400 mb-1">
+                    Acompañantes
+                    {maxCompanions != null && <span className="text-neutral-500"> (cupo: {maxCompanions})</span>}
+                  </label>
+                  <div className="space-y-2">
+                    {companionNames.map((value, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={value}
+                          onChange={(e) => updateCompanionName(index, e.target.value)}
+                          placeholder="Nombre y apellido"
+                          className={inputClass}
+                        />
+                        {maxCompanions == null && (
+                          <button
+                            type="button"
+                            onClick={() => removeCompanion(index)}
+                            className="shrink-0 text-neutral-500 hover:text-red-400 transition-colors"
+                            aria-label="Quitar acompañante"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  {maxCompanions == null && (
+                    <button
+                      type="button"
+                      onClick={addCompanion}
+                      className="mt-2 text-sm underline underline-offset-2 hover:brightness-125"
+                      style={{ color: primaryColor }}
+                    >
+                      + Agregar acompañante
+                    </button>
+                  )}
+                </div>
+              )}
 
               {questions.map((question, index) => (
                 <div key={index}>

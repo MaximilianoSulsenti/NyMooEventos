@@ -13,9 +13,17 @@ function Story({ config, appearance, styles }) {
   return (
     <section className={`text-center px-6 max-w-2xl mx-auto ${styles.fontClass}`}>
       {config.title && (
-        <h2 className={`${titleSize} mb-4 ${styles.heading}`} style={{ color: config.textColor || undefined }}>
+        <h2
+          className={`${titleSize} ${config.subtitle ? 'mb-1' : 'mb-4'} ${styles.heading}`}
+          style={{ color: config.textColor || undefined }}
+        >
           {config.title}
         </h2>
+      )}
+      {config.subtitle && (
+        <p className="mb-4" style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+          {config.subtitle}
+        </p>
       )}
       <div className={`${styles.divider} mx-auto mb-4`} style={{ background: appearance.primaryColor }} />
       {config.body && (

@@ -10,9 +10,14 @@ function Timeline({ config, appearance, styles }) {
 
   return (
     <section className={`text-center px-6 max-w-sm mx-auto ${styles.fontClass}`}>
-      <h2 className={`${titleSize} mb-6 ${styles.heading}`} style={{ color: config.textColor || undefined }}>
+      <h2 className={`${titleSize} ${config.subtitle ? 'mb-1' : 'mb-6'} ${styles.heading}`} style={{ color: config.textColor || undefined }}>
         {config.title || 'Cronograma'}
       </h2>
+      {config.subtitle && (
+        <p className="mb-6" style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+          {config.subtitle}
+        </p>
+      )}
       <ol className="space-y-4 text-left">
         {items.map((item, index) => {
           const Icon = resolveIcon(item.icon, item.label)

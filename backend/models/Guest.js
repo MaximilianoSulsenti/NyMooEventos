@@ -16,6 +16,7 @@ const guestSchema = new mongoose.Schema(
     // crear un invitado nuevo a partir de una sugerencia de canción sin RSVP.
     rsvpCompleted: { type: Boolean, default: true },
     companionsCount: { type: Number, default: 0 },
+    companionNames: { type: [String], default: [] },
     extraAnswers: { type: mongoose.Schema.Types.Mixed, default: {} },
     // Plan premium (invitaciones personalizadas): cupo de acompañantes que
     // el organizador le asignó a esta familia/invitado, y el código que

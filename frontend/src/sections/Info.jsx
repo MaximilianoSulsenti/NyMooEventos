@@ -69,11 +69,16 @@ function Info({ config, appearance, styles }) {
   return (
     <section className={`px-6 max-w-2xl mx-auto ${styles.fontClass}`}>
       <h2
-        className={`text-center ${titleSize} mb-6 ${styles.heading}`}
+        className={`text-center ${titleSize} ${config.subtitle ? 'mb-1' : 'mb-6'} ${styles.heading}`}
         style={{ color: config.textColor || undefined }}
       >
         {config.title || 'Información adicional'}
       </h2>
+      {config.subtitle && (
+        <p className="text-center mb-6" style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+          {config.subtitle}
+        </p>
+      )}
       <div className="grid sm:grid-cols-2 gap-3">
         {items.map((item, index) => (
           <motion.div

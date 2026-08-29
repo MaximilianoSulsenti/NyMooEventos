@@ -58,12 +58,19 @@ function RSVPSection({ event, config, appearance, styles }) {
           iconClassName="w-6 h-6"
         />
 
-        <p className="max-w-sm" style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
-          {config.title ||
-            (isWhatsapp
-              ? 'Confirmá tu asistencia por WhatsApp, así lo vemos al toque.'
-              : 'Tu presencia es el mejor regalo. Contanos si nos acompañás.')}
-        </p>
+        <div className="max-w-sm">
+          <p style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+            {config.title ||
+              (isWhatsapp
+                ? 'Confirmá tu asistencia por WhatsApp, así lo vemos al toque.'
+                : 'Tu presencia es el mejor regalo. Contanos si nos acompañás.')}
+          </p>
+          {config.subtitle && (
+            <p className="text-sm mt-1" style={{ color: secondaryTextColor(config.textColor, '99') }}>
+              {config.subtitle}
+            </p>
+          )}
+        </div>
 
         <Button type="button" onClick={() => setIsOpen(true)} primaryColor={accentColor}>
           {isWhatsapp && <WhatsappIcon className="w-4 h-4" />}

@@ -5,6 +5,7 @@ import api from '../services/api'
 import Button from '../components/ui/Button'
 import AnimatedIcon from '../components/AnimatedIcon'
 import { glassStyle, glassBlurClass } from '../utils/glass'
+import { secondaryTextColor } from '../utils/color'
 import { cn } from '../utils/cn'
 import { CARD_REVEAL } from '../utils/motionPresets'
 
@@ -161,6 +162,11 @@ function MusicPlaylist({ event, config, appearance, styles }) {
         <h2 className={`${titleSize} ${styles.heading}`} style={{ color: config.textColor || undefined }}>
           {config.title || 'Playlist del evento'}
         </h2>
+        {config.subtitle && (
+          <p className="text-sm -mt-2" style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+            {config.subtitle}
+          </p>
+        )}
 
         {embed ? (
           <div className="w-full overflow-hidden rounded-xl shadow-lg">

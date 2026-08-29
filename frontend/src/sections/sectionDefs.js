@@ -149,6 +149,7 @@ export const GLASS_FIELD_DEFS = [
 export const SECTIONS_WITH_GLASS_CARD = [
   'EventDetail',
   'Location',
+  'Countdown',
   'Info',
   'MusicPlaylist',
   'RSVP',
@@ -178,6 +179,7 @@ export const SECTION_FIELD_DEFS = {
   ],
   Countdown: [
     { key: 'title', label: 'Título de la sección', type: 'text' },
+    { key: 'subtitle', label: 'Subtítulo de la sección (opcional)', type: 'text' },
     { key: 'shape', label: 'Forma de los contadores', type: 'select', options: COUNTDOWN_SHAPE_OPTIONS },
     { key: 'fontSizeTitle', label: 'Tamaño de los dígitos', type: 'select', options: FONT_SIZE_OPTIONS },
     { key: 'fontSizeSubtitle', label: 'Tamaño de las etiquetas', type: 'select', options: FONT_SIZE_OPTIONS },
@@ -233,6 +235,7 @@ export const SECTION_FIELD_DEFS = {
   ],
   Story: [
     { key: 'title', label: 'Título', type: 'text' },
+    { key: 'subtitle', label: 'Subtítulo (opcional)', type: 'text' },
     { key: 'body', label: 'Introducción', type: 'textarea' },
     {
       key: 'milestones',
@@ -250,6 +253,7 @@ export const SECTION_FIELD_DEFS = {
   ],
   Gallery: [
     { key: 'title', label: 'Título', type: 'text' },
+    { key: 'subtitle', label: 'Subtítulo (opcional)', type: 'text' },
     { key: 'images', label: 'Fotos (sin límite)', type: 'imageList' },
     { key: 'layout', label: 'Diseño', type: 'select', options: GALLERY_LAYOUT_OPTIONS },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
@@ -291,6 +295,7 @@ export const SECTION_FIELD_DEFS = {
   ],
   RSVP: [
     { key: 'title', label: 'Título', type: 'text' },
+    { key: 'subtitle', label: 'Subtítulo (opcional)', type: 'text' },
     { key: 'buttonTextWhatsapp', label: 'Texto del botón (si confirman por WhatsApp)', type: 'text' },
     { key: 'buttonTextForm', label: 'Texto del botón (si confirman por formulario propio)', type: 'text' },
     { key: 'priceButtonText', label: 'Texto del link "Ver valor de la tarjeta" (opcional)', type: 'text' },
@@ -331,6 +336,7 @@ export const SECTION_FIELD_DEFS = {
   ],
   Info: [
     { key: 'title', label: 'Título de la sección', type: 'text' },
+    { key: 'subtitle', label: 'Subtítulo de la sección (opcional)', type: 'text' },
     {
       key: 'items',
       label: 'Bloques de información',
@@ -351,6 +357,7 @@ export const SECTION_FIELD_DEFS = {
   ],
   MusicPlaylist: [
     { key: 'title', label: 'Título', type: 'text' },
+    { key: 'subtitle', label: 'Subtítulo (opcional)', type: 'text' },
     { key: 'playlistUrl', label: 'Link de playlist (Spotify, YouTube o Apple Music)', type: 'text' },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
   ],
@@ -365,6 +372,7 @@ export const SECTION_FIELD_DEFS = {
   ],
   Timeline: [
     { key: 'title', label: 'Título', type: 'text' },
+    { key: 'subtitle', label: 'Subtítulo (opcional)', type: 'text' },
     {
       key: 'items',
       label: 'Cronograma',

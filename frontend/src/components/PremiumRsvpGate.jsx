@@ -5,6 +5,7 @@ import { X, Search } from 'lucide-react'
 import api from '../services/api'
 import RsvpForm from './RsvpForm'
 import DuoGuestInfoCard from './DuoGuestInfoCard'
+import RsvpStatusCard from './RsvpStatusCard'
 import Button from './ui/Button'
 import { shadeColor } from '../utils/color'
 import useLockBodyScroll from '../hooks/useLockBodyScroll'
@@ -70,6 +71,22 @@ function PremiumRsvpGate({ event, primaryColor = '#a855f7', dietaryOptions, extr
         />
       )
     }
+    // Si ya respondió (confirmado o declinado), no lo mandamos de nuevo al
+    // formulario -- eso lo dejaría reescribir su RSVP cada vez que entra a
+    // su link. En cambio ve una pantalla fija con lo que ya quedó
+    // registrado.
+    if (guest.status && guest.status !== 'pendiente') {
+      return (
+        <RsvpStatusCard
+          guestName={guest.name}
+          status={guest.status}
+          companionNames={guest.companionNames}
+          primaryColor={primaryColor}
+          onClose={onClose}
+        />
+      )
+    }
+
     return (
       <RsvpForm
         eventSlug={event.eventSlug}
@@ -80,6 +97,7 @@ function PremiumRsvpGate({ event, primaryColor = '#a855f7', dietaryOptions, extr
         guestId={guest._id}
         lockedName={guest.name}
         maxCompanions={guest.maxCompanionsAllowed}
+        initialCompanionNames={guest.companionNames}
       />
     )
   }
