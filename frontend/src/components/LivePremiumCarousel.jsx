@@ -3,12 +3,15 @@ import { AnimatePresence, motion } from 'motion/react'
 import { cloudinaryThumb } from '../utils/cloudinary'
 import { identityColor } from '../utils/identityColor'
 
-// Reemplaza al carrusel 3D (giraba en un anillo con rotateY) -- sin
-// perspectiva ni rotación: la foto activa al centro, grande y nítida, con
-// dos "compañeras" achicadas y atenuadas a los costados dando sensación de
-// profundidad -- como una pila de fotos, no una rueda. Evita de raíz el bug
-// del 3D (una cara sin backface-visibility se ve reflejada al girar hacia
-// atrás), porque acá ninguna tarjeta gira: solo entran/salen con fade.
+// Reemplaza al carrusel 3D (giraba en un anillo con rotateY, y sin
+// backface-visibility se veía la foto reflejada al girar hacia atrás -- bug
+// real, no solo estético). Acá cada foto es el MISMO elemento animado
+// (key=photo._id) en las cuatro posiciones -- entra chica y atenuada del
+// lado derecho, se va agrandando y enfocando a medida que avanza, queda
+// grande y nítida al centro, y sale atenuándose por la izquierda. Como es
+// la misma instancia la que cambia de posición (no una tarjeta fija que
+// cambia de contenido), Framer Motion anima el desplazamiento solo -- se ve
+// la foto "viniendo" de verdad, no un blur estático estilo antes.
 function SlotCaption({ photo }) {
   if (!photo.comment && !photo.guestName) return null
   const color = photo.guestName ? identityColor(photo.guestName) : null
@@ -25,9 +28,29 @@ function SlotCaption({ photo }) {
   )
 }
 
-function PhotoCard({ photo }) {
+// offset relativo a la foto activa: -1 saliendo por la izquierda, 0 al
+// centro (grande y nítida), 1 y 2 llegando por la derecha (cada vez más
+// chicas, atenuadas y desenfocadas cuanto más lejos del centro).
+const OFFSET_STYLE = {
+  '-1': { x: '-90%', scale: 0.55, opacity: 0, blur: 4 },
+  0: { x: '0%', scale: 1, opacity: 1, blur: 0 },
+  1: { x: '48%', scale: 0.68, opacity: 0.55, blur: 2 },
+  2: { x: '92%', scale: 0.52, opacity: 0.2, blur: 5 },
+}
+
+function Slot({ offset, photo }) {
+  const style = OFFSET_STYLE[offset]
+  const isCenter = offset === 0
+
   return (
-    <>
+    <motion.div
+      className="absolute w-52 h-72 sm:w-64 sm:h-80 rounded-2xl overflow-hidden border border-white/15 shadow-2xl bg-neutral-900"
+      style={{ zIndex: 10 - Math.abs(offset) }}
+      initial={{ x: '100%', scale: 0.5, opacity: 0, filter: 'blur(6px)' }}
+      animate={{ x: style.x, scale: style.scale, opacity: style.opacity, filter: `blur(${style.blur}px)` }}
+      exit={{ x: '-100%', scale: 0.5, opacity: 0, filter: 'blur(6px)' }}
+      transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+    >
       {photo.assetType === 'video' ? (
         <video
           src={cloudinaryThumb(photo.cloudinaryUrl, 500)}
@@ -40,42 +63,7 @@ function PhotoCard({ photo }) {
       ) : (
         <img src={cloudinaryThumb(photo.cloudinaryUrl, 500)} alt="" className="w-full h-full object-cover" />
       )}
-      <SlotCaption photo={photo} />
-    </>
-  )
-}
-
-// side: 'left' | 'center' | 'right' -- define tamaño, opacidad y desplazamiento
-// de cada tarjeta, siempre plana (sin rotar), solo con fade+scale al entrar.
-const SIDE_STYLES = {
-  left: { x: '-72%', scale: 0.72, opacity: 0.4, blur: 2, z: 1 },
-  center: { x: '0%', scale: 1, opacity: 1, blur: 0, z: 2 },
-  right: { x: '72%', scale: 0.72, opacity: 0.4, blur: 2, z: 1 },
-}
-
-function Slot({ side, photo }) {
-  const { x, scale, opacity, blur, z } = SIDE_STYLES[side]
-  return (
-    <motion.div
-      className="absolute w-52 h-72 sm:w-64 sm:h-80 rounded-2xl overflow-hidden border border-white/15 shadow-2xl bg-neutral-900"
-      style={{ zIndex: z, filter: blur ? `blur(${blur}px)` : undefined }}
-      animate={{ x, scale, opacity }}
-      transition={{ duration: 0.6, ease: 'easeInOut' }}
-    >
-      <AnimatePresence mode="wait">
-        {photo && (
-          <motion.div
-            key={photo._id}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="absolute inset-0"
-          >
-            <PhotoCard photo={photo} />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {isCenter && <SlotCaption photo={photo} />}
     </motion.div>
   )
 }
@@ -85,22 +73,33 @@ function LivePremiumCarousel({ photos, intervalMs = 4000 }) {
 
   useEffect(() => {
     if (photos.length < 2) return undefined
-    const interval = setInterval(() => setIndex((prev) => (prev + 1) % photos.length), intervalMs)
+    const interval = setInterval(() => setIndex((prev) => prev + 1), intervalMs)
     return () => clearInterval(interval)
   }, [photos.length, intervalMs])
 
   if (photos.length === 0) return null
 
   const len = photos.length
-  const left = len > 2 ? photos[(index - 1 + len) % len] : null
-  const center = photos[index % len]
-  const right = len > 1 ? photos[(index + 1) % len] : null
+  // Ventana de 4 posiciones (-1, 0, 1, 2) -- con pocas fotos en el evento
+  // dos offsets distintos pueden caer en la misma foto (ej. con 2 fotos en
+  // total), así que se descarta cualquier offset que repita un índice ya
+  // usado, en vez de duplicar la key y romper la animación.
+  const seenIndexes = new Set()
+  const visible = []
+  for (const offset of [-1, 0, 1, 2]) {
+    const photoIndex = ((index + offset) % len + len) % len
+    if (seenIndexes.has(photoIndex)) continue
+    seenIndexes.add(photoIndex)
+    visible.push({ offset, photo: photos[photoIndex] })
+  }
 
   return (
-    <div className="relative w-full h-[62vh] max-h-[520px] flex items-center justify-center">
-      {left && <Slot side="left" photo={left} />}
-      <Slot side="center" photo={center} />
-      {right && <Slot side="right" photo={right} />}
+    <div className="relative w-full h-[62vh] max-h-[520px] flex items-center justify-center overflow-hidden">
+      <AnimatePresence initial={false}>
+        {visible.map(({ offset, photo }) => (
+          <Slot key={photo._id} offset={offset} photo={photo} />
+        ))}
+      </AnimatePresence>
     </div>
   )
 }
