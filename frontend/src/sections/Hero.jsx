@@ -3,11 +3,17 @@ import { Sparkles } from 'lucide-react'
 import usePremiumGuest from '../hooks/usePremiumGuest'
 
 function Hero({ event, config, appearance, styles }) {
+  const kicker = config.kicker || 'Te invitamos a celebrar'
   const title = config.title || event.eventName
   const subtitle = config.subtitle || ''
   const titleSize = config.fontSizeTitle || 'text-4xl'
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const premiumGuest = usePremiumGuest(event)
+  // {nombre} en el template se reemplaza por el nombre real del invitado VIP.
+  const vipGreeting = (config.vipGreeting || '¡Hola, {nombre}! Están cordialmente invitados').replace(
+    '{nombre}',
+    premiumGuest?.name || ''
+  )
 
   return (
     <section className={`min-h-[70vh] flex flex-col items-center justify-center text-center px-6 ${styles.fontClass}`}>
@@ -29,12 +35,14 @@ function Hero({ event, config, appearance, styles }) {
             }}
           >
             <Sparkles className="w-3.5 h-3.5" />
-            ¡Hola, {premiumGuest.name}! Están cordialmente invitados
+            {vipGreeting}
           </motion.p>
         )}
-        <p className="uppercase tracking-[0.3em] text-xs mb-4" style={{ color: appearance.primaryColor }}>
-          Te invitamos a celebrar
-        </p>
+        {kicker && (
+          <p className="uppercase tracking-[0.3em] text-xs mb-4" style={{ color: appearance.primaryColor }}>
+            {kicker}
+          </p>
+        )}
         <h1
           className={`${titleSize} md:text-5xl mb-3 ${styles.heading}`}
           style={{ color: config.textColor || undefined }}

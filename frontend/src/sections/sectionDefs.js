@@ -142,6 +142,12 @@ export const SECTIONS_WITH_GLASS_CARD = [
 
 export const SECTION_FIELD_DEFS = {
   Hero: [
+    { key: 'kicker', label: 'Frase chica arriba del título (ej. "Te invitamos a celebrar")', type: 'text' },
+    {
+      key: 'vipGreeting',
+      label: 'Saludo VIP para invitados con link personalizado (usá {nombre} donde va su nombre)',
+      type: 'text',
+    },
     { key: 'title', label: 'Título', type: 'text' },
     { key: 'subtitle', label: 'Subtítulo', type: 'text' },
     { key: 'dedication', label: 'Dedicatoria o lema (opcional)', type: 'text' },
@@ -215,6 +221,7 @@ export const SECTION_FIELD_DEFS = {
   ],
   Location: [
     { key: 'title', label: 'Título de la sección', type: 'text' },
+    { key: 'mapsButtonText', label: 'Texto del botón del mapa', type: 'text' },
     {
       key: 'locations',
       label: 'Locaciones',
@@ -232,6 +239,9 @@ export const SECTION_FIELD_DEFS = {
   ],
   RSVP: [
     { key: 'title', label: 'Título', type: 'text' },
+    { key: 'buttonTextWhatsapp', label: 'Texto del botón (si confirman por WhatsApp)', type: 'text' },
+    { key: 'buttonTextForm', label: 'Texto del botón (si confirman por formulario propio)', type: 'text' },
+    { key: 'priceButtonText', label: 'Texto del link "Ver valor de la tarjeta" (opcional)', type: 'text' },
     {
       key: 'dietaryOptions',
       label: 'Opciones de restricciones alimentarias (una por línea, ej. "Vegetariano")',

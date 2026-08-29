@@ -216,7 +216,12 @@ function EventEditor() {
       <GlassPanel
         as="aside"
         accentColor={BRAND.blue}
-        className="w-full lg:w-96 shrink-0 p-6 space-y-8 overflow-y-auto lg:max-h-[calc(100vh-2rem)]"
+        // order-2 en pantallas angostas (celular/tablet/laptop chica, donde
+        // el layout se apila en vez de ir lado a lado) -- sin esto, este
+        // panel largo (7+ secciones) quedaba primero y la vista previa
+        // recién aparecía después de scrollear todo, dando la sensación de
+        // que un cambio (ej. subir una imagen de fondo) "no se mostraba".
+        className="w-full lg:w-96 shrink-0 order-2 lg:order-1 p-6 space-y-8 overflow-y-auto lg:max-h-[calc(100vh-2rem)]"
       >
         <div className="flex items-center justify-between">
           <Link to={`/dashboard/${eventId}`} className="text-white/40 text-xs uppercase tracking-widest hover:text-white transition">
@@ -319,7 +324,7 @@ function EventEditor() {
         {saveState === 'error' && <p className="text-red-400 text-sm text-center">No se pudo guardar</p>}
       </GlassPanel>
 
-      <main className="flex-1 rounded-3xl border border-white/10 overflow-y-auto relative lg:max-h-[calc(100vh-2rem)] shadow-2xl">
+      <main className="flex-1 rounded-3xl border border-white/10 overflow-y-auto relative order-1 lg:order-2 lg:max-h-[calc(100vh-2rem)] shadow-2xl">
         <div className={`min-h-full relative ${previewStyles.fontClass}`}>
           {appearance.useGlobalBackground ? (
             <GlobalBackground appearance={appearance} fixed={false} />

@@ -74,7 +74,7 @@ function Location({ config, appearance, styles }) {
                     primaryColor={primaryColor}
                     className="mt-2 px-5 py-2 text-sm"
                   >
-                    Ver en Google Maps
+                    {config.mapsButtonText || 'Ver en Google Maps'}
                   </Button>
                 )
               )}

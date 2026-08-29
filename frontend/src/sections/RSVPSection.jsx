@@ -66,7 +66,7 @@ function RSVPSection({ event, config, appearance, styles }) {
 
         <Button type="button" onClick={() => setIsOpen(true)} primaryColor={accentColor}>
           {isWhatsapp && <WhatsappIcon className="w-4 h-4" />}
-          {isWhatsapp ? 'Confirmar por WhatsApp' : 'Confirmar asistencia'}
+          {isWhatsapp ? config.buttonTextWhatsapp || 'Confirmar por WhatsApp' : config.buttonTextForm || 'Confirmar asistencia'}
         </Button>
 
         {guestCardEnabled && (
@@ -76,7 +76,7 @@ function RSVPSection({ event, config, appearance, styles }) {
             className="flex items-center gap-1.5 text-xs text-white/50 hover:text-white transition"
           >
             <CreditCard className="w-3.5 h-3.5" />
-            Ver valor de la tarjeta
+            {config.priceButtonText || 'Ver valor de la tarjeta'}
           </button>
         )}
       </motion.div>
