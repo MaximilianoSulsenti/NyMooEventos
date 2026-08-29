@@ -150,6 +150,11 @@ const eventSchema = new mongoose.Schema(
       bgOpacity: { type: Number, default: 100, min: 0, max: 100 },
       titleText: { type: String, default: '' },
       subtitleText: { type: String, default: '' },
+      // Mensaje que asoma por detrás del sobre para invitados SIN link VIP
+      // -- el invitado VIP (?guest=<passcode>, Nymoo VIVE) usa en cambio el
+      // saludo ya armado en Hero.config.vipGreeting (ver sectionDefs.js),
+      // no este campo.
+      welcomeMessage: { type: String, default: '' },
       buttonText: { type: String, default: 'Abrir invitación' },
       fontFamily: { type: String, default: 'sans' },
       fontSizeTitle: { type: String, default: 'text-base' },

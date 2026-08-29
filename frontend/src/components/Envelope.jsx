@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'motion/react'
 import { cn } from '../utils/cn'
-import { shadeColor } from '../utils/color'
+import { shadeColor, getContrastTextColor } from '../utils/color'
 import { FONT_FAMILY_CLASSES } from '../sections/theming'
 import Button from './ui/Button'
 
@@ -39,13 +39,19 @@ const FLAP_CLIP_PATH = 'polygon(0 0, 100% 0, 100% 74%, 50% 100%, 0 74%)'
 // solapa) -- ahí es donde se apoyan las costuras y el sello de cera.
 const FLAP_TIP_Y = FLAP_HEIGHT_PERCENT
 
-function Envelope({ settings, appearance, guestName, onOpen }) {
+function Envelope({ settings, appearance, guestName, welcomeMessage, onOpen }) {
   const [opening, setOpening] = useState(false)
   const fontClass = FONT_FAMILY_CLASSES[settings.fontFamily] || 'font-sans'
   const bgColor = settings.bgColor || '#0a0a0a'
   const flapFrontShade = shadeColor(bgColor, 18)
   const flapBackShade = shadeColor(bgColor, -35)
   const backdrop = shadeColor(bgColor, -25)
+  // Antes el texto de la solapa era blanco fijo -- andaba bien mientras el
+  // sobre era casi siempre oscuro, pero con el color de fondo editable (un
+  // sobre blanco, como el de la referencia) el texto quedaba invisible.
+  // Ahora el color por defecto se calcula según el contraste real contra
+  // bgColor, y solo se usa si nadie eligió un color de texto a mano.
+  const autoTextColor = getContrastTextColor(bgColor)
 
   function handleOpen() {
     setOpening(true)
@@ -60,28 +66,61 @@ function Envelope({ settings, appearance, guestName, onOpen }) {
       animate={{ opacity: opening ? 0 : 1 }}
       transition={{ duration: 0.5, delay: opening ? 0.7 : 0 }}
     >
-      {/* La tarjeta tiene proporciones fijas (no el viewport crudo), así el
-          efecto se ve simétrico en cualquier celular. Proporción apaisada
-          (más ancha que alta, aspect-[3/2]) para que se sienta como un
-          sobre de verdad apoyado sobre una superficie, no como una tarjeta
-          vertical -- referencia: foto de sobre de papel envejecido con
-          sello de lacre. perspective acá arriba es lo que le da profundidad
-          real al giro de la solapa de abajo. */}
-      <motion.div
-        className="relative w-full max-w-md aspect-[3/2] max-h-[85vh] rounded-lg shadow-2xl"
-        style={{ perspective: 1400 }}
-        initial={false}
-        animate={{ scale: opening ? 0.96 : 1 }}
-        transition={{ duration: 0.45, delay: opening ? 0.7 : 0 }}
-      >
-        {/* Cuerpo del sobre: fondo (color/imagen/video) + las costuras +
-            el botón, solo y centrado en el bolsillo debajo de la solapa. */}
-        <div
-          className="absolute inset-0 rounded-lg overflow-hidden border border-white/10"
-          style={{ backgroundColor: bgColor }}
+      {/* Wrapper compartido por el mensaje que asoma y el sobre en sí, para
+          poder ubicar el mensaje EN RELACIÓN al sobre (asomando por detrás
+          de la punta superior) sin que "fixed inset-0" (el fondo de toda la
+          pantalla) se meta en el medio de esa cuenta. */}
+      <div className="relative w-full max-w-md">
+        {/* Mensaje que asoma detrás del sobre, como una carta a medio sacar
+            -- z-0 (detrás del sobre, que va con z-10 más abajo) y con la
+            mitad de abajo tapada por el sobre a propósito, para que se lea
+            "adentro" y no como un cartel aparte flotando arriba. */}
+        {welcomeMessage && (
+          <motion.div
+            className="absolute inset-x-6 sm:inset-x-10 z-0 rounded-md shadow-xl px-5 py-5"
+            // bottom:100% + marginBottom negativo -- así el mensaje queda
+            // apoyado justo arriba del sobre y se mete un poco (28px) por
+            // detrás de su borde superior (donde lo tapa, por el z-index más
+            // alto del sobre), sea cual sea el largo del texto. Con un
+            // "bottom" en % puro, un mensaje largo empujaba todo tan arriba
+            // que se cortaba contra el borde de la pantalla.
+            style={{ bottom: '100%', marginBottom: '-28px', background: '#fdfbf6', color: '#2a2620' }}
+            initial={false}
+            animate={{ opacity: opening ? 0 : 1, y: opening ? -12 : 0 }}
+            transition={{ duration: 0.4, delay: opening ? 0 : 0.35 }}
+          >
+            <p className={cn('text-sm sm:text-base text-center leading-snug', fontClass)}>{welcomeMessage}</p>
+          </motion.div>
+        )}
+
+        {/* La tarjeta tiene proporciones fijas (no el viewport crudo), así el
+            efecto se ve simétrico en cualquier celular. Proporción apaisada
+            (más ancha que alta, aspect-[3/2]) para que se sienta como un
+            sobre de verdad apoyado sobre una superficie, no como una tarjeta
+            vertical. perspective acá arriba es lo que le da profundidad
+            real al giro de la solapa de abajo. */}
+        <motion.div
+          className="relative z-10 w-full aspect-[3/2] max-h-[85vh] rounded-lg shadow-2xl"
+          style={{ perspective: 1400 }}
+          initial={false}
+          animate={{ scale: opening ? 0.96 : 1 }}
+          transition={{ duration: 0.45, delay: opening ? 0.7 : 0 }}
         >
-          <EnvelopeBackground settings={settings} />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
+          {/* Cuerpo del sobre: fondo (color/imagen/video) + las costuras +
+              el botón, solo y centrado en el bolsillo debajo de la solapa. */}
+          <div
+            className="absolute inset-0 rounded-lg overflow-hidden border border-white/10"
+            style={{ backgroundColor: bgColor }}
+          >
+            <EnvelopeBackground settings={settings} />
+            {/* Este degradado oscuro solo suma cuando hay una imagen/video de
+                fondo (para que el texto siga siendo legible encima) -- antes
+                se aplicaba siempre, así que un sobre de color plano (blanco,
+                por ejemplo) quedaba oscurecido hacia abajo sin que nadie lo
+                hubiera pedido. */}
+            {settings.bgType !== 'color' && (
+              <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
+            )}
 
           {/* Costuras del bolsillo: las líneas de las solapas laterales que
               se doblan por detrás, como en un sobre de papel real -- se
@@ -143,96 +182,53 @@ function Envelope({ settings, appearance, guestName, onOpen }) {
           </motion.div>
         </div>
 
-        {/* Sello de cera con borde de soga retorcida (referencia: sello de
-            lacre clásico sobre sobre envejecido) -- silueta de cera
-            irregular hecha a mano, aro de "cordón" trenzado sobre el borde
-            (segmentos claro/oscuro alternados, el detalle que más vende que
-            es un sello prensado y no un botón), óvalo grabado al centro con
-            un pequeño patrón de puntos (sin letras) y una grieta fina, como
-            cera envejecida de verdad. Tamaño acotado a propósito para que
-            nunca invada el botón real de abajo (ver pt-12/pt-14 del
-            contenedor del botón). Se "rompe" (achica, gira un poco y se
-            desvanece) apenas se toca ese botón. */}
+        {/* Sello de cera con fleur-de-lis (referencia: sello de lacre
+            clásico, medallón circular prolijo con el motivo grabado al
+            centro) -- cera lisa y brillante (no un blob orgánico), con un
+            aro fino grabado y la fleur-de-lis en relieve, sin ninguna
+            letra. Tamaño acotado a propósito para que nunca invada el botón
+            real de abajo (ver pt-12/pt-14 del contenedor del botón). Se
+            "rompe" (achica, gira un poco y se desvanece) apenas se toca ese
+            botón. */}
         <motion.div
-          className="absolute z-20 w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem] -translate-x-1/2 -translate-y-1/2"
+          className="absolute z-20 w-[4.5rem] h-[4.5rem] sm:w-20 sm:h-20 -translate-x-1/2 -translate-y-1/2"
           style={{ left: '50%', top: `${FLAP_TIP_Y}%`, filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.45))' }}
           animate={opening ? { scale: 0, opacity: 0, rotate: 25 } : { scale: 1, opacity: 1, rotate: 0 }}
           transition={{ duration: 0.35, ease: 'easeIn' }}
         >
           <svg viewBox="0 0 100 100" className="w-full h-full">
             <defs>
-              <radialGradient id="waxBody" cx="34%" cy="26%" r="78%">
-                <stop offset="0%" stopColor={shadeColor(appearance.primaryColor, 30)} />
+              <radialGradient id="waxBody" cx="35%" cy="28%" r="80%">
+                <stop offset="0%" stopColor={shadeColor(appearance.primaryColor, 34)} />
                 <stop offset="45%" stopColor={appearance.primaryColor} />
-                <stop offset="100%" stopColor={shadeColor(appearance.primaryColor, -30)} />
-              </radialGradient>
-              <radialGradient id="waxCenter" cx="50%" cy="42%" r="65%">
-                <stop offset="0%" stopColor={shadeColor(appearance.primaryColor, -6)} />
-                <stop offset="100%" stopColor={shadeColor(appearance.primaryColor, -24)} />
+                <stop offset="100%" stopColor={shadeColor(appearance.primaryColor, -32)} />
               </radialGradient>
             </defs>
 
-            {/* Goterones de cera sobre el borde -- el detalle que más vende
-                que esto se derramó y se prensó a mano. */}
-            <circle cx="12" cy="64" r="5" fill="url(#waxBody)" />
-            <circle cx="88" cy="38" r="4.5" fill="url(#waxBody)" />
-            <circle cx="58" cy="92" r="4" fill="url(#waxBody)" />
+            {/* Pequeños goterones apenas asomando por el borde inferior --
+                el único detalle "derramado", el resto es cera prolija. */}
+            <circle cx="34" cy="86" r="3" fill="url(#waxBody)" />
+            <circle cx="66" cy="87" r="2.6" fill="url(#waxBody)" />
 
-            {/* Cuerpo de cera: silueta orgánica hecha a mano (radio
-                irregular en cada punto, suavizado con curvas), no un
-                círculo ni un blob genérico de CSS. */}
-            <path
-              d="M90.75,60.25 Q85.5,70.5 79.5,80.6 Q73.5,90.7 61.75,91.85 Q50,93 38,92.3 Q26,91.6 19.8,81.3 Q13.6,71 8.8,60.5 Q4,50 7.95,39 Q11.9,28 18.7,17.8 Q25.5,7.6 37.75,8.3 Q50,9 61.75,9.15 Q73.5,9.3 80.35,18.9 Q87.2,28.5 91.6,39.25 Q96,50 90.75,60.25 Z"
-              fill="url(#waxBody)"
-              stroke={shadeColor(appearance.primaryColor, -30)}
-              strokeWidth="0.6"
-              strokeOpacity="0.5"
-            />
+            {/* Cuerpo de cera: medallón circular prolijo, como un sello
+                prensado con matriz de verdad, no un blob orgánico. */}
+            <circle cx="50" cy="50" r="38" fill="url(#waxBody)" stroke={shadeColor(appearance.primaryColor, -32)} strokeWidth="0.6" strokeOpacity="0.5" />
+            {/* Aro grabado, cerca del borde -- el detalle de la matriz del sello. */}
+            <circle cx="50" cy="50" r="32" fill="none" stroke={shadeColor(appearance.primaryColor, -30)} strokeOpacity="0.4" strokeWidth="0.8" />
 
-            {/* Aro de soga retorcida: segmentos alternados claro/oscuro
-                revolviendo el centro, cada uno con su propia inclinación
-                para simular el trenzado del cordón -- así se lee como un
-                sello prensado con matriz de verdad. */}
-            <g>
-              {Array.from({ length: 28 }).map((_, i) => {
-                const angle = (360 / 28) * i
-                return (
-                  <rect
-                    key={i}
-                    x="48.7"
-                    y="9.5"
-                    width="2.6"
-                    height="7.5"
-                    rx="1.3"
-                    fill={i % 2 === 0 ? shadeColor(appearance.primaryColor, 18) : shadeColor(appearance.primaryColor, -26)}
-                    transform={`rotate(${angle} 50 50) rotate(20 50 13.25)`}
-                  />
-                )
-              })}
+            {/* Fleur-de-lis grabada al centro: pétalo central + dos pétalos
+                laterales enroscados + banda + punta inferior. Color dorado
+                fijo (no depende del color del evento) a propósito -- contra
+                un primaryColor claro (pasteles, colores flúo), aclarar la
+                cera de base para el relieve la volvía casi invisible; así
+                se lee siempre, sea cual sea el color elegido. */}
+            <g fill="#f2e0b0" stroke="#4a2410" strokeWidth="0.6" strokeOpacity="0.55">
+              <path d="M50,26 C45,32 43,40 44,48 L44,54 L56,54 L56,48 C57,40 55,32 50,26 Z" />
+              <path d="M45,50 C36,44 26,45 22,53 C20,58 23,62 29,60 C36,58 43,53 47,49 Z" />
+              <path d="M55,50 C64,44 74,45 78,53 C80,58 77,62 71,60 C64,58 57,53 53,49 Z" />
+              <rect x="30" y="52" width="40" height="6" rx="3" />
+              <path d="M45,58 L55,58 L50,68 Z" />
             </g>
-
-            {/* Óvalo central grabado (recesado, un tono más oscuro) con un
-                patrón simétrico de puntos en relieve adentro -- motivo
-                abstracto universal, sin ninguna letra. */}
-            <ellipse cx="50" cy="50" rx="21" ry="17.5" fill="url(#waxCenter)" stroke={shadeColor(appearance.primaryColor, -36)} strokeWidth="0.5" strokeOpacity="0.5" />
-            <g fill={shadeColor(appearance.primaryColor, 22)} fillOpacity="0.85">
-              {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => {
-                const rad = (angle * Math.PI) / 180
-                return <circle key={angle} cx={50 + 7 * Math.cos(rad)} cy={50 + 6 * Math.sin(rad)} r="1.15" />
-              })}
-              <circle cx="50" cy="50" r="1.7" />
-            </g>
-
-            {/* Grieta fina en la cera -- cera envejecida de verdad rara vez
-                queda perfecta. */}
-            <path
-              d="M 30 22 L 34 30 L 31 36 L 35 44"
-              fill="none"
-              stroke={shadeColor(appearance.primaryColor, -40)}
-              strokeWidth="0.5"
-              strokeOpacity="0.4"
-              strokeLinecap="round"
-            />
 
             {/* Brillo: uno chico y bien marcado (el "punto caliente" de la
                 cera pulida) más uno amplio y suave debajo, para que se
@@ -281,16 +277,16 @@ function Envelope({ settings, appearance, guestName, onOpen }) {
           >
             {settings.titleText && (
               <p
-                className={cn(settings.fontSizeTitle || 'text-base', 'text-white/90 tracking-wide leading-snug drop-shadow')}
-                style={settings.textColor ? { color: `${settings.textColor}e6` } : undefined}
+                className={cn(settings.fontSizeTitle || 'text-base', 'tracking-wide leading-snug drop-shadow')}
+                style={{ color: `${settings.textColor || autoTextColor}e6` }}
               >
                 {settings.titleText}
               </p>
             )}
             {settings.subtitleText && (
               <p
-                className={cn(settings.fontSizeSubtitle || 'text-sm', 'text-white/55 mt-1.5 tracking-wide')}
-                style={settings.textColor ? { color: `${settings.textColor}8c` } : undefined}
+                className={cn(settings.fontSizeSubtitle || 'text-sm', 'mt-1.5 tracking-wide')}
+                style={{ color: `${settings.textColor || autoTextColor}8c` }}
               >
                 {settings.subtitleText}
               </p>
@@ -308,6 +304,7 @@ function Envelope({ settings, appearance, guestName, onOpen }) {
           />
         </motion.div>
       </motion.div>
+      </div>
     </motion.div>
   )
 }

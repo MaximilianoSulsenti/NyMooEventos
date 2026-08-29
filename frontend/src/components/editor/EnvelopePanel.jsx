@@ -71,6 +71,20 @@ function EnvelopePanel({ eventId, settings, onChange }) {
           </div>
 
           <div>
+            <label className="block text-sm text-neutral-400 mb-1">Mensaje que asoma detrás del sobre (opcional)</label>
+            <textarea
+              value={settings.welcomeMessage || ''}
+              onChange={(e) => update({ welcomeMessage: e.target.value })}
+              rows={2}
+              placeholder="Ej: ¡Nos encantaría que nos acompañes!"
+              className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+            />
+            <p className="text-xs text-neutral-500 mt-1">
+              Para invitados con link personalizado (VIP) se usa el saludo que armaste en la sección Portada, no este mensaje.
+            </p>
+          </div>
+
+          <div>
             <label className="block text-sm text-neutral-400 mb-1">Texto del botón</label>
             <input
               type="text"

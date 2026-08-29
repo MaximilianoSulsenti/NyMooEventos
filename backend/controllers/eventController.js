@@ -185,6 +185,7 @@ async function updateEnvelopeSettings(req, res) {
     bgOpacity,
     titleText,
     subtitleText,
+    welcomeMessage,
     buttonText,
     fontFamily,
     fontSizeTitle,
@@ -199,6 +200,7 @@ async function updateEnvelopeSettings(req, res) {
   if (bgOpacity !== undefined) event.envelopeSettings.bgOpacity = bgOpacity;
   if (titleText !== undefined) event.envelopeSettings.titleText = titleText;
   if (subtitleText !== undefined) event.envelopeSettings.subtitleText = subtitleText;
+  if (welcomeMessage !== undefined) event.envelopeSettings.welcomeMessage = welcomeMessage;
   if (buttonText !== undefined) event.envelopeSettings.buttonText = buttonText;
   if (fontFamily !== undefined) event.envelopeSettings.fontFamily = fontFamily;
   if (fontSizeTitle !== undefined) event.envelopeSettings.fontSizeTitle = fontSizeTitle;
