@@ -329,7 +329,7 @@ function EventEditor() {
           {appearance.useGlobalBackground ? (
             <GlobalBackground appearance={appearance} fixed={false} />
           ) : (
-            <div className="absolute inset-0 -z-10" style={{ backgroundColor: appearance.backgroundColor }} />
+            <div className="absolute inset-0" style={{ backgroundColor: appearance.backgroundColor }} />
           )}
           <SectionRenderer event={previewEvent} />
         </div>
