@@ -66,25 +66,24 @@ function Envelope({ settings, appearance, guestName, welcomeMessage, onOpen }) {
       animate={{ opacity: opening ? 0 : 1 }}
       transition={{ duration: 0.5, delay: opening ? 0.7 : 0 }}
     >
-      {/* Wrapper compartido por el mensaje que asoma y el sobre en sí, para
-          poder ubicar el mensaje EN RELACIÓN al sobre (asomando por detrás
-          de la punta superior) sin que "fixed inset-0" (el fondo de toda la
-          pantalla) se meta en el medio de esa cuenta. */}
-      <div className="relative w-full max-w-md">
+      {/* Wrapper compartido por el mensaje que asoma y el sobre en sí --
+          flex column en flujo normal (no absolute) a propósito: así el
+          "items-center" de más arriba centra el GRUPO entero (mensaje +
+          sobre) contando su altura real. Con el mensaje en absolute (como
+          estaba antes) el centrado solo tenía en cuenta el sobre, y un
+          mensaje largo (o una pantalla baja) lo empujaba tan arriba que se
+          cortaba contra el borde de la pantalla. */}
+      <div className="flex flex-col items-center w-full max-w-md">
         {/* Mensaje que asoma detrás del sobre, como una carta a medio sacar
-            -- z-0 (detrás del sobre, que va con z-10 más abajo) y con la
-            mitad de abajo tapada por el sobre a propósito, para que se lea
-            "adentro" y no como un cartel aparte flotando arriba. */}
+            -- el margen negativo (-mb-3, 12px) lo mete por detrás del borde
+            superior del sobre (que lo tapa, por su z-index más alto), pero
+            siempre MENOS que el padding vertical de la tarjeta (py-5, 20px)
+            a propósito: así lo que se tapa es aire/padding, nunca el texto
+            en sí, sea cual sea el largo del mensaje. */}
         {welcomeMessage && (
           <motion.div
-            className="absolute inset-x-6 sm:inset-x-10 z-0 rounded-md shadow-xl px-5 py-5"
-            // bottom:100% + marginBottom negativo -- así el mensaje queda
-            // apoyado justo arriba del sobre y se mete un poco (28px) por
-            // detrás de su borde superior (donde lo tapa, por el z-index más
-            // alto del sobre), sea cual sea el largo del texto. Con un
-            // "bottom" en % puro, un mensaje largo empujaba todo tan arriba
-            // que se cortaba contra el borde de la pantalla.
-            style={{ bottom: '100%', marginBottom: '-28px', background: '#fdfbf6', color: '#2a2620' }}
+            className="relative z-0 w-[88%] sm:w-[85%] -mb-3 rounded-md shadow-xl px-5 py-5"
+            style={{ background: '#fdfbf6', color: '#2a2620' }}
             initial={false}
             animate={{ opacity: opening ? 0 : 1, y: opening ? -12 : 0 }}
             transition={{ duration: 0.4, delay: opening ? 0 : 0.35 }}
@@ -313,8 +312,8 @@ function Envelope({ settings, appearance, guestName, welcomeMessage, onOpen }) {
             )}
             {settings.subtitleText && (
               <p
-                className={cn(settings.fontSizeSubtitle || 'text-sm', 'mt-1.5 tracking-wide')}
-                style={{ color: `${settings.textColor || autoTextColor}8c` }}
+                className={cn(settings.fontSizeSubtitle || 'text-sm', 'mt-1.5 tracking-wide drop-shadow')}
+                style={{ color: `${settings.textColor || autoTextColor}d9` }}
               >
                 {settings.subtitleText}
               </p>
