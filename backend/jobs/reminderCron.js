@@ -63,10 +63,14 @@ async function runReminderSweep() {
 }
 
 function startReminderCron() {
-  cron.schedule('0 * * * *', () => {
+  // Antes corría en punto cada hora -- una tarea programada para "dentro de
+  // unos minutos" podía tardar hasta 59 minutos en salir, porque el barrido
+  // anterior ya había pasado. Cada 10 minutos sigue siendo un chequeo
+  // liviano (una sola consulta a Mongo) pero baja esa espera máxima a 10.
+  cron.schedule('*/10 * * * *', () => {
     runReminderSweep().catch((err) => console.error('[ReminderCron] Error en el barrido de recordatorios:', err.message));
   });
-  console.log('[ReminderCron] Programado para correr cada hora en punto.');
+  console.log('[ReminderCron] Programado para correr cada 10 minutos.');
 }
 
 module.exports = { startReminderCron, runReminderSweep };
