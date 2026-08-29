@@ -187,6 +187,12 @@ export const SECTION_FIELD_DEFS = {
     { key: 'subtitle', label: 'Subtítulo de la sección (opcional)', type: 'text' },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
     { key: 'fontSizeSubtitle', label: 'Tamaño del subtítulo', type: 'select', options: FONT_SIZE_OPTIONS },
+    {
+      key: 'hideDate',
+      label: '¿Ocultar la fecha y hora grande de arriba? (útil si ya la mostrás en la Portada)',
+      type: 'select',
+      options: YES_NO_OPTIONS,
+    },
     { key: 'description', label: 'Descripción', type: 'textarea' },
     {
       key: 'details',

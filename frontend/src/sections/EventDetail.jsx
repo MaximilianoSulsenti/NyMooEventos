@@ -159,33 +159,47 @@ function EventDetail({ event, config, appearance, styles }) {
         >
           <div className="absolute top-0 inset-x-0 h-[2px]" style={{ background: appearance.primaryColor }} />
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-5 sm:gap-8 px-8 py-7">
-            <div className="flex flex-col items-center shrink-0">
-              <span className="text-[11px] uppercase tracking-[0.2em] text-white/50">{weekday}</span>
-              <span className="text-5xl font-bold leading-none my-1" style={{ color: appearance.primaryColor }}>
-                {day}
-              </span>
-              <span className="text-sm uppercase tracking-widest text-white/70">{month}</span>
-            </div>
+          {/* Fecha/hora grande, ocultable a propósito (config.hideDate) --
+              para cuando ya se muestra en la Portada (ver Hero.jsx) y acá
+              sobra. La descripción queda SIEMPRE independiente de esto (se
+              podía perder si se ocultaba el bloque entero, ya que antes
+              vivía adentro de esta misma fila). */}
+          {!config.hideDate && (
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-5 sm:gap-8 px-8 pt-7">
+              <div className="flex flex-col items-center shrink-0">
+                <span className="text-[11px] uppercase tracking-[0.2em] text-white/50">{weekday}</span>
+                <span className="text-5xl font-bold leading-none my-1" style={{ color: appearance.primaryColor }}>
+                  {day}
+                </span>
+                <span className="text-sm uppercase tracking-widest text-white/70">{month}</span>
+              </div>
 
-            <div className="hidden sm:block w-px self-stretch bg-white/10" />
-            <div className="sm:hidden w-12 h-px bg-white/10" />
+              <div className="hidden sm:block w-px self-stretch bg-white/10" />
+              <div className="sm:hidden w-12 h-px bg-white/10" />
 
-            <div className="flex flex-col items-center sm:items-start text-center sm:text-left gap-1">
               <p className="text-white/90 font-medium flex items-center gap-2">
                 <Clock className="w-4 h-4 shrink-0" style={{ color: appearance.primaryColor }} />
                 {formattedTime} hs
               </p>
-              {config.description && (
-                <p className={`mt-1 max-w-sm ${bodySize}`} style={{ color: secondaryTextColor(config.textColor, '99') }}>
-                  {config.description}
-                </p>
-              )}
             </div>
-          </div>
+          )}
+
+          {config.description && (
+            <p
+              className={cn('px-8 text-center', config.hideDate ? 'pt-7' : 'pt-4', bodySize)}
+              style={{ color: secondaryTextColor(config.textColor, '99') }}
+            >
+              {config.description}
+            </p>
+          )}
 
           {details.length > 0 && (
-            <div className="w-full border-t border-white/10 px-6 sm:px-8 py-5 grid sm:grid-cols-2 gap-x-6 gap-y-4 text-left">
+            <div
+              className={cn(
+                'w-full px-6 sm:px-8 py-5 grid sm:grid-cols-2 gap-x-6 gap-y-4 text-left',
+                (!config.hideDate || config.description) && 'border-t border-white/10 mt-5'
+              )}
+            >
               {details.map((detail, index) => {
                 const Icon = resolveIcon(detail.icon, detail.label)
                 return (
