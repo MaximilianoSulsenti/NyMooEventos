@@ -82,8 +82,8 @@ const Carousel = memo(({ handleClick, controls, cards, isCarouselActive, onDragS
         {/* Este carrusel solo se usa para la galería estática de los
             novios (ver sections/Gallery.jsx) -- `images` es un array fijo
             que se carga una sola vez, no un feed en vivo que va agregando
-            fotos (ese caso lo resuelve LiveCarousel3D.jsx, un componente
-            aparte). Por eso acá el ángulo/radio va directo en `style`,
+            fotos (ese caso lo resuelve components/LivePremiumCarousel.jsx,
+            un componente aparte, sin rotación 3D). Por eso acá el ángulo/radio va directo en `style`,
             como en el componente original de Cult-UI: fijar la posición
             con `animate`+`transition` fue un ajuste pensado para el feed
             en vivo que terminó aplicado por error a este archivo, y le

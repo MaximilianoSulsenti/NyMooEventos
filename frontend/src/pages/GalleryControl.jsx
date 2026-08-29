@@ -462,7 +462,7 @@ function GalleryControl() {
                 >
                   <option value="grid">Cuadrícula (varias fotos)</option>
                   <option value="single">Foto única, más rápido</option>
-                  <option value="carousel3d">Carrusel 3D (efecto premium)</option>
+                  <option value="carousel3d">Carrusel (efecto premium)</option>
                 </select>
               </div>
 

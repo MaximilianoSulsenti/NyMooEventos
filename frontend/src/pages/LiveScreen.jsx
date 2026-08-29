@@ -10,7 +10,7 @@ import TypewriterText from '../components/TypewriterText'
 import Confetti from '../components/Confetti'
 import LightBeams from '../components/LightBeams'
 import EmojiRain from '../components/EmojiRain'
-import LiveCarousel3D from '../components/LiveCarousel3D'
+import LivePremiumCarousel from '../components/LivePremiumCarousel'
 import { cloudinaryThumb, cloudinaryLarge } from '../utils/cloudinary'
 import { identityColor } from '../utils/identityColor'
 
@@ -299,25 +299,27 @@ function LiveScreen() {
   }, [eventSlug])
 
   const isGrid = party.enabled && party.layout === 'grid'
-  const isCarousel3D = party.enabled && party.layout === 'carousel3d'
+  // El valor guardado sigue siendo "carousel3d" a propósito (no hace falta
+  // migrar nada en la base) aunque ya no gira en 3D -- ver LivePremiumCarousel.
+  const isPremiumCarousel = party.enabled && party.layout === 'carousel3d'
   const visibleCount = isGrid ? 6 : 1
   const intervalMs = (speedSeconds ?? (party.enabled ? 3 : 7)) * 1000
   const animationClass = party.enabled ? 'photo-enter-party' : 'photo-enter-elegant'
 
   useEffect(() => {
-    // El carrusel 3D gira solo (rotación propia en LiveCarousel3D) -- no
-    // necesita este cursor de "foto actual" que usan grilla y foto única.
-    if (photos.length === 0 || isPaused || isCarousel3D) return undefined
+    // El carrusel premium gira solo (timer propio en LivePremiumCarousel) --
+    // no necesita este cursor de "foto actual" que usan grilla y foto única.
+    if (photos.length === 0 || isPaused || isPremiumCarousel) return undefined
     const interval = setInterval(() => {
       setCursor((prev) => prev + visibleCount)
     }, intervalMs)
     return () => clearInterval(interval)
-  }, [photos.length, visibleCount, intervalMs, isPaused, isCarousel3D])
+  }, [photos.length, visibleCount, intervalMs, isPaused, isPremiumCarousel])
 
   // Modo elegante (foto única): cada vez que cambia la foto en pantalla, si
   // tiene comentario se agrega al feed tipo chat. En modo grilla y carrusel
-  // 3D no se usa (no hay un cursor de "foto actual" que avance solo).
-  const currentSinglePhoto = !isGrid && !isCarousel3D && photos.length > 0 ? photos[cursor % photos.length] : null
+  // premium no se usa (no hay un cursor de "foto actual" que avance solo).
+  const currentSinglePhoto = !isGrid && !isPremiumCarousel && photos.length > 0 ? photos[cursor % photos.length] : null
   const currentSingleKey = currentSinglePhoto ? `${currentSinglePhoto._id}-${cursor}` : null
 
   useEffect(() => {
@@ -362,7 +364,7 @@ function LiveScreen() {
       {event && <BrandLogos branding={event.brandingSettings} />}
       {event?.activeModules?.photoCollection && <LiveQrPanel eventSlug={eventSlug} eventName={event.eventName} />}
       <AnimatePresence>{announcement && <AnnouncementBanner announcement={announcement} />}</AnimatePresence>
-      {!isGrid && !isCarousel3D && <LiveCommentFeed items={commentFeed} />}
+      {!isGrid && !isPremiumCarousel && <LiveCommentFeed items={commentFeed} />}
 
       {isGrid ? (
         <div
@@ -411,8 +413,8 @@ function LiveScreen() {
             </div>
           ))}
         </div>
-      ) : isCarousel3D ? (
-        <LiveCarousel3D photos={photos} />
+      ) : isPremiumCarousel ? (
+        <LivePremiumCarousel photos={photos} intervalMs={intervalMs} />
       ) : (
         <PhotoCard key={`${visiblePhotos[0]._id}-${cursor}`} photo={visiblePhotos[0]} animationClass={animationClass} fit="contain" />
       )}
