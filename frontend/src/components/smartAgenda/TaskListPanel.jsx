@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { Check, MessageCircle, Trash2, CheckSquare, X } from 'lucide-react'
+import { Check, MessageCircle, Trash2, CheckSquare, X, Loader2 } from 'lucide-react'
 import { groupTasksByBucket, categoryColor, CATEGORY_META, formatTaskDate } from '../../utils/smartAgenda'
 import { BRAND } from '../../utils/brand'
 
@@ -14,18 +14,30 @@ const BUCKET_ORDER = ['overdue', 'today', 'thisWeek', 'later']
 
 function TaskRow({ task, onToggleStatus, onEdit, onDelete, selectMode, isSelected, onToggleSelect }) {
   const [confirmDelete, setConfirmDelete] = useState(false)
+  // Sin esto, un segundo click mientras el primer borrado todavía está en
+  // vuelo dispara un pedido duplicado -- el que llega después se encuentra
+  // la tarea ya borrada, falla, y como nada lo esperaba ni lo atajaba, el
+  // botón se quedaba "trabado" en rojo sin volver a responder.
+  const [deleting, setDeleting] = useState(false)
   const isDone = task.status === 'Completada'
   const color = categoryColor(task.category)
   const CategoryIcon = CATEGORY_META[task.category]?.Icon
 
-  function handleDeleteClick(e) {
+  async function handleDeleteClick(e) {
     e.stopPropagation()
+    if (deleting) return
     if (!confirmDelete) {
       setConfirmDelete(true)
       setTimeout(() => setConfirmDelete(false), 3000)
       return
     }
-    onDelete(task._id)
+    setDeleting(true)
+    try {
+      await onDelete(task._id)
+    } finally {
+      setDeleting(false)
+      setConfirmDelete(false)
+    }
   }
 
   return (
@@ -107,10 +119,11 @@ function TaskRow({ task, onToggleStatus, onEdit, onDelete, selectMode, isSelecte
           <button
             type="button"
             onClick={handleDeleteClick}
+            disabled={deleting}
             aria-label={`Eliminar ${task.title}`}
-            className={`shrink-0 transition ${confirmDelete ? 'text-red-400' : 'text-white/20 hover:text-red-400'}`}
+            className={`shrink-0 transition disabled:opacity-50 ${confirmDelete ? 'text-red-400' : 'text-white/20 hover:text-red-400'}`}
           >
-            <Trash2 className="w-3.5 h-3.5" />
+            {deleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
           </button>
         </>
       )}
@@ -122,7 +135,7 @@ function TaskRow({ task, onToggleStatus, onEdit, onDelete, selectMode, isSelecte
 // checklist sugerido (ver TemplatePickerModal.jsx) y el cliente después
 // prefiere tareas propias: en vez de entrar tarea por tarea al modal para
 // borrarlas de a una, se seleccionan varias y se sacan juntas.
-function SelectionBar({ selectedCount, totalCount, allSelected, onToggleSelectAll, onCancel, onDelete, confirmDelete }) {
+function SelectionBar({ selectedCount, totalCount, allSelected, onToggleSelectAll, onCancel, onDelete, confirmDelete, deleting }) {
   return (
     <div className="flex items-center justify-between gap-2 mb-3 rounded-xl bg-white/5 border border-white/10 px-3 py-2">
       <div className="flex items-center gap-3">
@@ -150,13 +163,13 @@ function SelectionBar({ selectedCount, totalCount, allSelected, onToggleSelectAl
         <button
           type="button"
           onClick={onDelete}
-          disabled={selectedCount === 0}
+          disabled={selectedCount === 0 || deleting}
           className={`flex items-center gap-1.5 text-xs py-1.5 px-3 rounded-lg transition disabled:opacity-30 ${
             confirmDelete ? 'bg-red-600 text-white' : 'bg-white/5 text-white/60 hover:bg-white/10'
           }`}
         >
-          <Trash2 className="w-3.5 h-3.5" />
-          {confirmDelete ? `¿Eliminar ${selectedCount}?` : 'Eliminar seleccionadas'}
+          {deleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+          {deleting ? 'Eliminando...' : confirmDelete ? `¿Eliminar ${selectedCount}?` : 'Eliminar seleccionadas'}
         </button>
       </div>
     </div>
@@ -167,6 +180,7 @@ function TaskListPanel({ tasks, onToggleStatus, onEdit, onDeleteTasks }) {
   const [selectMode, setSelectMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState(new Set())
   const [confirmBulkDelete, setConfirmBulkDelete] = useState(false)
+  const [bulkDeleting, setBulkDeleting] = useState(false)
 
   function toggleSelect(taskId) {
     setSelectedIds((prev) => {
@@ -190,13 +204,19 @@ function TaskListPanel({ tasks, onToggleStatus, onEdit, onDeleteTasks }) {
   }
 
   async function handleBulkDelete() {
+    if (bulkDeleting) return
     if (!confirmBulkDelete) {
       setConfirmBulkDelete(true)
       setTimeout(() => setConfirmBulkDelete(false), 3000)
       return
     }
-    await onDeleteTasks([...selectedIds])
-    exitSelectMode()
+    setBulkDeleting(true)
+    try {
+      await onDeleteTasks([...selectedIds])
+      exitSelectMode()
+    } finally {
+      setBulkDeleting(false)
+    }
   }
 
   if (tasks.length === 0) {
@@ -220,6 +240,7 @@ function TaskListPanel({ tasks, onToggleStatus, onEdit, onDeleteTasks }) {
           onCancel={exitSelectMode}
           onDelete={handleBulkDelete}
           confirmDelete={confirmBulkDelete}
+          deleting={bulkDeleting}
         />
       ) : (
         <div className="flex justify-end mb-3">

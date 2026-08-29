@@ -139,9 +139,17 @@ function SmartAgenda() {
   // varios (selección múltiple) -- así un checklist cargado de más (ver
   // TemplatePickerModal.jsx) se puede sacar entero en un solo click en vez
   // de entrar tarea por tarea.
+  // allSettled (no all) + reloadTasks en finally -- si una de las tareas ya
+  // se había borrado (doble click, carrera entre dos intentos) esa request
+  // sola falla con 404, pero eso no debe tirar abajo el resto ni dejar a
+  // quien llama esperando una promesa que nunca resuelve: siempre se
+  // resincroniza la lista con el servidor, pase lo que pase.
   async function handleDeleteTasks(taskIds) {
-    await Promise.all(taskIds.map((taskId) => api.delete(`${tasksPath}/${taskId}`, { params: tasksParams })))
-    await reloadTasks()
+    try {
+      await Promise.allSettled(taskIds.map((taskId) => api.delete(`${tasksPath}/${taskId}`, { params: tasksParams })))
+    } finally {
+      await reloadTasks()
+    }
   }
 
   async function handleToggleStatus(task) {
