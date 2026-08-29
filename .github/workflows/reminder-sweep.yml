@@ -1,0 +1,27 @@
+name: Barrido de recordatorios de la Agenda Inteligente
+
+# El plan gratis de Render duerme el backend a los 15 minutos sin tráfico, y
+# el cron interno (node-cron) solo corre mientras el proceso está vivo -- sin
+# esto, un recordatorio programado de noche podía tardar horas en salir.
+# Este workflow despierta al backend y dispara el chequeo cada 10 minutos,
+# sin depender de que el servidor ya esté despierto por otra cosa.
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch: {} # permite dispararlo a mano desde la pestaña Actions
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disparar barrido de recordatorios en el backend
+        run: |
+          status=$(curl -s -o /tmp/sweep_response.json -w "%{http_code}" --max-time 90 -X POST \
+            -H "x-backup-secret: ${{ secrets.BACKUP_SECRET }}" \
+            https://nymoo-backend.onrender.com/api/system/run-reminder-sweep)
+          echo "Respuesta del backend:"
+          cat /tmp/sweep_response.json
+          if [ "$status" != "200" ]; then
+            echo "El barrido falló con status $status"
+            exit 1
+          fi
