@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { motion } from 'motion/react'
-import { Download, Users, UserCheck, UserX, Clock, Armchair, Music4, CalendarClock } from 'lucide-react'
+import { Download, Users, UserCheck, UserX, Clock, Armchair, Music4, CalendarClock, Images } from 'lucide-react'
 import api from '../services/api'
 import PageBackground from '../components/PageBackground'
 import BrandLogos from '../components/BrandLogos'
@@ -120,6 +120,25 @@ function StatsDashboard() {
               <Download className="w-4 h-4" />
               Exportar CSV
             </button>
+
+            {event.activeModules?.liveGallery && (
+              <motion.a
+                href={`/evento/${encodeURIComponent(eventSlug)}/gallery-control?token=${encodeURIComponent(token)}`}
+                target="_blank"
+                rel="noreferrer"
+                whileHover={{ scale: 1.02, translateY: -1 }}
+                whileTap={{ scale: 0.97 }}
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border border-white/10 backdrop-blur-sm transition"
+                style={{
+                  background: `linear-gradient(135deg, ${BRAND.pink}22, ${BRAND.blue}14)`,
+                  color: '#ffffff',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 20px -10px rgba(0,0,0,0.5)',
+                }}
+              >
+                <Images className="w-4 h-4" style={{ color: BRAND.pink }} />
+                Moderar galería en vivo
+              </motion.a>
+            )}
 
             {event.activeModules?.tableOrganizer && (
               <motion.a
