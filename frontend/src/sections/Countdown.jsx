@@ -66,7 +66,9 @@ function Countdown({ event, config, appearance, styles }) {
             <p className={`${digitSize} font-semibold`} style={{ color: appearance.primaryColor }}>
               {String(unit.value).padStart(2, '0')}
             </p>
-            <p className={`${labelSize} text-white/50 mt-1`}>{unit.label}</p>
+            <p className={`${labelSize} mt-1`} style={{ color: config.labelColor || 'rgba(255,255,255,0.5)' }}>
+              {unit.label}
+            </p>
           </motion.div>
         ))}
       </div>

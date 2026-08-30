@@ -183,6 +183,7 @@ export const SECTION_FIELD_DEFS = {
     { key: 'shape', label: 'Forma de los contadores', type: 'select', options: COUNTDOWN_SHAPE_OPTIONS },
     { key: 'fontSizeTitle', label: 'Tamaño de los dígitos', type: 'select', options: FONT_SIZE_OPTIONS },
     { key: 'fontSizeSubtitle', label: 'Tamaño de las etiquetas', type: 'select', options: FONT_SIZE_OPTIONS },
+    { key: 'labelColor', label: 'Color de las etiquetas (Días, Hs, Min, Seg)', type: 'color' },
   ],
   EventDetail: [
     { key: 'title', label: 'Título de la sección (opcional)', type: 'text' },
