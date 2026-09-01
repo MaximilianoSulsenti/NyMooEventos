@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { FileSpreadsheet, Plus, X, Search, Loader2, Music2, ExternalLink } from 'lucide-react'
+import { FileSpreadsheet, Plus, X, Search, Loader2, Music2, ExternalLink, MessageSquareText } from 'lucide-react'
 import { BRAND } from '../../utils/brand'
 import { cn } from '../../utils/cn'
 import { parsePlaylistFromFile } from '../../utils/playlistOrganizer'
@@ -8,11 +8,13 @@ import { parsePlaylistFromFile } from '../../utils/playlistOrganizer'
 const inputClass =
   'w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30 transition'
 
-function SongBankPanel({ songBank, onAddTracks, onRemoveFromBank }) {
+function SongBankPanel({ songBank, onAddTracks, onRemoveFromBank, onImportSongs }) {
   const fileInputRef = useRef(null)
   const [isDragging, setIsDragging] = useState(false)
   const [importState, setImportState] = useState('idle') // idle | reading | done | error
   const [importMessage, setImportMessage] = useState('')
+  const [suggestedState, setSuggestedState] = useState('idle') // idle | reading | done | error
+  const [suggestedMessage, setSuggestedMessage] = useState('')
   const [manualTitle, setManualTitle] = useState('')
   const [manualArtist, setManualArtist] = useState('')
   const [search, setSearch] = useState('')
@@ -46,6 +48,31 @@ function SongBankPanel({ songBank, onAddTracks, onRemoveFromBank }) {
     }
   }
 
+  async function handleImportSongs() {
+    if (!onImportSongs) return
+    setSuggestedState('reading')
+    setSuggestedMessage('')
+    try {
+      const { total, newCount } = await onImportSongs()
+      if (total === 0) {
+        setSuggestedState('error')
+        setSuggestedMessage('Todavía nadie sugirió una canción.')
+        return
+      }
+      setSuggestedState('done')
+      setSuggestedMessage(
+        newCount > 0
+          ? `Se importaron ${newCount} canción${newCount === 1 ? '' : 'es'} sugerida${newCount === 1 ? '' : 's'}${
+              total - newCount > 0 ? ` (${total - newCount} ya estaban en la lista)` : ''
+            }.`
+          : 'Todas las sugerencias ya estaban en la lista.'
+      )
+    } catch {
+      setSuggestedState('error')
+      setSuggestedMessage('No pudimos importar las sugerencias, probá de nuevo.')
+    }
+  }
+
   function handleDrop(e) {
     e.preventDefault()
     setIsDragging(false)
@@ -64,8 +91,34 @@ function SongBankPanel({ songBank, onAddTracks, onRemoveFromBank }) {
     <div className="space-y-5">
       <div>
         <h2 className="text-base font-semibold mb-1">Banco de canciones</h2>
-        <p className="text-white/40 text-sm">Importá tu lista desde Excel o agregalas a mano.</p>
+        <p className="text-white/40 text-sm">
+          {onImportSongs
+            ? 'Importá las que sugirieron tus invitados, desde Excel, o agregalas a mano.'
+            : 'Importá tu lista desde Excel o agregalas a mano.'}
+        </p>
       </div>
+
+      {onImportSongs && (
+        <div className="space-y-1.5">
+          <button
+            type="button"
+            onClick={handleImportSongs}
+            disabled={suggestedState === 'reading'}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border border-white/10 transition disabled:opacity-50 hover:brightness-110"
+            style={{ background: `${BRAND.pink}18`, color: BRAND.pink }}
+          >
+            {suggestedState === 'reading' ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <MessageSquareText className="w-4 h-4" />
+            )}
+            Importar sugerencias de invitados
+          </button>
+          {suggestedMessage && (
+            <p className={cn('text-xs', suggestedState === 'error' ? 'text-red-400' : 'text-white/50')}>{suggestedMessage}</p>
+          )}
+        </div>
+      )}
 
       <div
         onDragOver={(e) => {

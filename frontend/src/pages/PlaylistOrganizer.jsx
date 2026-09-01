@@ -116,6 +116,32 @@ function PlaylistOrganizer() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload)
   }, [dirty])
 
+  // Evita que el cliente tenga que anotar a mano las canciones que los
+  // invitados van sugiriendo desde la invitación (sección de playlist) --
+  // las trae directo del mismo lugar que las muestra el panel de
+  // estadísticas (guest.songRequest).
+  async function handleImportSongs() {
+    const { data } = isClientMode
+      ? await api.get(`/guests/client/${eventSlug}`, { params: { token } })
+      : await api.get(`/guests/event/${eventId}`)
+
+    const suggestions = data
+      .filter((g) => (g.songRequest || '').trim())
+      .map((g) => ({ title: g.songRequest.trim(), artist: '', notes: `Sugerida por ${g.name}` }))
+
+    // A diferencia del organizador de mesas, acá `addTracks` no deduplica
+    // solo (una vez asignado un tema a un bloque, deja de estar en el
+    // banco pero sigue "existiendo") -- hay que chequear contra el banco Y
+    // contra lo ya asignado en los bloques antes de agregar.
+    const existingTitles = new Set(
+      [...organizer.songBank, ...organizer.moments.flatMap((m) => m.tracks)].map((t) => t.title.trim().toLowerCase())
+    )
+    const newTracks = suggestions.filter((t) => !existingTitles.has(t.title.toLowerCase()))
+
+    if (newTracks.length > 0) organizer.addTracks(newTracks)
+    return { total: suggestions.length, newCount: newTracks.length }
+  }
+
   async function handleSave() {
     setSaveState('saving')
     try {
@@ -388,6 +414,7 @@ function PlaylistOrganizer() {
               songBank={organizer.songBank}
               onAddTracks={organizer.addTracks}
               onRemoveFromBank={organizer.removeFromBank}
+              onImportSongs={activeModules?.guestControl ? handleImportSongs : null}
             />
           </GlassPanel>
 
