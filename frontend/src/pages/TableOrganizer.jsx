@@ -107,6 +107,24 @@ function TableOrganizer() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload)
   }, [dirty])
 
+  // Evita que el cliente tenga que exportar el Excel de confirmados desde
+  // el panel de estadísticas y volver a subirlo acá -- trae los mismos
+  // datos (invitados con status "confirmado") directo del RSVP.
+  async function handleImportConfirmed() {
+    const { data } = isClientMode
+      ? await api.get(`/guests/client/${eventSlug}`, { params: { token } })
+      : await api.get(`/guests/event/${eventId}`)
+
+    const confirmedNames = data
+      .filter((g) => g.status === 'confirmado' && g.rsvpCompleted !== false)
+      .map((g) => g.name)
+
+    const existing = new Set(organizer.guests)
+    const newCount = confirmedNames.filter((n) => !existing.has(n)).length
+    organizer.addGuests(confirmedNames)
+    return { total: confirmedNames.length, newCount }
+  }
+
   async function handleSave() {
     setSaveState('saving')
     try {
@@ -376,6 +394,7 @@ function TableOrganizer() {
               pendingGuests={organizer.pendingGuests}
               onAddGuests={organizer.addGuests}
               onRemoveGuest={organizer.removeGuest}
+              onImportConfirmed={activeModules?.guestControl ? handleImportConfirmed : null}
             />
           </GlassPanel>
 

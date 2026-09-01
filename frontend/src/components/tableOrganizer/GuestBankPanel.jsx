@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { FileSpreadsheet, UserPlus, X, Search, Loader2, Users } from 'lucide-react'
+import { FileSpreadsheet, UserPlus, UserCheck, X, Search, Loader2, Users } from 'lucide-react'
 import { BRAND } from '../../utils/brand'
 import { cn } from '../../utils/cn'
 import { parseGuestNamesFromFile } from '../../utils/tableOrganizer'
@@ -8,11 +8,13 @@ import { parseGuestNamesFromFile } from '../../utils/tableOrganizer'
 const inputClass =
   'w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30 transition'
 
-function GuestBankPanel({ allGuests, pendingGuests, onAddGuests, onRemoveGuest }) {
+function GuestBankPanel({ allGuests, pendingGuests, onAddGuests, onRemoveGuest, onImportConfirmed }) {
   const fileInputRef = useRef(null)
   const [isDragging, setIsDragging] = useState(false)
   const [importState, setImportState] = useState('idle') // idle | reading | done | error
   const [importMessage, setImportMessage] = useState('')
+  const [confirmedState, setConfirmedState] = useState('idle') // idle | reading | done | error
+  const [confirmedMessage, setConfirmedMessage] = useState('')
   const [manualName, setManualName] = useState('')
   const [search, setSearch] = useState('')
 
@@ -50,6 +52,31 @@ function GuestBankPanel({ allGuests, pendingGuests, onAddGuests, onRemoveGuest }
     }
   }
 
+  async function handleImportConfirmed() {
+    if (!onImportConfirmed) return
+    setConfirmedState('reading')
+    setConfirmedMessage('')
+    try {
+      const { total, newCount } = await onImportConfirmed()
+      if (total === 0) {
+        setConfirmedState('error')
+        setConfirmedMessage('Todavía no tenés invitados confirmados en el RSVP.')
+        return
+      }
+      setConfirmedState('done')
+      setConfirmedMessage(
+        newCount > 0
+          ? `Se importaron ${newCount} invitado${newCount === 1 ? '' : 's'} confirmado${newCount === 1 ? '' : 's'}${
+              total - newCount > 0 ? ` (${total - newCount} ya estaban en la lista)` : ''
+            }.`
+          : 'Todos los confirmados ya estaban en la lista.'
+      )
+    } catch {
+      setConfirmedState('error')
+      setConfirmedMessage('No pudimos importar los confirmados, probá de nuevo.')
+    }
+  }
+
   function handleDrop(e) {
     e.preventDefault()
     setIsDragging(false)
@@ -67,8 +94,28 @@ function GuestBankPanel({ allGuests, pendingGuests, onAddGuests, onRemoveGuest }
     <div className="space-y-5">
       <div>
         <h2 className="text-base font-semibold mb-1">Invitados</h2>
-        <p className="text-white/40 text-sm">Importá tu lista desde Excel o agregalos a mano.</p>
+        <p className="text-white/40 text-sm">
+          {onImportConfirmed ? 'Importá los confirmados del RSVP, desde Excel, o agregalos a mano.' : 'Importá tu lista desde Excel o agregalos a mano.'}
+        </p>
       </div>
+
+      {onImportConfirmed && (
+        <div className="space-y-1.5">
+          <button
+            type="button"
+            onClick={handleImportConfirmed}
+            disabled={confirmedState === 'reading'}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border border-white/10 transition disabled:opacity-50 hover:brightness-110"
+            style={{ background: `${BRAND.lime}18`, color: BRAND.lime }}
+          >
+            {confirmedState === 'reading' ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserCheck className="w-4 h-4" />}
+            Importar confirmados del RSVP
+          </button>
+          {confirmedMessage && (
+            <p className={cn('text-xs', confirmedState === 'error' ? 'text-red-400' : 'text-white/50')}>{confirmedMessage}</p>
+          )}
+        </div>
+      )}
 
       <div
         onDragOver={(e) => {
