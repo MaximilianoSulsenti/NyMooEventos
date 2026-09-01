@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
 import { cn } from '../utils/cn'
-import { shadeColor, getContrastTextColor } from '../utils/color'
+import { shadeColor, getContrastTextColor, extractDominantColor, extractDominantColorFromVideo } from '../utils/color'
 import { FONT_FAMILY_CLASSES } from '../sections/theming'
 import Button from './ui/Button'
 
@@ -41,11 +41,40 @@ const FLAP_TIP_Y = FLAP_HEIGHT_PERCENT
 
 function Envelope({ settings, appearance, guestName, welcomeMessage, onOpen }) {
   const [opening, setOpening] = useState(false)
+  const [mediaColor, setMediaColor] = useState(null)
   const fontClass = FONT_FAMILY_CLASSES[settings.fontFamily] || 'font-sans'
   const bgColor = settings.bgColor || '#0a0a0a'
+
+  // El telón de fondo (todo lo que rodea la tarjeta del sobre) seguía
+  // siempre el color elegido a mano, aunque hubiera una imagen/video de
+  // fondo -- si esa foto era, por ejemplo, un sobre envejecido en tonos
+  // sepia, el telón quedaba con un color que no tenía nada que ver. Ahora
+  // se saca el color promedio de la imagen/video real y se usa para el
+  // telón, cayendo al color elegido a mano mientras se extrae o si falla.
+  useEffect(() => {
+    let cancelled = false
+    if (settings.bgType === 'image' && settings.bgUrl) {
+      extractDominantColor(settings.bgUrl)
+        .then((color) => !cancelled && setMediaColor(color))
+        .catch(() => !cancelled && setMediaColor(null))
+    } else if (settings.bgType === 'video' && settings.bgUrl) {
+      extractDominantColorFromVideo(settings.bgUrl)
+        .then((color) => !cancelled && setMediaColor(color))
+        .catch(() => !cancelled && setMediaColor(null))
+    }
+    return () => {
+      cancelled = true
+    }
+  }, [settings.bgType, settings.bgUrl])
+
   const flapFrontShade = shadeColor(bgColor, 18)
   const flapBackShade = shadeColor(bgColor, -35)
-  const backdrop = shadeColor(bgColor, -25)
+  // mediaColor puede quedar con el valor de una imagen/video anterior un
+  // instante (mientras se extrae el nuevo, o si se volvió a "Color") -- por
+  // eso acá se vuelve a chequear bgType antes de usarlo, en vez de confiar
+  // en que el propio estado ya esté al día.
+  const hasMediaBg = (settings.bgType === 'image' || settings.bgType === 'video') && Boolean(settings.bgUrl)
+  const backdrop = shadeColor(hasMediaBg && mediaColor ? mediaColor : bgColor, -25)
   // Antes el texto de la solapa era blanco fijo -- andaba bien mientras el
   // sobre era casi siempre oscuro, pero con el color de fondo editable (un
   // sobre blanco, como el de la referencia) el texto quedaba invisible.

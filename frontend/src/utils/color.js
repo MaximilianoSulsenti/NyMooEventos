@@ -53,3 +53,74 @@ export function getContrastTextColor(hex) {
 export function secondaryTextColor(textColor, opacityHex) {
   return `${textColor || '#ffffff'}${opacityHex}`
 }
+
+// Promedia los píxeles de una imagen/video ya cargado (achicado a un canvas
+// chico primero, para que sea rápido) y devuelve un color representativo.
+// Se usa para el telón de fondo del sobre de bienvenida: que acompañe los
+// tonos reales de la foto/video que subió el cliente (ej. sepia de un
+// sobre envejecido), en vez de quedar siempre atado a un color elegido a
+// mano aparte.
+function averageColorFromSource(source, width, height) {
+  const size = 24
+  const canvas = document.createElement('canvas')
+  canvas.width = size
+  canvas.height = size
+  const ctx = canvas.getContext('2d')
+  ctx.drawImage(source, 0, 0, width, height, 0, 0, size, size)
+  const { data } = ctx.getImageData(0, 0, size, size)
+  let r = 0
+  let g = 0
+  let b = 0
+  let count = 0
+  for (let i = 0; i < data.length; i += 4) {
+    r += data[i]
+    g += data[i + 1]
+    b += data[i + 2]
+    count++
+  }
+  return rgbToHex(r / count, g / count, b / count)
+}
+
+// crossOrigin='anonymous' funciona sin problemas contra Cloudinary (ya
+// manda los headers CORS permisivos por defecto) -- si algún día se sube
+// una URL de otro origen que no los mande, el canvas queda "tainted" y
+// getImageData tira, por eso todo esto siempre se usa con un .catch() que
+// cae de vuelta al color elegido a mano.
+export function extractDominantColor(imageUrl) {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.onload = () => {
+      try {
+        resolve(averageColorFromSource(img, img.naturalWidth, img.naturalHeight))
+      } catch (err) {
+        reject(err)
+      }
+    }
+    img.onerror = () => reject(new Error('No se pudo cargar la imagen'))
+    img.src = imageUrl
+  })
+}
+
+export function extractDominantColorFromVideo(videoUrl) {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement('video')
+    video.crossOrigin = 'anonymous'
+    video.muted = true
+    video.playsInline = true
+    video.preload = 'auto'
+    video.addEventListener(
+      'loadeddata',
+      () => {
+        try {
+          resolve(averageColorFromSource(video, video.videoWidth, video.videoHeight))
+        } catch (err) {
+          reject(err)
+        }
+      },
+      { once: true }
+    )
+    video.addEventListener('error', () => reject(new Error('No se pudo cargar el video')), { once: true })
+    video.src = videoUrl
+  })
+}
