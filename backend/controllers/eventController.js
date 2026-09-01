@@ -153,6 +153,7 @@ async function updateAppearance(req, res) {
     secondaryColor,
     backgroundColor,
     fontFamily,
+    titleFontFamily,
     useGlobalBackground,
     globalBgType,
     globalBgUrl,
@@ -165,6 +166,7 @@ async function updateAppearance(req, res) {
   if (secondaryColor !== undefined) event.appearance.secondaryColor = secondaryColor;
   if (backgroundColor !== undefined) event.appearance.backgroundColor = backgroundColor;
   if (fontFamily !== undefined) event.appearance.fontFamily = fontFamily;
+  if (titleFontFamily !== undefined) event.appearance.titleFontFamily = titleFontFamily;
   if (useGlobalBackground !== undefined) event.appearance.useGlobalBackground = useGlobalBackground;
   if (globalBgType !== undefined) event.appearance.globalBgType = globalBgType;
   if (globalBgUrl !== undefined) event.appearance.globalBgUrl = globalBgUrl;

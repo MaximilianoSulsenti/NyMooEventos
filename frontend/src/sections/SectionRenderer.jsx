@@ -38,7 +38,7 @@ const SECTION_COMPONENTS = {
 
 function SectionRenderer({ event }) {
   const appearance = event.appearance || {}
-  const styles = getThemeStyles(appearance.theme, appearance.fontFamily)
+  const styles = getThemeStyles(appearance.theme, appearance.fontFamily, appearance.titleFontFamily)
 
   const sections = [...(event.sections || [])]
     .filter((section) => section.enabled)

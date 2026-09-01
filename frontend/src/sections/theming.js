@@ -62,8 +62,19 @@ export const FONT_FAMILY_CLASSES = {
   chewy: 'font-chewy',
 }
 
-export function getThemeStyles(theme, fontFamily) {
+// titleFontFamily es opcional -- vacío/no elegido usa la misma tipografía
+// que el resto del texto (el `heading` de la base ya trae solo peso/tracking,
+// sin font-family propia, así que hereda el fontClass del contenedor). Si se
+// elige una, se agrega esa clase directo en `heading` -- como se aplica en el
+// propio <h2>/<h1> de cada sección, gana por sobre lo heredado del wrapper
+// sin tener que tocar los ~15 archivos de sección uno por uno.
+export function getThemeStyles(theme, fontFamily, titleFontFamily) {
   const base = THEME_STYLES[theme] || THEME_STYLES.minimalista
   const fontOverride = fontFamily && FONT_FAMILY_CLASSES[fontFamily]
-  return fontOverride ? { ...base, fontClass: fontOverride } : base
+  const titleFontOverride = titleFontFamily && FONT_FAMILY_CLASSES[titleFontFamily]
+  return {
+    ...base,
+    fontClass: fontOverride || base.fontClass,
+    heading: titleFontOverride ? `${base.heading} ${titleFontOverride}` : base.heading,
+  }
 }

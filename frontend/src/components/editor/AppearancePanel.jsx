@@ -48,7 +48,7 @@ function AppearancePanel({ eventId, appearance, onChange }) {
         <label className="block text-sm text-neutral-400 mb-1">Tema</label>
         <select
           value={appearance.theme}
-          onChange={(e) => update({ theme: e.target.value })}
+          onChange={(e) => update({ theme: e.target.value, fontFamily: '' })}
           className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
         >
           {THEMES.map((theme) => (
@@ -60,12 +60,29 @@ function AppearancePanel({ eventId, appearance, onChange }) {
       </div>
 
       <div>
-        <label className="block text-sm text-neutral-400 mb-1">Tipografía</label>
+        <label className="block text-sm text-neutral-400 mb-1">Tipografía del texto</label>
         <select
-          value={appearance.fontFamily}
+          value={appearance.fontFamily || ''}
           onChange={(e) => update({ fontFamily: e.target.value })}
           className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
         >
+          <option value="">Automática (según el tema)</option>
+          {FONTS.map((font) => (
+            <option key={font.value} value={font.value}>
+              {font.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-sm text-neutral-400 mb-1">Tipografía de los títulos (opcional)</label>
+        <select
+          value={appearance.titleFontFamily || ''}
+          onChange={(e) => update({ titleFontFamily: e.target.value })}
+          className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
+        >
+          <option value="">Igual que el texto</option>
           {FONTS.map((font) => (
             <option key={font.value} value={font.value}>
               {font.label}

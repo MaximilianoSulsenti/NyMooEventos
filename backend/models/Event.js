@@ -135,7 +135,14 @@ const eventSchema = new mongoose.Schema(
       primaryColor: { type: String, default: '#a855f7' },
       secondaryColor: { type: String, default: '#111827' },
       backgroundColor: { type: String, default: '#0a0a0a' },
-      fontFamily: { type: String, default: 'sans' },
+      // Vacío = usa la tipografía "de fábrica" del tema elegido (ver
+      // THEME_STYLES en theming.js) -- en cuanto se elige una a mano acá,
+      // esa gana y queda fija aunque después se cambie de tema.
+      fontFamily: { type: String, default: '' },
+      // Vacío = usa la misma que el resto del texto (fontFamily de arriba)
+      // -- separada a propósito para poder combinar, ej. cuerpo en Sans y
+      // títulos en una manuscrita, sin tener que elegir una sola para todo.
+      titleFontFamily: { type: String, default: '' },
       useGlobalBackground: { type: Boolean, default: false },
       globalBgType: { type: String, enum: BG_TYPES, default: 'color' },
       globalBgUrl: { type: String, default: '' },
