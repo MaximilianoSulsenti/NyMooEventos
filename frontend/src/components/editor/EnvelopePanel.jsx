@@ -1,5 +1,6 @@
 import { BG_TYPE_OPTIONS, FONT_SIZE_OPTIONS } from '../../sections/sectionDefs'
 import ImageUploadField from './ImageUploadField'
+import VideoUploadField from './VideoUploadField'
 import { BRAND } from '../../utils/brand'
 
 function ColorField({ label, value, onChange }) {
@@ -164,25 +165,27 @@ function EnvelopePanel({ eventId, settings, onChange }) {
           />
 
           {settings.bgType === 'image' && (
-            <ImageUploadField
-              eventId={eventId}
-              label="Imagen de fondo"
-              value={settings.bgUrl || ''}
-              onChange={(url) => update({ bgUrl: url })}
-            />
+            <div>
+              <ImageUploadField
+                eventId={eventId}
+                label="Imagen de fondo"
+                value={settings.bgUrl || ''}
+                onChange={(url) => update({ bgUrl: url })}
+              />
+              <p className="text-xs text-neutral-500 mt-1">
+                Para que quede prolijo, usá una foto de sobre visto de frente (no en diagonal), con la solapa
+                arriba -- así calza con la animación de apertura.
+              </p>
+            </div>
           )}
 
           {settings.bgType === 'video' && (
-            <div>
-              <label className="block text-sm text-neutral-400 mb-1">URL del video de fondo</label>
-              <input
-                type="text"
-                value={settings.bgUrl || ''}
-                onChange={(e) => update({ bgUrl: e.target.value })}
-                placeholder="https://..."
-                className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
-              />
-            </div>
+            <VideoUploadField
+              eventId={eventId}
+              label="Video de fondo"
+              value={settings.bgUrl || ''}
+              onChange={(url) => update({ bgUrl: url })}
+            />
           )}
 
           {settings.bgType !== 'color' && (
@@ -201,6 +204,22 @@ function EnvelopePanel({ eventId, settings, onChange }) {
           )}
 
           <div>
+            <label className="block text-sm text-neutral-400 mb-1">Sello de cera</label>
+            <select
+              value={settings.showWaxSeal || ''}
+              onChange={(e) => update({ showWaxSeal: e.target.value })}
+              className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+            >
+              <option value="">Automático (se oculta si usás imagen/video de fondo)</option>
+              <option value="si">Mostrar siempre</option>
+              <option value="no">Ocultar siempre</option>
+            </select>
+            <p className="text-xs text-neutral-500 mt-1">
+              Apagalo si tu imagen de fondo ya tiene su propio sello dibujado, para no duplicarlo.
+            </p>
+          </div>
+
+          <div>
             <label className="block text-sm text-neutral-400 mb-1">Tipografía</label>
             <select
               value={settings.fontFamily || 'sans'}
@@ -212,6 +231,10 @@ function EnvelopePanel({ eventId, settings, onChange }) {
               <option value="display">Elegante (Playfair Display)</option>
               <option value="script">Manuscrita (Dancing Script)</option>
               <option value="modern">Moderna (Poppins)</option>
+              <option value="greatvibes">Manuscrita fina (Great Vibes)</option>
+              <option value="cormorant">Clásica elegante (Cormorant Garamond)</option>
+              <option value="bebas">Bold festiva (Bebas Neue)</option>
+              <option value="chewy">Infantil y divertida (Chewy)</option>
             </select>
           </div>
         </div>

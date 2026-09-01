@@ -52,6 +52,13 @@ function Envelope({ settings, appearance, guestName, welcomeMessage, onOpen }) {
   // Ahora el color por defecto se calcula según el contraste real contra
   // bgColor, y solo se usa si nadie eligió un color de texto a mano.
   const autoTextColor = getContrastTextColor(bgColor)
+  // Automático: se oculta solo cuando hay imagen/video de fondo, porque una
+  // foto de sobre real (como la que pidió el cliente de referencia) suele
+  // traer su propio sello ya "impreso" -- mostrar el nuestro ARRIBA se vería
+  // duplicado. Con fondo de color plano (sin foto) es el único detalle que
+  // le da carácter de sobre, así que ahí sigue mostrándose solo.
+  const showWaxSeal =
+    settings.showWaxSeal === 'si' ? true : settings.showWaxSeal === 'no' ? false : settings.bgType === 'color'
 
   function handleOpen() {
     setOpening(true)
@@ -96,10 +103,18 @@ function Envelope({ settings, appearance, guestName, welcomeMessage, onOpen }) {
             efecto se ve simétrico en cualquier celular. Proporción apaisada
             (más ancha que alta, aspect-[3/2]) para que se sienta como un
             sobre de verdad apoyado sobre una superficie, no como una tarjeta
-            vertical. perspective acá arriba es lo que le da profundidad
-            real al giro de la solapa de abajo. */}
+            vertical. Con nombre de invitado (VIP) el bolsillo de abajo carga
+            sello + placa del nombre + botón -- en pantallas angostas ese
+            trío no entraba en el aspecto apaisado normal y el botón quedaba
+            cortado, así que ahí se usa una proporción un poco menos
+            apaisada (más alta) para darle el aire que necesita, sin tocar
+            el aspecto del sobre normal. perspective acá arriba es lo que le
+            da profundidad real al giro de la solapa de abajo. */}
         <motion.div
-          className="relative z-10 w-full aspect-[3/2] max-h-[85vh] rounded-lg shadow-2xl"
+          className={cn(
+            'relative z-10 w-full max-h-[85vh] rounded-lg shadow-2xl',
+            guestName ? 'aspect-[4/3]' : 'aspect-[3/2]'
+          )}
           style={{ perspective: 1400 }}
           initial={false}
           animate={{ scale: opening ? 0.96 : 1 }}
@@ -146,24 +161,36 @@ function Envelope({ settings, appearance, guestName, welcomeMessage, onOpen }) {
               brillo al hover), con un flote suave para que invite a
               tocarlo. */}
           <motion.div
-            className="absolute inset-x-0 z-10 flex flex-col items-center px-6 pt-12 sm:pt-14"
+            className={cn(
+              'absolute inset-x-0 z-10 flex flex-col items-center px-6',
+              showWaxSeal ? 'pt-10 sm:pt-11' : 'pt-6 sm:pt-7'
+            )}
             style={{ top: `${FLAP_TIP_Y}%`, bottom: 0 }}
             animate={{ opacity: opening ? 0 : 1, y: opening ? 10 : 0 }}
             transition={{ duration: 0.3, delay: opening ? 0 : 0.2 }}
           >
             {/* Invitación VIP: si se resolvió el invitado por ?guest=<passcode>
-                (Nymoo VIVE), lo saluda por su nombre en cursiva -- no
-                reemplaza el texto de la solapa, se suma arriba del botón. */}
+                (Nymoo VIVE), lo saluda por su nombre -- no reemplaza el texto
+                de la solapa, se suma arriba del botón. Va en una placa
+                chica con fondo propio (no solo texto con drop-shadow) para
+                que se lea siempre, sea cual sea lo que haya detrás (un color
+                plano o una foto de sobre real con detalle) -- y con más aire
+                debajo (mb-4/5) para que nunca quede pegado al botón. */}
             {guestName && (
-              <motion.p
-                className="font-script text-xl sm:text-2xl mb-2 text-center drop-shadow-lg"
-                style={{ color: appearance.primaryColor }}
+              <motion.div
+                className="mb-1.5 sm:mb-2 max-w-[85%] px-3.5 py-0.5 rounded-full backdrop-blur-sm border shadow-lg"
+                style={{ background: 'rgba(20,16,12,0.4)', borderColor: `${appearance.primaryColor}66` }}
                 initial={{ opacity: 0, y: -6 }}
                 animate={{ opacity: opening ? 0 : 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.15 }}
               >
-                ¡Hola {guestName}!
-              </motion.p>
+                <p
+                  className="font-script text-sm sm:text-base text-center leading-tight truncate"
+                  style={{ color: appearance.primaryColor }}
+                >
+                  ¡Hola, {guestName}!
+                </p>
+              </motion.div>
             )}
             <motion.div
               animate={{ y: [0, -5, 0] }}
@@ -173,7 +200,11 @@ function Envelope({ settings, appearance, guestName, welcomeMessage, onOpen }) {
                 type="button"
                 onClick={handleOpen}
                 primaryColor={appearance.primaryColor}
-                className={cn('px-9 sm:px-11 py-3.5 sm:py-4 tracking-wide', fontClass)}
+                className={cn(
+                  guestName ? 'px-7 sm:px-9 py-2.5 sm:py-3' : 'px-9 sm:px-11 py-3.5 sm:py-4',
+                  'tracking-wide',
+                  fontClass
+                )}
               >
                 {settings.buttonText || 'Abrir invitación'}
               </Button>
@@ -188,54 +219,57 @@ function Envelope({ settings, appearance, guestName, welcomeMessage, onOpen }) {
             letra. Tamaño acotado a propósito para que nunca invada el botón
             real de abajo (ver pt-12/pt-14 del contenedor del botón). Se
             "rompe" (achica, gira un poco y se desvanece) apenas se toca ese
-            botón. */}
-        <motion.div
-          className="absolute z-20 w-[4.5rem] h-[4.5rem] sm:w-20 sm:h-20 -translate-x-1/2 -translate-y-1/2"
-          style={{ left: '50%', top: `${FLAP_TIP_Y}%`, filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.45))' }}
-          animate={opening ? { scale: 0, opacity: 0, rotate: 25 } : { scale: 1, opacity: 1, rotate: 0 }}
-          transition={{ duration: 0.35, ease: 'easeIn' }}
-        >
-          <svg viewBox="0 0 100 100" className="w-full h-full">
-            <defs>
-              <radialGradient id="waxBody" cx="35%" cy="28%" r="80%">
-                <stop offset="0%" stopColor={shadeColor(appearance.primaryColor, 34)} />
-                <stop offset="45%" stopColor={appearance.primaryColor} />
-                <stop offset="100%" stopColor={shadeColor(appearance.primaryColor, -32)} />
-              </radialGradient>
-            </defs>
+            botón. Se oculta con imagen/video de fondo salvo que se pida lo
+            contrario (ver showWaxSeal más arriba). */}
+        {showWaxSeal && (
+          <motion.div
+            className="absolute z-20 w-[4.5rem] h-[4.5rem] sm:w-20 sm:h-20 -translate-x-1/2 -translate-y-1/2"
+            style={{ left: '50%', top: `${FLAP_TIP_Y}%`, filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.45))' }}
+            animate={opening ? { scale: 0, opacity: 0, rotate: 25 } : { scale: 1, opacity: 1, rotate: 0 }}
+            transition={{ duration: 0.35, ease: 'easeIn' }}
+          >
+            <svg viewBox="0 0 100 100" className="w-full h-full">
+              <defs>
+                <radialGradient id="waxBody" cx="35%" cy="28%" r="80%">
+                  <stop offset="0%" stopColor={shadeColor(appearance.primaryColor, 34)} />
+                  <stop offset="45%" stopColor={appearance.primaryColor} />
+                  <stop offset="100%" stopColor={shadeColor(appearance.primaryColor, -32)} />
+                </radialGradient>
+              </defs>
 
-            {/* Pequeños goterones apenas asomando por el borde inferior --
-                el único detalle "derramado", el resto es cera prolija. */}
-            <circle cx="34" cy="86" r="3" fill="url(#waxBody)" />
-            <circle cx="66" cy="87" r="2.6" fill="url(#waxBody)" />
+              {/* Pequeños goterones apenas asomando por el borde inferior --
+                  el único detalle "derramado", el resto es cera prolija. */}
+              <circle cx="34" cy="86" r="3" fill="url(#waxBody)" />
+              <circle cx="66" cy="87" r="2.6" fill="url(#waxBody)" />
 
-            {/* Cuerpo de cera: medallón circular prolijo, como un sello
-                prensado con matriz de verdad, no un blob orgánico. */}
-            <circle cx="50" cy="50" r="38" fill="url(#waxBody)" stroke={shadeColor(appearance.primaryColor, -32)} strokeWidth="0.6" strokeOpacity="0.5" />
-            {/* Aro grabado, cerca del borde -- el detalle de la matriz del sello. */}
-            <circle cx="50" cy="50" r="32" fill="none" stroke={shadeColor(appearance.primaryColor, -30)} strokeOpacity="0.4" strokeWidth="0.8" />
+              {/* Cuerpo de cera: medallón circular prolijo, como un sello
+                  prensado con matriz de verdad, no un blob orgánico. */}
+              <circle cx="50" cy="50" r="38" fill="url(#waxBody)" stroke={shadeColor(appearance.primaryColor, -32)} strokeWidth="0.6" strokeOpacity="0.5" />
+              {/* Aro grabado, cerca del borde -- el detalle de la matriz del sello. */}
+              <circle cx="50" cy="50" r="32" fill="none" stroke={shadeColor(appearance.primaryColor, -30)} strokeOpacity="0.4" strokeWidth="0.8" />
 
-            {/* Fleur-de-lis grabada al centro: pétalo central + dos pétalos
-                laterales enroscados + banda + punta inferior. Color dorado
-                fijo (no depende del color del evento) a propósito -- contra
-                un primaryColor claro (pasteles, colores flúo), aclarar la
-                cera de base para el relieve la volvía casi invisible; así
-                se lee siempre, sea cual sea el color elegido. */}
-            <g fill="#f2e0b0" stroke="#4a2410" strokeWidth="0.6" strokeOpacity="0.55">
-              <path d="M50,26 C45,32 43,40 44,48 L44,54 L56,54 L56,48 C57,40 55,32 50,26 Z" />
-              <path d="M45,50 C36,44 26,45 22,53 C20,58 23,62 29,60 C36,58 43,53 47,49 Z" />
-              <path d="M55,50 C64,44 74,45 78,53 C80,58 77,62 71,60 C64,58 57,53 53,49 Z" />
-              <rect x="30" y="52" width="40" height="6" rx="3" />
-              <path d="M45,58 L55,58 L50,68 Z" />
-            </g>
+              {/* Fleur-de-lis grabada al centro: pétalo central + dos pétalos
+                  laterales enroscados + banda + punta inferior. Color dorado
+                  fijo (no depende del color del evento) a propósito -- contra
+                  un primaryColor claro (pasteles, colores flúo), aclarar la
+                  cera de base para el relieve la volvía casi invisible; así
+                  se lee siempre, sea cual sea el color elegido. */}
+              <g fill="#f2e0b0" stroke="#4a2410" strokeWidth="0.6" strokeOpacity="0.55">
+                <path d="M50,26 C45,32 43,40 44,48 L44,54 L56,54 L56,48 C57,40 55,32 50,26 Z" />
+                <path d="M45,50 C36,44 26,45 22,53 C20,58 23,62 29,60 C36,58 43,53 47,49 Z" />
+                <path d="M55,50 C64,44 74,45 78,53 C80,58 77,62 71,60 C64,58 57,53 53,49 Z" />
+                <rect x="30" y="52" width="40" height="6" rx="3" />
+                <path d="M45,58 L55,58 L50,68 Z" />
+              </g>
 
-            {/* Brillo: uno chico y bien marcado (el "punto caliente" de la
-                cera pulida) más uno amplio y suave debajo, para que se
-                sienta vidriosa y no plana. */}
-            <ellipse cx="36" cy="30" rx="18" ry="12" fill="rgba(255,255,255,0.14)" />
-            <ellipse cx="33" cy="24" rx="7" ry="4" fill="rgba(255,255,255,0.4)" />
-          </svg>
-        </motion.div>
+              {/* Brillo: uno chico y bien marcado (el "punto caliente" de la
+                  cera pulida) más uno amplio y suave debajo, para que se
+                  sienta vidriosa y no plana. */}
+              <ellipse cx="36" cy="30" rx="18" ry="12" fill="rgba(255,255,255,0.14)" />
+              <ellipse cx="33" cy="24" rx="7" ry="4" fill="rgba(255,255,255,0.4)" />
+            </svg>
+          </motion.div>
+        )}
 
         {/* Sombra que se profundiza a medida que la solapa se levanta, para
             que el papel de abajo se sienta "adentro" del sobre en vez de
