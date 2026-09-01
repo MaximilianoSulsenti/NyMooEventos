@@ -39,6 +39,22 @@ body {
   font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
 }
 
+.font-greatvibes {
+  font-family: 'Great Vibes', cursive;
+}
+
+.font-cormorant {
+  font-family: 'Cormorant Garamond', ui-serif, Georgia, serif;
+}
+
+.font-bebas {
+  font-family: 'Bebas Neue', ui-sans-serif, sans-serif;
+}
+
+.font-chewy {
+  font-family: 'Chewy', cursive;
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;

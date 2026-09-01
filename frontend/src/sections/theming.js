@@ -56,6 +56,10 @@ export const FONT_FAMILY_CLASSES = {
   display: 'font-display',
   script: 'font-script',
   modern: 'font-modern',
+  greatvibes: 'font-greatvibes',
+  cormorant: 'font-cormorant',
+  bebas: 'font-bebas',
+  chewy: 'font-chewy',
 }
 
 export function getThemeStyles(theme, fontFamily) {

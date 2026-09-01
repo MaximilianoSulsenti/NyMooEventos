@@ -9,6 +9,10 @@ const FONTS = [
   { value: 'display', label: 'Elegante (Playfair Display)' },
   { value: 'script', label: 'Manuscrita (Dancing Script)' },
   { value: 'modern', label: 'Moderna (Poppins)' },
+  { value: 'greatvibes', label: 'Manuscrita fina (Great Vibes)' },
+  { value: 'cormorant', label: 'Clásica elegante (Cormorant Garamond)' },
+  { value: 'bebas', label: 'Bold festiva (Bebas Neue)' },
+  { value: 'chewy', label: 'Infantil y divertida (Chewy)' },
 ]
 
 function ColorField({ label, value, onChange }) {
