@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
-import { LogOut, Plus, Calendar, Pencil, Trash2, Receipt } from 'lucide-react'
+import { LogOut, Plus, Calendar, Pencil, Trash2, Receipt, DatabaseBackup, Loader2 } from 'lucide-react'
 import api from '../services/api'
 import { clearSession, getStoredUser } from '../services/auth'
 import BrandBackground from '../components/BrandBackground'
@@ -21,6 +21,7 @@ function EventsList() {
   const [date, setDate] = useState('')
   const [createError, setCreateError] = useState('')
   const [confirmDeleteId, setConfirmDeleteId] = useState(null)
+  const [backupLoading, setBackupLoading] = useState(false)
 
   function loadEvents() {
     setLoadState('loading')
@@ -69,6 +70,19 @@ function EventsList() {
     }
   }
 
+  async function handleDownloadBackup() {
+    setBackupLoading(true)
+    try {
+      const { data } = await api.get('/backup/download-url')
+      window.open(data.url, '_blank', 'noopener,noreferrer')
+    } catch {
+      // Si falla (ej. todavía no corrió ningún backup), no hay mucho más
+      // que mostrar acá -- el botón simplemente vuelve a su estado normal.
+    } finally {
+      setBackupLoading(false)
+    }
+  }
+
   async function handleLogout() {
     try {
       await api.post('/auth/logout')
@@ -99,6 +113,21 @@ function EventsList() {
                   <Receipt className="w-4 h-4" />
                   Pedidos
                 </Link>
+              )}
+              {user?.isAdmin && (
+                <button
+                  type="button"
+                  onClick={handleDownloadBackup}
+                  disabled={backupLoading}
+                  className="flex items-center gap-1.5 text-sm text-white/50 hover:text-white transition disabled:opacity-50"
+                >
+                  {backupLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <DatabaseBackup className="w-4 h-4" />
+                  )}
+                  Backup
+                </button>
               )}
               <button
                 type="button"
