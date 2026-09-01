@@ -48,14 +48,28 @@ async function runBackup(req, res) {
   res.json({ message: 'Backup generado', exportedAt: payload.exportedAt, counts: payload.counts });
 }
 
-async function getBackupDownloadUrl(req, res) {
+// Descarga el backup y lo manda ya descomprimido -- se guarda en Cloudinary
+// como gzip para pesar menos, pero quien lo pide (una persona, no un script)
+// necesita un .json normal que se pueda abrir con cualquier cosa.
+async function downloadBackup(req, res) {
   const url = cloudinary.utils.private_download_url(BACKUP_PUBLIC_ID, '', {
     resource_type: 'raw',
     type: 'private',
     expires_at: Math.floor(Date.now() / 1000) + 300, // 5 minutos
   });
 
-  res.json({ url });
+  const cloudinaryRes = await fetch(url);
+  if (!cloudinaryRes.ok) {
+    return res.status(502).json({ message: 'No se pudo obtener el backup' });
+  }
+
+  const gzipped = Buffer.from(await cloudinaryRes.arrayBuffer());
+  const json = zlib.gunzipSync(gzipped);
+  const dateStr = new Date().toISOString().slice(0, 10);
+
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Content-Disposition', `attachment; filename="nymoo-backup-${dateStr}.json"`);
+  res.send(json);
 }
 
-module.exports = { runBackup, getBackupDownloadUrl };
+module.exports = { runBackup, downloadBackup };

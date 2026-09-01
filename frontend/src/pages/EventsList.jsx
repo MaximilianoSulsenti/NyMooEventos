@@ -73,8 +73,22 @@ function EventsList() {
   async function handleDownloadBackup() {
     setBackupLoading(true)
     try {
-      const { data } = await api.get('/backup/download-url')
-      window.open(data.url, '_blank', 'noopener,noreferrer')
+      // responseType 'blob' + descarga por <a download> porque es un
+      // endpoint autenticado (necesita el header de sesión) -- no se puede
+      // abrir como un link común con window.open. El nombre se arma acá
+      // mismo (no se puede leer el Content-Disposition del backend sin
+      // exponerlo por CORS, y no vale la pena solo para esto).
+      const response = await api.get('/backup/download', { responseType: 'blob' })
+      const filename = `nymoo-backup-${new Date().toISOString().slice(0, 10)}.json`
+
+      const blobUrl = window.URL.createObjectURL(response.data)
+      const link = document.createElement('a')
+      link.href = blobUrl
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(blobUrl)
     } catch {
       // Si falla (ej. todavía no corrió ningún backup), no hay mucho más
       // que mostrar acá -- el botón simplemente vuelve a su estado normal.
