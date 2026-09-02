@@ -4,7 +4,7 @@ import { motion } from 'motion/react'
 import api from '../services/api'
 import SectionRenderer from '../sections/SectionRenderer'
 import GlobalBackground from '../sections/GlobalBackground'
-import Envelope from '../components/Envelope'
+import WelcomeScreen from '../components/WelcomeScreen'
 import MusicPlayerWidget from '../components/MusicPlayerWidget'
 import ScrollProgressBar from '../components/ScrollProgressBar'
 import usePremiumGuest from '../hooks/usePremiumGuest'
@@ -14,10 +14,10 @@ function DigitalCard() {
   const { eventSlug } = useParams()
   const [event, setEvent] = useState(null)
   const [loadState, setLoadState] = useState('loading') // loading | ready | not-found | error
-  const [envelopeOpen, setEnvelopeOpen] = useState(false)
+  const [introOpen, setIntroOpen] = useState(false)
   // Invitación VIP (Nymoo VIVE): si la URL trae ?guest=<passcode>, resuelve
-  // el nombre del invitado para saludarlo por su nombre en el sobre --
-  // mismo hook que ya usa Hero.jsx para el pill "¡Hola, {nombre}!".
+  // el nombre del invitado para saludarlo por su nombre en la pantalla de
+  // bienvenida -- mismo hook que ya usa Hero.jsx para el pill "¡Hola, {nombre}!".
   const premiumGuest = usePremiumGuest(event)
 
   useEffect(() => {
@@ -28,7 +28,7 @@ function DigitalCard() {
       .then(({ data }) => {
         if (!isMounted) return
         setEvent(data)
-        setEnvelopeOpen(!data.envelopeSettings?.enabled)
+        setIntroOpen(!data.envelopeSettings?.enabled)
         setLoadState('ready')
       })
       .catch((err) => {
@@ -42,11 +42,11 @@ function DigitalCard() {
   }, [eventSlug])
 
   useEffect(() => {
-    document.body.style.overflow = envelopeOpen ? '' : 'hidden'
+    document.body.style.overflow = introOpen ? '' : 'hidden'
     return () => {
       document.body.style.overflow = ''
     }
-  }, [envelopeOpen])
+  }, [introOpen])
 
   if (loadState === 'loading') {
     return (
@@ -94,8 +94,8 @@ function DigitalCard() {
         <div className="fixed inset-0 -z-10" style={{ backgroundColor: appearance.backgroundColor || '#0a0a0a' }} />
       )}
 
-      {event.envelopeSettings?.enabled && !envelopeOpen && (
-        <Envelope
+      {event.envelopeSettings?.enabled && !introOpen && (
+        <WelcomeScreen
           settings={event.envelopeSettings}
           appearance={appearance}
           guestName={premiumGuest?.name}
@@ -103,7 +103,7 @@ function DigitalCard() {
             // VIP (link con ?guest=<passcode>, Nymoo VIVE): usa el mismo
             // saludo ya armado para la Portada (Hero.config.vipGreeting),
             // no un mensaje aparte -- así no hay que cargarlo dos veces.
-            // Sin invitado VIP: el mensaje propio del sobre.
+            // Sin invitado VIP: el mensaje propio de esta pantalla.
             premiumGuest
               ? (heroConfig.vipGreeting || '¡Hola, {nombre}! Están cordialmente invitados').replace(
                   '{nombre}',
@@ -111,7 +111,7 @@ function DigitalCard() {
                 )
               : event.envelopeSettings.welcomeMessage || ''
           }
-          onOpen={() => setEnvelopeOpen(true)}
+          onOpen={() => setIntroOpen(true)}
         />
       )}
 
@@ -119,13 +119,13 @@ function DigitalCard() {
         <MusicPlayerWidget
           settings={event.musicSettings}
           primaryColor={appearance.primaryColor}
-          autoPlayTrigger={envelopeOpen}
+          autoPlayTrigger={introOpen}
         />
       )}
 
       <motion.div
         initial={event.envelopeSettings?.enabled ? { opacity: 0, scale: 0.97 } : false}
-        animate={envelopeOpen ? { opacity: 1, scale: 1 } : {}}
+        animate={introOpen ? { opacity: 1, scale: 1 } : {}}
         transition={{ duration: 0.6, ease: 'easeOut' }}
       >
         <SectionRenderer event={event} />

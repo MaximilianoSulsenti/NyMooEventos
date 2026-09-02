@@ -23,6 +23,11 @@ const SECTION_TYPES = [
 const THEMES = ['minimalista', 'moderno', 'vanguardista', 'romantica', 'bohemio', 'elegante', 'festivo'];
 const MODERATION_MODES = ['manual', 'automatica', 'semiautomatica'];
 const BG_TYPES = ['color', 'image', 'video'];
+// Solo para la pantalla de bienvenida: 'auto' hereda el fondo de la propia
+// tarjeta (mismo tema/color/imagen global que el resto de la invitación),
+// sin tener que elegir uno aparte -- las otras dos secciones que usan
+// BG_TYPES no ofrecen esta opción, por eso es un enum separado.
+const WELCOME_SCREEN_BG_TYPES = ['auto', 'color', 'image', 'video'];
 const RSVP_TYPES = ['basico_whatsapp', 'intermedio_db', 'premium_personalizado'];
 const BRAND_POSITIONS = ['top-left', 'top-right', 'bottom-left', 'bottom-right'];
 
@@ -149,23 +154,31 @@ const eventSchema = new mongoose.Schema(
       globalBgOpacity: { type: Number, default: 100, min: 0, max: 100 },
       globalBgGradient: { type: String, default: '' },
     },
+    // El nombre del campo (envelopeSettings) quedó del diseño anterior con
+    // forma de sobre -- se mantiene así para no pedir una migración de datos
+    // (todo evento ya creado sigue funcionando tal cual), aunque ahora es
+    // una pantalla de bienvenida a pantalla completa, sin sobre.
     envelopeSettings: {
       enabled: { type: Boolean, default: false },
-      bgType: { type: String, enum: BG_TYPES, default: 'color' },
+      bgType: { type: String, enum: WELCOME_SCREEN_BG_TYPES, default: 'auto' },
       bgColor: { type: String, default: '#0a0a0a' },
       bgUrl: { type: String, default: '' },
       bgOpacity: { type: Number, default: 100, min: 0, max: 100 },
       titleText: { type: String, default: '' },
       subtitleText: { type: String, default: '' },
-      // Mensaje que asoma por detrás del sobre para invitados SIN link VIP
-      // -- el invitado VIP (?guest=<passcode>, Nymoo VIVE) usa en cambio el
-      // saludo ya armado en Hero.config.vipGreeting (ver sectionDefs.js),
+      // Mensaje que se muestra debajo del subtítulo para invitados SIN link
+      // VIP -- el invitado VIP (?guest=<passcode>, Nymoo VIVE) usa en cambio
+      // el saludo ya armado en Hero.config.vipGreeting (ver sectionDefs.js),
       // no este campo.
       welcomeMessage: { type: String, default: '' },
       buttonText: { type: String, default: 'Abrir invitación' },
       fontFamily: { type: String, default: 'sans' },
-      fontSizeTitle: { type: String, default: 'text-base' },
-      fontSizeSubtitle: { type: String, default: 'text-sm' },
+      // Más grandes que antes (text-base/text-sm) -- eran los tamaños de
+      // cuando esto vivía adentro de una tarjeta chica de sobre; a pantalla
+      // completa quedaban perdidos. Eventos ya creados guardan su propio
+      // valor así que no cambian por esto.
+      fontSizeTitle: { type: String, default: 'text-2xl' },
+      fontSizeSubtitle: { type: String, default: 'text-base' },
       textColor: { type: String, default: '' },
     },
     brandingSettings: {

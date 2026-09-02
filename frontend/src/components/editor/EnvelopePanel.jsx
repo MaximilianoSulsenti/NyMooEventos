@@ -3,6 +3,11 @@ import ImageUploadField from './ImageUploadField'
 import VideoUploadField from './VideoUploadField'
 import { BRAND } from '../../utils/brand'
 
+// Solo para esta pantalla -- "Automática" hereda el fondo de la propia
+// tarjeta (mismo tema/color/imagen global que el resto de la invitación),
+// para no tener que elegir un fondo aparte si no hace falta.
+const WELCOME_BG_TYPE_OPTIONS = [{ value: 'auto', label: 'Automática (misma que la tarjeta)' }, ...BG_TYPE_OPTIONS]
+
 function ColorField({ label, value, onChange }) {
   return (
     <div>
@@ -30,10 +35,13 @@ function EnvelopePanel({ eventId, settings, onChange }) {
     onChange({ ...settings, ...patch })
   }
 
+  const bgType = settings.bgType || 'auto'
+  const isAuto = bgType === 'auto'
+
   return (
     <div className="space-y-4" style={{ '--accent': BRAND.blue }}>
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium">Activar sobre de bienvenida</span>
+        <span className="text-sm font-medium">Activar pantalla de bienvenida</span>
         <button
           type="button"
           role="switch"
@@ -72,7 +80,7 @@ function EnvelopePanel({ eventId, settings, onChange }) {
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-400 mb-1">Mensaje que asoma detrás del sobre (opcional)</label>
+            <label className="block text-sm text-neutral-400 mb-1">Mensaje adicional (opcional)</label>
             <textarea
               value={settings.welcomeMessage || ''}
               onChange={(e) => update({ welcomeMessage: e.target.value })}
@@ -81,7 +89,8 @@ function EnvelopePanel({ eventId, settings, onChange }) {
               className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
             />
             <p className="text-xs text-neutral-500 mt-1">
-              Para invitados con link personalizado (VIP) se usa el saludo que armaste en la sección Portada, no este mensaje.
+              Para invitados con link personalizado (VIP) se usa el saludo que armaste en la sección Portada, no este
+              mensaje.
             </p>
           </div>
 
@@ -99,7 +108,7 @@ function EnvelopePanel({ eventId, settings, onChange }) {
             <div>
               <label className="block text-sm text-neutral-400 mb-1">Tamaño del texto</label>
               <select
-                value={settings.fontSizeTitle || 'text-base'}
+                value={settings.fontSizeTitle || 'text-2xl'}
                 onChange={(e) => update({ fontSizeTitle: e.target.value })}
                 className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
               >
@@ -113,7 +122,7 @@ function EnvelopePanel({ eventId, settings, onChange }) {
             <div>
               <label className="block text-sm text-neutral-400 mb-1">Tamaño del subtítulo</label>
               <select
-                value={settings.fontSizeSubtitle || 'text-sm'}
+                value={settings.fontSizeSubtitle || 'text-base'}
                 onChange={(e) => update({ fontSizeSubtitle: e.target.value })}
                 className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
               >
@@ -128,7 +137,7 @@ function EnvelopePanel({ eventId, settings, onChange }) {
 
           <div>
             <ColorField
-              label="Color del texto en la solapa"
+              label="Color del texto"
               value={settings.textColor || '#ffffff'}
               onChange={(v) => update({ textColor: v })}
             />
@@ -144,13 +153,13 @@ function EnvelopePanel({ eventId, settings, onChange }) {
           </div>
 
           <div>
-            <label className="block text-sm text-neutral-400 mb-1">Tipo de fondo</label>
+            <label className="block text-sm text-neutral-400 mb-1">Fondo</label>
             <select
-              value={settings.bgType}
+              value={bgType}
               onChange={(e) => update({ bgType: e.target.value })}
               className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
             >
-              {BG_TYPE_OPTIONS.map((opt) => (
+              {WELCOME_BG_TYPE_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
                 </option>
@@ -158,66 +167,48 @@ function EnvelopePanel({ eventId, settings, onChange }) {
             </select>
           </div>
 
-          <ColorField
-            label={settings.bgType === 'color' ? 'Color de fondo' : 'Color base (detrás de la imagen/video)'}
-            value={settings.bgColor || '#0a0a0a'}
-            onChange={(v) => update({ bgColor: v })}
-          />
-
-          {settings.bgType === 'image' && (
-            <div>
-              <ImageUploadField
-                eventId={eventId}
-                label="Imagen de fondo"
-                value={settings.bgUrl || ''}
-                onChange={(url) => update({ bgUrl: url })}
+          {!isAuto && (
+            <>
+              <ColorField
+                label={bgType === 'color' ? 'Color de fondo' : 'Color base (detrás de la imagen/video)'}
+                value={settings.bgColor || '#0a0a0a'}
+                onChange={(v) => update({ bgColor: v })}
               />
-              <p className="text-xs text-neutral-500 mt-1">
-                Para que quede prolijo, usá una foto de sobre visto de frente (no en diagonal), con la solapa
-                arriba -- así calza con la animación de apertura.
-              </p>
-            </div>
-          )}
 
-          {settings.bgType === 'video' && (
-            <VideoUploadField
-              eventId={eventId}
-              label="Video de fondo"
-              value={settings.bgUrl || ''}
-              onChange={(url) => update({ bgUrl: url })}
-            />
-          )}
+              {bgType === 'image' && (
+                <ImageUploadField
+                  eventId={eventId}
+                  label="Imagen de fondo"
+                  value={settings.bgUrl || ''}
+                  onChange={(url) => update({ bgUrl: url })}
+                />
+              )}
 
-          {settings.bgType !== 'color' && (
-            <div>
-              <label className="block text-sm text-neutral-400 mb-1">Opacidad: {settings.bgOpacity ?? 100}</label>
-              <input
-                type="range"
-                min={0}
-                max={100}
-                step={5}
-                value={settings.bgOpacity ?? 100}
-                onChange={(e) => update({ bgOpacity: Number(e.target.value) })}
-                className="w-full accent-[var(--accent)]"
-              />
-            </div>
-          )}
+              {bgType === 'video' && (
+                <VideoUploadField
+                  eventId={eventId}
+                  label="Video de fondo"
+                  value={settings.bgUrl || ''}
+                  onChange={(url) => update({ bgUrl: url })}
+                />
+              )}
 
-          <div>
-            <label className="block text-sm text-neutral-400 mb-1">Sello de cera</label>
-            <select
-              value={settings.showWaxSeal || ''}
-              onChange={(e) => update({ showWaxSeal: e.target.value })}
-              className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
-            >
-              <option value="">Automático (se oculta si usás imagen/video de fondo)</option>
-              <option value="si">Mostrar siempre</option>
-              <option value="no">Ocultar siempre</option>
-            </select>
-            <p className="text-xs text-neutral-500 mt-1">
-              Apagalo si tu imagen de fondo ya tiene su propio sello dibujado, para no duplicarlo.
-            </p>
-          </div>
+              {bgType !== 'color' && (
+                <div>
+                  <label className="block text-sm text-neutral-400 mb-1">Opacidad: {settings.bgOpacity ?? 100}</label>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={5}
+                    value={settings.bgOpacity ?? 100}
+                    onChange={(e) => update({ bgOpacity: Number(e.target.value) })}
+                    className="w-full accent-[var(--accent)]"
+                  />
+                </div>
+              )}
+            </>
+          )}
 
           <div>
             <label className="block text-sm text-neutral-400 mb-1">Tipografía</label>
