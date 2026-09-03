@@ -21,6 +21,7 @@ const {
   updatePlaylistForClient,
   getPlaylistForClient,
   signAppearanceUpload,
+  deleteAppearanceAsset,
   updateModerationModeForClient,
   updatePlaybackSpeedForClient,
   updateMaxLivePhotosForClient,
@@ -54,6 +55,7 @@ router.patch('/:eventId/sections', requireAuth, requireEventOwnership, updateSec
 router.put('/:eventId/tables', requireAuth, requireEventOwnership, updateTables);
 router.put('/:eventId/playlist', requireAuth, requireEventOwnership, updatePlaylist);
 router.get('/:eventId/appearance/sign', requireAuth, requireEventOwnership, signAppearanceUpload);
+router.post('/:eventId/appearance/delete-asset', requireAuth, requireEventOwnership, deleteAppearanceAsset);
 router.post('/:eventId/duplicate-duo', requireAuth, requireEventOwnership, duplicateDuo);
 router.post('/:eventId/regenerate-token', requireAuth, requireEventOwnership, regenerateClientToken);
 router.delete('/:eventId', requireAuth, requireEventOwnership, deleteEvent);

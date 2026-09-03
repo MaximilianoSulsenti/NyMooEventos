@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { FileVideo } from 'lucide-react'
+import { FileVideo, Trash2 } from 'lucide-react'
 import api from '../../services/api'
 import { BRAND } from '../../utils/brand'
 
@@ -11,12 +11,25 @@ import { BRAND } from '../../utils/brand'
 // a mano (por si el video ya está alojado en otro lado).
 function VideoUploadField({ eventId, label, value, onChange }) {
   const fileInputRef = useRef(null)
-  const [status, setStatus] = useState('idle') // idle | uploading | error
+  const [status, setStatus] = useState('idle') // idle | uploading | removing | error
+
+  // Best-effort -- si la URL no era de nuestra cuenta de Cloudinary (ej.
+  // alguien pegó una a mano de otro lado), esto simplemente no encuentra
+  // nada que borrar y no rompe nada.
+  async function deleteAsset(url) {
+    if (!url) return
+    try {
+      await api.post(`/events/${eventId}/appearance/delete-asset`, { url, resourceType: 'video' })
+    } catch {
+      // ignorado a propósito
+    }
+  }
 
   async function handleFileChange(event) {
     const file = event.target.files?.[0]
     if (!file) return
 
+    const previousValue = value
     setStatus('uploading')
     try {
       const { data: signData } = await api.get(`/events/${eventId}/appearance/sign`)
@@ -37,11 +50,19 @@ function VideoUploadField({ eventId, label, value, onChange }) {
 
       onChange(data.secure_url)
       setStatus('idle')
+      deleteAsset(previousValue)
     } catch {
       setStatus('error')
     } finally {
       event.target.value = ''
     }
+  }
+
+  async function handleRemove() {
+    setStatus('removing')
+    await deleteAsset(value)
+    onChange('')
+    setStatus('idle')
   }
 
   return (
@@ -51,15 +72,28 @@ function VideoUploadField({ eventId, label, value, onChange }) {
         <video src={value} muted loop autoPlay playsInline className="w-full h-24 object-cover rounded-lg mb-2" />
       )}
       <input ref={fileInputRef} type="file" accept="video/*" onChange={handleFileChange} className="hidden" />
-      <button
-        type="button"
-        onClick={() => fileInputRef.current?.click()}
-        disabled={status === 'uploading'}
-        className="flex items-center gap-2 rounded-lg bg-neutral-800 border border-white/10 px-3 py-2 text-sm text-neutral-300 hover:text-white hover:border-white/20 transition disabled:opacity-50"
-      >
-        <FileVideo className="w-4 h-4" style={{ color: BRAND.blue }} />
-        {status === 'uploading' ? 'Subiendo...' : value ? 'Cambiar video' : 'Subir video'}
-      </button>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={status === 'uploading' || status === 'removing'}
+          className="flex items-center gap-2 rounded-lg bg-neutral-800 border border-white/10 px-3 py-2 text-sm text-neutral-300 hover:text-white hover:border-white/20 transition disabled:opacity-50"
+        >
+          <FileVideo className="w-4 h-4" style={{ color: BRAND.blue }} />
+          {status === 'uploading' ? 'Subiendo...' : value ? 'Cambiar video' : 'Subir video'}
+        </button>
+        {value && (
+          <button
+            type="button"
+            onClick={handleRemove}
+            disabled={status === 'uploading' || status === 'removing'}
+            className="flex items-center gap-2 rounded-lg bg-neutral-800 border border-white/10 px-3 py-2 text-sm text-neutral-400 hover:text-red-400 hover:border-red-400/30 transition disabled:opacity-50"
+          >
+            <Trash2 className="w-4 h-4" />
+            {status === 'removing' ? 'Quitando...' : 'Quitar'}
+          </button>
+        )}
+      </div>
       {status === 'error' && <p className="text-xs text-red-400 mt-1">No se pudo subir el video</p>}
 
       <p className="text-xs text-neutral-500 mt-2 mb-1">...o pegá una URL directa (si ya está alojado en otro lado):</p>

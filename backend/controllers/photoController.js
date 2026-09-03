@@ -2,6 +2,7 @@ const cloudinary = require('../config/cloudinary');
 const Event = require('../models/Event');
 const Photo = require('../models/Photo');
 const { containsBannedWord } = require('../utils/moderationFilter');
+const { extractPublicIdFromUrl } = require('../utils/cloudinary');
 
 const MAX_VIDEO_BYTES = 20 * 1024 * 1024;
 const MAX_VIDEO_SECONDS = 15.5; // pequeño margen sobre el límite de 15s del frontend
@@ -59,16 +60,6 @@ function isTrustedCloudinaryUrl(url, folder, resourceType = 'image') {
 }
 
 // Fallback para fotos viejas que no guardaron publicId: lo deduce de la URL.
-function extractPublicIdFromUrl(url) {
-  try {
-    const decoded = decodeURIComponent(url);
-    const match = decoded.match(/\/upload\/(?:v\d+\/)?(.+)\.[a-zA-Z0-9]+$/);
-    return match ? match[1] : null;
-  } catch {
-    return null;
-  }
-}
-
 async function signUpload(req, res) {
   const { eventSlug } = req.params;
   const assetType = req.query.type === 'video' ? 'video' : 'image';

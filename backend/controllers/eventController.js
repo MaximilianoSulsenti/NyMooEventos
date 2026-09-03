@@ -4,6 +4,7 @@ const Guest = require('../models/Guest');
 const Photo = require('../models/Photo');
 const cloudinary = require('../config/cloudinary');
 const { isAdminEmail } = require('../middleware/admin');
+const { extractPublicIdFromUrl } = require('../utils/cloudinary');
 
 function slugify(value) {
   return value
@@ -613,6 +614,32 @@ async function signAppearanceUpload(req, res) {
   });
 }
 
+// Borra el archivo real de Cloudinary cuando el organizador quita una
+// imagen/video de apariencia (fondo global, fondo por sección, sobre de
+// bienvenida) -- sin esto, el asset se quedaba subido para siempre aunque
+// ya no lo usara nadie, comiéndose la cuota de storage sin necesidad. Se
+// hace best-effort: si Cloudinary falla o la URL no era de esta cuenta, no
+// bloquea al organizador para seguir editando su invitación.
+async function deleteAppearanceAsset(req, res) {
+  const { url, resourceType } = req.body;
+  if (!url) {
+    return res.status(400).json({ message: 'Falta la URL del archivo a borrar' });
+  }
+
+  const publicId = extractPublicIdFromUrl(url);
+  if (!publicId) {
+    return res.json({ deleted: false });
+  }
+
+  try {
+    await cloudinary.uploader.destroy(publicId, { resource_type: resourceType === 'video' ? 'video' : 'image' });
+    res.json({ deleted: true });
+  } catch (err) {
+    console.error('[Cloudinary] No se pudo borrar el asset de apariencia:', err.message);
+    res.json({ deleted: false });
+  }
+}
+
 async function updateModerationModeForClient(req, res) {
   const { moderationMode } = req.body;
 
@@ -776,6 +803,7 @@ module.exports = {
   updatePlaylistForClient,
   getPlaylistForClient,
   signAppearanceUpload,
+  deleteAppearanceAsset,
   updateModerationModeForClient,
   updatePlaybackSpeedForClient,
   updateMaxLivePhotosForClient,
