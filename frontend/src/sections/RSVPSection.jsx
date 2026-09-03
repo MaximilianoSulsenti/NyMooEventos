@@ -34,6 +34,7 @@ function RSVPSection({ event, config, appearance, styles }) {
   if (isWhatsapp && !event.rsvpSettings?.whatsappNumber) return null
 
   const accentColor = isWhatsapp ? WHATSAPP_GREEN : primaryColor
+  const priceButtonColor = config.priceButtonColor || config.textColor || '#ffffff'
 
   return (
     <section className={`px-6 ${styles.fontClass}`}>
@@ -78,14 +79,26 @@ function RSVPSection({ event, config, appearance, styles }) {
         </Button>
 
         {guestCardEnabled && (
-          <button
+          <motion.button
             type="button"
             onClick={() => setShowPrice(true)}
-            className="flex items-center gap-1.5 text-xs text-white/50 hover:text-white transition"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="flex items-center gap-1.5 text-xs px-4 py-2 rounded-full border transition-colors"
+            style={{
+              // Un botón "fantasma" (con contorno, sin relleno sólido) a
+              // propósito -- por más color que se elija, nunca compite en
+              // peso visual con el botón principal de arriba (ese sí
+              // relleno sólido con degradado y sombra propia). Sin color
+              // elegido, cae al mismo gris apagado de antes.
+              color: `${priceButtonColor}cc`,
+              borderColor: `${priceButtonColor}40`,
+              background: `${priceButtonColor}12`,
+            }}
           >
             <CreditCard className="w-3.5 h-3.5" />
             {config.priceButtonText || 'Ver valor de la tarjeta'}
-          </button>
+          </motion.button>
         )}
       </motion.div>
 
@@ -95,6 +108,8 @@ function RSVPSection({ event, config, appearance, styles }) {
           minorPrice={event.rsvpSettings?.guestCardMinorPrice}
           description={event.rsvpSettings?.guestCardDescription}
           primaryColor={accentColor}
+          modalBgColor={config.modalBgColor}
+          modalTextColor={config.modalTextColor}
           onClose={() => setShowPrice(false)}
         />
       )}
@@ -103,6 +118,8 @@ function RSVPSection({ event, config, appearance, styles }) {
         <PremiumRsvpGate
           event={event}
           primaryColor={primaryColor}
+          modalBgColor={config.modalBgColor}
+          modalTextColor={config.modalTextColor}
           dietaryOptions={config.dietaryOptions}
           extraQuestions={config.extraQuestions}
           onClose={() => setIsOpen(false)}
@@ -113,6 +130,8 @@ function RSVPSection({ event, config, appearance, styles }) {
         <RsvpForm
           eventSlug={event.eventSlug}
           primaryColor={accentColor}
+          modalBgColor={config.modalBgColor}
+          modalTextColor={config.modalTextColor}
           dietaryOptions={config.dietaryOptions}
           extraQuestions={config.extraQuestions}
           onClose={() => setIsOpen(false)}

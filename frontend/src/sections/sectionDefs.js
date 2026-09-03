@@ -300,6 +300,17 @@ export const SECTION_FIELD_DEFS = {
     { key: 'buttonTextWhatsapp', label: 'Texto del botón (si confirman por WhatsApp)', type: 'text' },
     { key: 'buttonTextForm', label: 'Texto del botón (si confirman por formulario propio)', type: 'text' },
     { key: 'priceButtonText', label: 'Texto del link "Ver valor de la tarjeta" (opcional)', type: 'text' },
+    { key: 'priceButtonColor', label: 'Color del botón "Ver valor de la tarjeta" (opcional)', type: 'color' },
+    {
+      key: 'modalBgColor',
+      label: 'Color de fondo del modal de confirmación (opcional)',
+      type: 'color',
+    },
+    {
+      key: 'modalTextColor',
+      label: 'Color del texto del modal de confirmación (opcional)',
+      type: 'color',
+    },
     {
       key: 'dietaryOptions',
       label: 'Opciones de restricciones alimentarias (una por línea, ej. "Vegetariano")',

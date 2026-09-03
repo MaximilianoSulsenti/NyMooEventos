@@ -1,79 +1,53 @@
-import { motion, AnimatePresence } from 'motion/react'
-import { X, Check, HeartCrack } from 'lucide-react'
-import { shadeColor } from '../utils/color'
-import useLockBodyScroll from '../hooks/useLockBodyScroll'
+import { motion } from 'motion/react'
+import { Check, HeartCrack } from 'lucide-react'
+import RsvpModalShell from './RsvpModalShell'
+import { secondaryTextColor } from '../utils/color'
 
 // Reemplaza al RsvpForm cuando un invitado VIP que YA confirmó (o declinó)
 // vuelve a entrar con su link personalizado -- en vez de mostrarle de nuevo
 // el formulario para completar, se le muestra esto: ya no hay nada que
 // llenar, solo la confirmación de lo que ya quedó registrado.
-function RsvpStatusCard({ guestName, status, companionNames, primaryColor = '#a855f7', onClose }) {
-  useLockBodyScroll()
-  const light = shadeColor(primaryColor, 25)
-  const dark = shadeColor(primaryColor, -25)
+function RsvpStatusCard({ guestName, status, companionNames, primaryColor = '#a855f7', modalBgColor, modalTextColor, onClose }) {
   const isConfirmed = status === 'confirmado'
   const companions = Array.isArray(companionNames) ? companionNames.filter(Boolean) : []
+  const mutedColor = secondaryTextColor(modalTextColor, '99')
+  const bodyColor = secondaryTextColor(modalTextColor, 'd9')
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-      >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 10 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ duration: 0.25 }}
-          className="rounded-3xl p-px w-full max-w-md shadow-2xl"
-          style={{ background: `linear-gradient(160deg, ${light}90, transparent 45%, ${dark}70)` }}
+    <RsvpModalShell accentColor={primaryColor} bgColor={modalBgColor} textColor={modalTextColor} onClose={onClose}>
+      <div className="text-center">
+        <motion.span
+          initial={{ scale: 0, rotate: -30 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: 'spring', stiffness: 260, damping: 16 }}
+          className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"
+          style={{ background: `${primaryColor}22`, color: primaryColor }}
         >
-          <div className="bg-neutral-900 text-white rounded-[calc(1.5rem-1px)] p-6 relative max-h-[90vh] overflow-y-auto text-center">
-            <button
-              type="button"
-              onClick={onClose}
-              className="absolute top-4 right-4 text-neutral-400 hover:text-white transition-colors"
-              aria-label="Cerrar"
-            >
-              <X className="w-5 h-5" />
-            </button>
+          {isConfirmed ? <Check className="w-7 h-7" /> : <HeartCrack className="w-7 h-7" />}
+        </motion.span>
 
-            <motion.span
-              initial={{ scale: 0, rotate: -30 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ type: 'spring', stiffness: 260, damping: 16 }}
-              className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"
-              style={{ background: `${primaryColor}22`, color: primaryColor }}
-            >
-              {isConfirmed ? <Check className="w-7 h-7" /> : <HeartCrack className="w-7 h-7" />}
-            </motion.span>
+        <p className="text-sm mb-1" style={{ color: mutedColor }}>
+          ¡Hola, {guestName}!
+        </p>
+        <h2 className="text-xl font-semibold mb-2">
+          {isConfirmed ? 'Ya confirmaste tu asistencia' : 'Ya registramos tu respuesta'}
+        </h2>
 
-            <p className="text-neutral-400 text-sm mb-1">¡Hola, {guestName}!</p>
-            <h2 className="text-xl font-semibold mb-2">
-              {isConfirmed ? 'Ya confirmaste tu asistencia' : 'Ya registramos tu respuesta'}
-            </h2>
-
-            {isConfirmed ? (
-              <p className="text-neutral-300 text-sm leading-relaxed">
-                {companions.length > 0 ? (
-                  <>
-                    Vas a venir con {companions.join(', ')}. ¡Los esperamos en el evento!
-                  </>
-                ) : (
-                  '¡Te esperamos en el evento!'
-                )}
-              </p>
+        {isConfirmed ? (
+          <p className="text-sm leading-relaxed" style={{ color: bodyColor }}>
+            {companions.length > 0 ? (
+              <>Vas a venir con {companions.join(', ')}. ¡Los esperamos en el evento!</>
             ) : (
-              <p className="text-neutral-300 text-sm leading-relaxed">
-                Registramos que no vas a poder acompañarnos. ¡Gracias por avisarnos!
-              </p>
+              '¡Te esperamos en el evento!'
             )}
-          </div>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
+          </p>
+        ) : (
+          <p className="text-sm leading-relaxed" style={{ color: bodyColor }}>
+            Registramos que no vas a poder acompañarnos. ¡Gracias por avisarnos!
+          </p>
+        )}
+      </div>
+    </RsvpModalShell>
   )
 }
 

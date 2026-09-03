@@ -1,13 +1,19 @@
 import { motion, AnimatePresence } from 'motion/react'
 import { X, CreditCard } from 'lucide-react'
 import useLockBodyScroll from '../hooks/useLockBodyScroll'
+import { secondaryTextColor } from '../utils/color'
 
 // Info del costo de la tarjeta del salón, cargada por el organizador en
 // RsvpSettingsPanel (rsvpSettings.guestCard*) -- texto libre a propósito,
 // igual que guestCardDetails.pricePerCard en el Order, porque no siempre
 // hay un número cerrado ("a confirmar", "USD 20", etc.).
-function GuestCardPriceModal({ adultPrice, minorPrice, description, primaryColor, onClose }) {
+function GuestCardPriceModal({ adultPrice, minorPrice, description, primaryColor, modalBgColor, modalTextColor, onClose }) {
   useLockBodyScroll()
+  const bg = modalBgColor || '#171717'
+  const textColor = modalTextColor || '#ffffff'
+  const mutedColor = secondaryTextColor(modalTextColor, '99')
+  const rowBg = `${textColor}0d`
+  const rowBorder = `${textColor}1a`
 
   return (
     <AnimatePresence>
@@ -22,12 +28,14 @@ function GuestCardPriceModal({ adultPrice, minorPrice, description, primaryColor
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.25 }}
-          className="bg-neutral-900 text-white rounded-2xl w-full max-w-sm p-6 relative shadow-2xl border border-white/10 max-h-[90vh] overflow-y-auto"
+          className="rounded-2xl w-full max-w-sm p-6 relative shadow-2xl border max-h-[90vh] overflow-y-auto"
+          style={{ background: bg, color: textColor, borderColor: rowBorder }}
         >
           <button
             type="button"
             onClick={onClose}
-            className="absolute top-4 right-4 text-neutral-400 hover:text-white transition-colors"
+            className="absolute top-4 right-4 opacity-60 hover:opacity-100 transition-opacity"
+            style={{ color: textColor }}
             aria-label="Cerrar"
           >
             <X className="w-5 h-5" />
@@ -44,20 +52,34 @@ function GuestCardPriceModal({ adultPrice, minorPrice, description, primaryColor
 
           <div className="space-y-2.5">
             {adultPrice && (
-              <div className="flex items-center justify-between gap-3 rounded-xl bg-white/5 border border-white/10 px-4 py-3">
-                <span className="text-sm text-white/70">Adultos</span>
+              <div
+                className="flex items-center justify-between gap-3 rounded-xl border px-4 py-3"
+                style={{ background: rowBg, borderColor: rowBorder }}
+              >
+                <span className="text-sm" style={{ color: mutedColor }}>
+                  Adultos
+                </span>
                 <span className="font-semibold">{adultPrice}</span>
               </div>
             )}
             {minorPrice && (
-              <div className="flex items-center justify-between gap-3 rounded-xl bg-white/5 border border-white/10 px-4 py-3">
-                <span className="text-sm text-white/70">Menores</span>
+              <div
+                className="flex items-center justify-between gap-3 rounded-xl border px-4 py-3"
+                style={{ background: rowBg, borderColor: rowBorder }}
+              >
+                <span className="text-sm" style={{ color: mutedColor }}>
+                  Menores
+                </span>
                 <span className="font-semibold">{minorPrice}</span>
               </div>
             )}
           </div>
 
-          {description && <p className="text-white/50 text-sm leading-relaxed mt-4">{description}</p>}
+          {description && (
+            <p className="text-sm leading-relaxed mt-4" style={{ color: mutedColor }}>
+              {description}
+            </p>
+          )}
         </motion.div>
       </motion.div>
     </AnimatePresence>
