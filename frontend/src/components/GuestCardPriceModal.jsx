@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { X, CreditCard } from 'lucide-react'
 import useLockBodyScroll from '../hooks/useLockBodyScroll'
@@ -15,7 +16,8 @@ function GuestCardPriceModal({ adultPrice, minorPrice, description, primaryColor
   const rowBg = `${textColor}0d`
   const rowBorder = `${textColor}1a`
 
-  return (
+  // Portal a document.body -- ver comentario equivalente en RsvpModalShell.
+  return createPortal(
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
@@ -82,7 +84,8 @@ function GuestCardPriceModal({ adultPrice, minorPrice, description, primaryColor
           )}
         </motion.div>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   )
 }
 

@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { X, Sparkles } from 'lucide-react'
 import useLockBodyScroll from '../hooks/useLockBodyScroll'
@@ -11,7 +12,8 @@ import useLockBodyScroll from '../hooks/useLockBodyScroll'
 function ModulePreviewModal({ title, paragraphs, primaryColor, onClose }) {
   useLockBodyScroll()
 
-  return (
+  // Portal a document.body -- ver comentario equivalente en RsvpModalShell.
+  return createPortal(
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
@@ -53,7 +55,8 @@ function ModulePreviewModal({ title, paragraphs, primaryColor, onClose }) {
           <p className="text-white/40 text-xs">Todavía no está activo, pero se habilita solo el día del evento -- ¡no tenés que hacer nada!</p>
         </motion.div>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   )
 }
 

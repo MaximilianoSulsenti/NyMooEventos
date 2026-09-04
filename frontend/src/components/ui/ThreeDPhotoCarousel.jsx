@@ -1,4 +1,5 @@
 import { memo, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { AnimatePresence, motion, useAnimation, useMotionValue, useTransform } from 'motion/react'
 
 // Adaptado del componente oficial three-d-carousel de Cult-UI (cult-ui.com),
@@ -149,32 +150,44 @@ function ThreeDPhotoCarousel({ images }) {
 
   return (
     <motion.div layout className="relative">
-      <AnimatePresence mode="sync">
-        {activeImg && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0 }}
-            layoutId={`img-container-${activeImg}`}
-            layout="position"
-            onClick={handleClose}
-            className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 m-5 md:m-24 rounded-3xl"
-            style={{ willChange: 'opacity' }}
-            transition={transitionOverlay}
-          >
-            <motion.img
-              layoutId={`img-${activeImg}`}
-              src={activeImg}
-              alt=""
-              className="max-w-full max-h-full rounded-lg shadow-2xl"
-              initial={{ scale: 0.5 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.5, duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-              style={{ willChange: 'transform' }}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Portal a document.body -- ver comentario equivalente en
+          RsvpModalShell.jsx. El layoutId de Framer Motion sigue funcionando
+          igual a través de un portal (usa contexto de React, no de posición
+          en el DOM), así que la transición compartida con la miniatura del
+          carrusel no se ve afectada. Importante: el createPortal tiene que
+          envolver a AnimatePresence desde AFUERA, no ir adentro como hijo
+          suyo -- AnimatePresence filtra sus children con isValidElement,
+          que devuelve false para un ReactPortal, así que si el portal queda
+          adentro, lo descarta en silencio y el lightbox nunca aparece. */}
+      {createPortal(
+        <AnimatePresence mode="sync">
+          {activeImg && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0 }}
+              layoutId={`img-container-${activeImg}`}
+              layout="position"
+              onClick={handleClose}
+              className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 m-5 md:m-24 rounded-3xl"
+              style={{ willChange: 'opacity' }}
+              transition={transitionOverlay}
+            >
+              <motion.img
+                layoutId={`img-${activeImg}`}
+                src={activeImg}
+                alt=""
+                className="max-w-full max-h-full rounded-lg shadow-2xl"
+                initial={{ scale: 0.5 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.5, duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+                style={{ willChange: 'transform' }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
       <div className="relative h-[360px] md:h-[420px] w-full overflow-hidden">
         <Carousel
           handleClick={handleClick}

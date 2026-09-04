@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { X } from 'lucide-react'
 import { shadeColor } from '../utils/color'
@@ -16,7 +17,12 @@ function RsvpModalShell({ accentColor = '#a855f7', bgColor, textColor, onClose, 
   const bg = bgColor || '#171717'
   const text = textColor || '#ffffff'
 
-  return (
+  // Portal a document.body -- sin esto, el modal queda anidado dentro del
+  // <section> de la sección que lo abrió (RSVP, regalos, etc), y otra
+  // sección más abajo en la página puede terminar pintándose ENCIMA de él
+  // (y capturando los clicks) pese al position:fixed + z-50, porque su
+  // stacking queda atado al de esa sección en vez de ir directo al root.
+  return createPortal(
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
@@ -52,7 +58,8 @@ function RsvpModalShell({ accentColor = '#a855f7', bgColor, textColor, onClose, 
           </div>
         </motion.div>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   )
 }
 

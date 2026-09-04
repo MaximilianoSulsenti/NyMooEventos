@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { X } from 'lucide-react'
 import UploadPhotosForm from './UploadPhotosForm'
@@ -6,7 +7,8 @@ import useLockBodyScroll from '../hooks/useLockBodyScroll'
 function UploadPhotosModal({ eventSlug, primaryColor, allowVideos, onClose }) {
   useLockBodyScroll()
 
-  return (
+  // Portal a document.body -- ver comentario equivalente en RsvpModalShell.
+  return createPortal(
     <AnimatePresence>
       <motion.div
         initial={{ opacity: 0 }}
@@ -34,7 +36,8 @@ function UploadPhotosModal({ eventSlug, primaryColor, allowVideos, onClose }) {
           <UploadPhotosForm eventSlug={eventSlug} primaryColor={primaryColor} allowVideos={allowVideos} />
         </motion.div>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   )
 }
 
