@@ -147,6 +147,26 @@ body {
   font-family: 'Alex Brush', cursive;
 }
 
+.font-mrdehaviland {
+  font-family: 'Mr De Haviland', cursive;
+}
+
+.font-italianno {
+  font-family: 'Italianno', cursive;
+}
+
+.font-rougescript {
+  font-family: 'Rouge Script', cursive;
+}
+
+.font-petitformalscript {
+  font-family: 'Petit Formal Script', cursive;
+}
+
+.font-meaculpa {
+  font-family: 'Mea Culpa', cursive;
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;

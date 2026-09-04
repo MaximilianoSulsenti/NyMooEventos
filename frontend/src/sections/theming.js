@@ -83,6 +83,11 @@ export const FONT_FAMILY_CLASSES = {
   beaurivage: 'font-beaurivage',
   lavishlyyours: 'font-lavishlyyours',
   alexbrush: 'font-alexbrush',
+  mrdehaviland: 'font-mrdehaviland',
+  italianno: 'font-italianno',
+  rougescript: 'font-rougescript',
+  petitformalscript: 'font-petitformalscript',
+  meaculpa: 'font-meaculpa',
 }
 
 // titleFontFamily es opcional -- vacío/no elegido usa la misma tipografía

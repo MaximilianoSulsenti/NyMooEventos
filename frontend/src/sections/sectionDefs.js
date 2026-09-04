@@ -89,6 +89,11 @@ export const FONTS = [
   { value: 'beaurivage', label: 'Caligrafía francesa fina (Beau Rivage)' },
   { value: 'lavishlyyours', label: 'Firma elegante (Lavishly Yours)' },
   { value: 'alexbrush', label: 'Pincel clásico (Alex Brush)' },
+  { value: 'mrdehaviland', label: 'Flourish grande clásico (Mr De Haviland)' },
+  { value: 'italianno', label: 'Elegante con rulos (Italianno)' },
+  { value: 'rougescript', label: 'Caligrafía romántica (Rouge Script)' },
+  { value: 'petitformalscript', label: 'Formal delicada (Petit Formal Script)' },
+  { value: 'meaculpa', label: 'Manuscrita casual (Mea Culpa)' },
 ]
 
 export const BG_TYPE_OPTIONS = [
