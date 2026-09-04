@@ -5,7 +5,7 @@ import { resolveIcon } from './eventIcons'
 import AnimatedIcon from '../components/AnimatedIcon'
 import { glassStyle, glassBlurClass } from '../utils/glass'
 import { CARD_REVEAL } from '../utils/motionPresets'
-import { secondaryTextColor } from '../utils/color'
+import { secondaryTextColor, titleTextStyle } from '../utils/color'
 
 // Un grupo de detalles (ej. "Ceremonia Religiosa" con Fecha/Hora/Lugar) --
 // mismo AnimatedIcon/label/text que el bloque de "detalles" de siempre,
@@ -129,7 +129,7 @@ function EventDetail({ event, config, appearance, styles }) {
       {config.title && (
         <h2
           className={`${titleSize} ${config.subtitle ? 'mb-1' : 'mb-5'} ${styles.heading}`}
-          style={{ color: config.textColor || undefined }}
+          style={titleTextStyle(config)}
         >
           {config.title}
         </h2>

@@ -2,6 +2,7 @@ import {
   SECTION_FIELD_DEFS,
   BACKGROUND_FIELD_DEFS,
   TEXT_FIELD_DEFS,
+  TITLE_GRADIENT_FIELD_DEFS,
   GLASS_FIELD_DEFS,
   SECTIONS_WITH_GLASS_CARD,
 } from '../../sections/sectionDefs'
@@ -28,6 +29,27 @@ const SECTIONS_WITH_TITLE_COLOR = [
   'InstagramSection',
   'Timeline',
   'Footer',
+]
+
+// Subconjunto de SECTIONS_WITH_TITLE_COLOR que además tiene un título
+// principal real (<h1>/<h2>) al que aplicarle el degradado -- RSVP y Footer
+// no tienen uno (su texto "título" ya es secundario/tenue), así que no
+// muestran este control, que ahí no haría nada.
+const SECTIONS_WITH_TITLE_GRADIENT = [
+  'Hero',
+  'EventDetail',
+  'Countdown',
+  'Story',
+  'Gallery',
+  'LiveGallery',
+  'DigitalAlbumButton',
+  'Location',
+  'GiftRegistry',
+  'SalonCarrousel',
+  'Info',
+  'MusicPlaylist',
+  'InstagramSection',
+  'Timeline',
 ]
 
 function FieldInput({ eventId, field, config, onChange }) {
@@ -146,6 +168,7 @@ function FieldInput({ eventId, field, config, onChange }) {
 function SectionFieldEditor({ eventId, sectionId, config, onChange }) {
   const fields = SECTION_FIELD_DEFS[sectionId] || []
   const showTextColor = SECTIONS_WITH_TITLE_COLOR.includes(sectionId)
+  const showTitleGradient = SECTIONS_WITH_TITLE_GRADIENT.includes(sectionId)
   const showGlass = SECTIONS_WITH_GLASS_CARD.includes(sectionId)
 
   function updateField(key, value) {
@@ -160,6 +183,10 @@ function SectionFieldEditor({ eventId, sectionId, config, onChange }) {
           {TEXT_FIELD_DEFS.map((field) => (
             <FieldInput key={field.key} eventId={eventId} field={field} config={config} onChange={updateField} />
           ))}
+          {showTitleGradient &&
+            TITLE_GRADIENT_FIELD_DEFS.filter((field) => !field.showIf || field.showIf(config)).map((field) => (
+              <FieldInput key={field.key} eventId={eventId} field={field} config={config} onChange={updateField} />
+            ))}
         </div>
       )}
 

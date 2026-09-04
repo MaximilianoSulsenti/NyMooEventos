@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
 import { cn } from '../utils/cn'
 import { glassStyle, glassBlurClass } from '../utils/glass'
-import { secondaryTextColor } from '../utils/color'
+import { secondaryTextColor, titleTextStyle } from '../utils/color'
 
 function getTimeLeft(target) {
   const diff = Math.max(0, new Date(target).getTime() - Date.now())
@@ -44,7 +44,7 @@ function Countdown({ event, config, appearance, styles }) {
 
   return (
     <section className={`text-center px-6 ${styles.fontClass}`}>
-      <h2 className={`text-lg ${config.subtitle ? 'mb-1' : 'mb-6'} ${styles.heading}`} style={{ color: config.textColor || undefined }}>
+      <h2 className={`text-lg ${config.subtitle ? 'mb-1' : 'mb-6'} ${styles.heading}`} style={titleTextStyle(config)}>
         {config.title || 'Cuenta regresiva'}
       </h2>
       {config.subtitle && (

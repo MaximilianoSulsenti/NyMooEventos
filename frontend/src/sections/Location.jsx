@@ -4,7 +4,7 @@ import { resolveIcon } from './eventIcons'
 import AnimatedIcon from '../components/AnimatedIcon'
 import Button from '../components/ui/Button'
 import { glassStyle, glassBlurClass } from '../utils/glass'
-import { secondaryTextColor } from '../utils/color'
+import { secondaryTextColor, titleTextStyle } from '../utils/color'
 
 function isEmbedUrl(url = '') {
   return url.includes('google.com/maps/embed')
@@ -19,7 +19,7 @@ function Location({ config, appearance, styles }) {
 
   return (
     <section className={`text-center px-6 ${styles.fontClass}`}>
-      <h2 className={`${titleSize} ${config.subtitle ? 'mb-1' : 'mb-6'} ${styles.heading}`} style={{ color: config.textColor || undefined }}>
+      <h2 className={`${titleSize} ${config.subtitle ? 'mb-1' : 'mb-6'} ${styles.heading}`} style={titleTextStyle(config)}>
         {config.title || 'Ubicación'}
       </h2>
       {config.subtitle && (

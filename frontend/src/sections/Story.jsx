@@ -1,6 +1,6 @@
 import { motion } from 'motion/react'
 import { Heart } from 'lucide-react'
-import { secondaryTextColor } from '../utils/color'
+import { secondaryTextColor, titleTextStyle } from '../utils/color'
 
 function Story({ config, appearance, styles }) {
   const milestones = Array.isArray(config.milestones) ? config.milestones : []
@@ -15,7 +15,7 @@ function Story({ config, appearance, styles }) {
       {config.title && (
         <h2
           className={`${titleSize} ${config.subtitle ? 'mb-1' : 'mb-4'} ${styles.heading}`}
-          style={{ color: config.textColor || undefined }}
+          style={titleTextStyle(config)}
         >
           {config.title}
         </h2>

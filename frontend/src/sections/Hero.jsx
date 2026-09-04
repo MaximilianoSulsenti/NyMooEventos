@@ -1,7 +1,7 @@
 import { motion } from 'motion/react'
 import { Sparkles, CalendarDays } from 'lucide-react'
 import usePremiumGuest from '../hooks/usePremiumGuest'
-import { secondaryTextColor } from '../utils/color'
+import { secondaryTextColor, titleTextStyle } from '../utils/color'
 
 function Hero({ event, config, appearance, styles }) {
   const kicker = config.kicker || 'Te invitamos a celebrar'
@@ -54,7 +54,7 @@ function Hero({ event, config, appearance, styles }) {
         )}
         <h1
           className={`${titleSize} md:text-5xl mb-3 ${styles.heading}`}
-          style={{ color: config.textColor || undefined }}
+          style={titleTextStyle(config)}
         >
           {title}
         </h1>

@@ -5,7 +5,7 @@ import { cn } from '../utils/cn'
 import { resolveIcon } from './eventIcons'
 import AnimatedIcon from '../components/AnimatedIcon'
 import { glassStyle, glassBlurClass } from '../utils/glass'
-import { secondaryTextColor } from '../utils/color'
+import { secondaryTextColor, titleTextStyle } from '../utils/color'
 
 function InfoCard({ item, appearance, styles, config, isOpen, onToggle }) {
   const Icon = resolveIcon(item.icon, `${item.title || ''} ${item.body || ''}`)
@@ -72,7 +72,7 @@ function Info({ config, appearance, styles }) {
     <section className={`px-6 max-w-2xl mx-auto ${styles.fontClass}`}>
       <h2
         className={`text-center ${titleSize} ${config.subtitle ? 'mb-1' : 'mb-6'} ${styles.heading}`}
-        style={{ color: config.textColor || undefined }}
+        style={titleTextStyle(config)}
       >
         {config.title || 'Información adicional'}
       </h2>

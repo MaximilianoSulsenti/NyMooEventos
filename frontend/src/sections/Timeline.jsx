@@ -1,7 +1,7 @@
 import { motion } from 'motion/react'
 import { resolveIcon } from './eventIcons'
 import AnimatedIcon from '../components/AnimatedIcon'
-import { secondaryTextColor } from '../utils/color'
+import { secondaryTextColor, titleTextStyle } from '../utils/color'
 
 function Timeline({ config, appearance, styles }) {
   const items = Array.isArray(config.items) ? config.items : []
@@ -10,7 +10,7 @@ function Timeline({ config, appearance, styles }) {
 
   return (
     <section className={`text-center px-6 max-w-sm mx-auto ${styles.fontClass}`}>
-      <h2 className={`${titleSize} ${config.subtitle ? 'mb-1' : 'mb-6'} ${styles.heading}`} style={{ color: config.textColor || undefined }}>
+      <h2 className={`${titleSize} ${config.subtitle ? 'mb-1' : 'mb-6'} ${styles.heading}`} style={titleTextStyle(config)}>
         {config.title || 'Cronograma'}
       </h2>
       {config.subtitle && (

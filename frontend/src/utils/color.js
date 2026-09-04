@@ -54,6 +54,23 @@ export function secondaryTextColor(textColor, opacityHex) {
   return `${textColor || '#ffffff'}${opacityHex}`
 }
 
+// Style para el título principal de una sección -- degradado de dos colores
+// (background-clip: text) si está activado y ambos colores están cargados,
+// si no el color simple de siempre. Pensado como reemplazo directo de
+// { color: config.textColor || undefined } en el <h1>/<h2> de cada sección.
+export function titleTextStyle(config) {
+  if (config.titleColorMode === 'degradado' && config.titleGradientFrom && config.titleGradientTo) {
+    return {
+      backgroundImage: `linear-gradient(${config.titleGradientDirection || 'to bottom'}, ${config.titleGradientFrom}, ${config.titleGradientTo})`,
+      WebkitBackgroundClip: 'text',
+      backgroundClip: 'text',
+      color: 'transparent',
+      WebkitTextFillColor: 'transparent',
+    }
+  }
+  return { color: config.textColor || undefined }
+}
+
 // Promedia los píxeles de una imagen/video ya cargado (achicado a un canvas
 // chico primero, para que sea rápido) y devuelve un color representativo.
 // Se usa para el telón de fondo del sobre de bienvenida: que acompañe los

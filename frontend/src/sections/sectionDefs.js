@@ -160,6 +160,40 @@ export const BACKGROUND_FIELD_DEFS = [
 // (ver secondaryTextColor en utils/color.js), no solo el título.
 export const TEXT_FIELD_DEFS = [{ key: 'textColor', label: 'Color del texto', type: 'color' }]
 
+// Degradado opcional para el TÍTULO principal de la sección únicamente (no
+// el subtítulo/cuerpo, que siguen derivando de textColor de arriba vía
+// secondaryTextColor) -- ver titleTextStyle en utils/color.js.
+export const TITLE_GRADIENT_FIELD_DEFS = [
+  {
+    key: 'titleColorMode',
+    label: 'Estilo del título',
+    type: 'select',
+    options: [
+      { value: 'solido', label: 'Color sólido' },
+      { value: 'degradado', label: 'Degradado (dos colores)' },
+    ],
+  },
+  {
+    key: 'titleGradientFrom',
+    label: 'Color inicial del degradado',
+    type: 'color',
+    showIf: (config) => config.titleColorMode === 'degradado',
+  },
+  {
+    key: 'titleGradientTo',
+    label: 'Color final del degradado',
+    type: 'color',
+    showIf: (config) => config.titleColorMode === 'degradado',
+  },
+  {
+    key: 'titleGradientDirection',
+    label: 'Dirección del degradado',
+    type: 'select',
+    options: GRADIENT_DIRECTION_OPTIONS,
+    showIf: (config) => config.titleColorMode === 'degradado',
+  },
+]
+
 // Fondo vidriado (glassmorphism) editable, para las secciones con tarjetas de vidrio.
 export const GLASS_FIELD_DEFS = [
   { key: 'glassOpacity', label: 'Opacidad del vidrio', type: 'range', min: 0, max: 20, step: 1 },

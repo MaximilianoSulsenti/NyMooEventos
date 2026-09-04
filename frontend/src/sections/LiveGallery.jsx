@@ -5,7 +5,7 @@ import Button from '../components/ui/Button'
 import UploadPhotosModal from '../components/UploadPhotosModal'
 import ModulePreviewModal from '../components/ModulePreviewModal'
 import { CARD_REVEAL } from '../utils/motionPresets'
-import { secondaryTextColor } from '../utils/color'
+import { secondaryTextColor, titleTextStyle } from '../utils/color'
 
 const PREVIEW_PARAGRAPHS = [
   'Acá vas a poder ver en tiempo real, proyectadas en la pantalla del salón, las fotos y videos que vayan subiendo tus invitados durante la fiesta.',
@@ -31,7 +31,7 @@ function LiveGallery({ event, config, appearance, styles }) {
   return (
     <section className={`text-center px-6 ${styles.fontClass}`}>
       <motion.div {...CARD_REVEAL}>
-        <h2 className={`${titleSize} mb-2 ${styles.heading}`} style={{ color: config.textColor || undefined }}>
+        <h2 className={`${titleSize} mb-2 ${styles.heading}`} style={titleTextStyle(config)}>
           {config.title || 'Galería en vivo'}
         </h2>
         {config.subtitle && (

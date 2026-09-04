@@ -5,7 +5,7 @@ import { InstagramIcon } from '../components/icons/BrandIcons'
 import { glassStyle, glassBlurClass } from '../utils/glass'
 import { cn } from '../utils/cn'
 import { CARD_REVEAL } from '../utils/motionPresets'
-import { secondaryTextColor } from '../utils/color'
+import { secondaryTextColor, titleTextStyle } from '../utils/color'
 
 // Degradado clásico de Instagram, usado cuando el admin no eligió un color
 // de acento propio en el editor.
@@ -45,7 +45,7 @@ function InstagramSection({ config, styles }) {
         />
 
         {config.title && (
-          <h2 className={`${titleSize} ${styles.heading}`} style={{ color: config.textColor || undefined }}>
+          <h2 className={`${titleSize} ${styles.heading}`} style={titleTextStyle(config)}>
             {config.title}
           </h2>
         )}

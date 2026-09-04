@@ -5,7 +5,7 @@ import api from '../services/api'
 import Button from '../components/ui/Button'
 import AnimatedIcon from '../components/AnimatedIcon'
 import { glassStyle, glassBlurClass } from '../utils/glass'
-import { secondaryTextColor } from '../utils/color'
+import { secondaryTextColor, titleTextStyle } from '../utils/color'
 import { cn } from '../utils/cn'
 import { CARD_REVEAL } from '../utils/motionPresets'
 
@@ -172,7 +172,7 @@ function MusicPlaylist({ event, config, appearance, styles }) {
           iconClassName="w-5 h-5"
         />
 
-        <h2 className={`${titleSize} ${styles.heading}`} style={{ color: config.textColor || undefined }}>
+        <h2 className={`${titleSize} ${styles.heading}`} style={titleTextStyle(config)}>
           {config.title || 'Playlist del evento'}
         </h2>
         {config.subtitle && (

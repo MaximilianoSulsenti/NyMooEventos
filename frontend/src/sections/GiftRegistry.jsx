@@ -7,7 +7,7 @@ import AnimatedIcon from '../components/AnimatedIcon'
 import { glassStyle, glassBlurClass } from '../utils/glass'
 import { cn } from '../utils/cn'
 import { CARD_REVEAL } from '../utils/motionPresets'
-import { secondaryTextColor } from '../utils/color'
+import { secondaryTextColor, titleTextStyle } from '../utils/color'
 
 function GiftRegistry({ config, appearance, styles }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -40,7 +40,7 @@ function GiftRegistry({ config, appearance, styles }) {
           iconClassName="w-6 h-6"
         />
 
-        <h2 className={`${titleSize} ${styles.heading}`} style={{ color: config.textColor || undefined }}>
+        <h2 className={`${titleSize} ${styles.heading}`} style={titleTextStyle(config)}>
           {config.title || 'Lista de regalos'}
         </h2>
 
