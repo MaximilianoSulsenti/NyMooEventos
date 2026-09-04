@@ -167,17 +167,30 @@ function EventDetail({ event, config, appearance, styles }) {
           {!config.hideDate && (
             <div className="flex flex-col sm:flex-row items-center justify-center gap-5 sm:gap-8 px-8 pt-7">
               <div className="flex flex-col items-center shrink-0">
-                <span className="text-[11px] uppercase tracking-[0.2em] text-white/50">{weekday}</span>
+                <span
+                  className="text-[11px] uppercase tracking-[0.2em]"
+                  style={{ color: secondaryTextColor(config.textColor, '80') }}
+                >
+                  {weekday}
+                </span>
                 <span className="text-5xl font-bold leading-none my-1" style={{ color: appearance.primaryColor }}>
                   {day}
                 </span>
-                <span className="text-sm uppercase tracking-widest text-white/70">{month}</span>
+                <span
+                  className="text-sm uppercase tracking-widest"
+                  style={{ color: secondaryTextColor(config.textColor, 'b3') }}
+                >
+                  {month}
+                </span>
               </div>
 
               <div className="hidden sm:block w-px self-stretch bg-white/10" />
               <div className="sm:hidden w-12 h-px bg-white/10" />
 
-              <p className="text-white/90 font-medium flex items-center gap-2">
+              <p
+                className="font-medium flex items-center gap-2"
+                style={{ color: secondaryTextColor(config.textColor, 'e6') }}
+              >
                 <Clock className="w-4 h-4 shrink-0" style={{ color: appearance.primaryColor }} />
                 {formattedTime} hs
               </p>
@@ -212,7 +225,11 @@ function EventDetail({ event, config, appearance, styles }) {
                       iconClassName="w-4 h-4"
                     />
                     <div>
-                      {detail.label && <p className="text-sm font-semibold text-white/90">{detail.label}</p>}
+                      {detail.label && (
+                        <p className="text-sm font-semibold" style={{ color: secondaryTextColor(config.textColor, 'e6') }}>
+                          {detail.label}
+                        </p>
+                      )}
                       {detail.text && (
                         <p className={bodySize} style={{ color: secondaryTextColor(config.textColor, '99') }}>
                           {detail.text}

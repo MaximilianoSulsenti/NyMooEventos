@@ -332,6 +332,16 @@ export const SECTION_FIELD_DEFS = {
     { key: 'cbuAlias', label: 'Alias / CBU', type: 'text' },
     { key: 'bankName', label: 'Banco (opcional)', type: 'text' },
     { key: 'customMessage', label: 'Mensaje de agradecimiento (dentro del modal)', type: 'textarea' },
+    {
+      key: 'modalBgColor',
+      label: 'Color de fondo del modal de regalo (opcional)',
+      type: 'color',
+    },
+    {
+      key: 'modalTextColor',
+      label: 'Color del texto del modal de regalo (opcional)',
+      type: 'color',
+    },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
     { key: 'fontSizeSubtitle', label: 'Tamaño del subtítulo', type: 'select', options: FONT_SIZE_OPTIONS },
   ],

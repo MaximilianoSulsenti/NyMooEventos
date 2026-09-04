@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
-import { X, Check, Lock } from 'lucide-react'
+import { X, Check, Lock, Plus } from 'lucide-react'
 import api from '../services/api'
 import Button from './ui/Button'
 import RsvpModalShell from './RsvpModalShell'
@@ -288,10 +288,11 @@ function RsvpForm({
                 <button
                   type="button"
                   onClick={addCompanion}
-                  className="mt-2 text-sm underline underline-offset-2 hover:brightness-125"
-                  style={{ color: primaryColor }}
+                  className="mt-2 inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg border transition-colors hover:brightness-125"
+                  style={{ color: textColor, background: `${textColor}0d`, borderColor: `${textColor}26` }}
                 >
-                  + Agregar acompañante
+                  <Plus className="w-3.5 h-3.5" />
+                  Agregar acompañante
                 </button>
               )}
             </div>

@@ -57,7 +57,11 @@ function Location({ config, appearance, styles }) {
                 iconClassName="w-6 h-6"
               />
 
-              {location.label && <p className={`font-semibold ${fontSize}`}>{location.label}</p>}
+              {location.label && (
+                <p className={`font-semibold ${fontSize}`} style={{ color: config.textColor || undefined }}>
+                  {location.label}
+                </p>
+              )}
               {location.address && (
                 <p className="text-sm max-w-xs" style={{ color: secondaryTextColor(config.textColor, '99') }}>
                   {location.address}

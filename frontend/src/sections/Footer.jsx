@@ -89,10 +89,11 @@ function Footer({ event, config, appearance, styles }) {
                 initial={{ opacity: 0, y: 10, scale: 0.8 }}
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
-                whileHover={{ scale: 1.12, y: -2, borderColor: primaryColor, color: primaryColor }}
+                whileHover={{ scale: 1.12, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ delay: index * 0.06, type: 'spring', stiffness: 260, damping: 18 }}
-                className="w-11 h-11 rounded-full flex items-center justify-center border border-white/10 bg-white/5 text-white/60 shadow-lg backdrop-blur-sm"
+                className="w-11 h-11 rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm transition-colors"
+                style={{ background: `${primaryColor}22`, color: primaryColor }}
               >
                 <Icon className="w-4 h-4" />
               </motion.a>
@@ -107,7 +108,8 @@ function Footer({ event, config, appearance, styles }) {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2, duration: 0.6 }}
-          className="text-white/30 text-xs mt-8 uppercase tracking-[0.15em]"
+          className="text-xs mt-8 uppercase tracking-[0.15em]"
+          style={{ color: secondaryTextColor(config.textColor, '4d') }}
         >
           {config.signature}
         </motion.p>

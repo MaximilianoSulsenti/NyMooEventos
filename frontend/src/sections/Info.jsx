@@ -28,9 +28,11 @@ function InfoCard({ item, appearance, styles, config, isOpen, onToggle }) {
           style={{ background: `${appearance.primaryColor}22`, color: appearance.primaryColor }}
           iconClassName="w-4 h-4"
         />
-        <span className="font-medium flex-1">{item.title}</span>
+        <span className="font-medium flex-1" style={{ color: config.textColor || undefined }}>
+          {item.title}
+        </span>
         <motion.span animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
-          <ChevronDown className="w-4 h-4 text-white/50" />
+          <ChevronDown className="w-4 h-4" style={{ color: secondaryTextColor(config.textColor, '80') }} />
         </motion.span>
       </button>
       <AnimatePresence initial={false}>

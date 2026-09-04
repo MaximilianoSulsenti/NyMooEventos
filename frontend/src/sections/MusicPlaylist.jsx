@@ -42,11 +42,20 @@ function toEmbedUrl(url) {
   }
 }
 
-function SongRequestForm({ eventSlug, primaryColor }) {
+function SongRequestForm({ eventSlug, primaryColor, config }) {
   const [name, setName] = useState('')
   const [song, setSong] = useState('')
   const [status, setStatus] = useState('idle') // idle | sending | success | error
   const [errorMessage, setErrorMessage] = useState('')
+
+  // Antes esta tarjeta usaba bg-white/5 + texto blanco fijo -- se veía bien
+  // en la mayoría de los temas (fondo oscuro) pero se volvía casi invisible
+  // si el organizador elegía un fondo claro, porque un 5% de blanco sobre
+  // blanco no se nota. Derivando el tinte del propio color de texto elegido
+  // (en vez de blanco fijo) queda igual que antes cuando nadie lo toca, y
+  // se ajusta solo con cualquier color que se elija.
+  const textColor = config?.textColor || '#ffffff'
+  const inputStyle = { color: textColor, background: `${textColor}0d`, borderColor: `${textColor}26` }
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -70,7 +79,9 @@ function SongRequestForm({ eventSlug, primaryColor }) {
 
   return (
     <div className="w-full pt-5 mt-5 border-t border-white/10" style={{ '--accent': primaryColor }}>
-      <p className="text-white/70 text-sm mb-3">¿Qué canción no puede faltar en la fiesta? 🎶</p>
+      <p className="text-sm mb-3" style={{ color: secondaryTextColor(textColor, 'b3') }}>
+        ¿Qué canción no puede faltar en la fiesta? 🎶
+      </p>
 
       <AnimatePresence mode="wait">
         {status === 'success' ? (
@@ -105,7 +116,8 @@ function SongRequestForm({ eventSlug, primaryColor }) {
               onChange={(e) => setName(e.target.value.slice(0, 40))}
               placeholder="Tu nombre"
               required
-              className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30"
+              style={inputStyle}
+              className="w-full rounded-xl border px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30"
             />
             <input
               type="text"
@@ -113,7 +125,8 @@ function SongRequestForm({ eventSlug, primaryColor }) {
               onChange={(e) => setSong(e.target.value.slice(0, 150))}
               placeholder="Nombre de la canción o link de Spotify/YouTube"
               required
-              className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30"
+              style={inputStyle}
+              className="w-full rounded-xl border px-3 py-2 text-sm outline-none transition-colors focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30"
             />
             {status === 'error' && <p className="text-red-400 text-xs">{errorMessage}</p>}
             <Button type="submit" disabled={status === 'sending'} primaryColor={primaryColor} className="w-full disabled:opacity-40">
@@ -188,7 +201,7 @@ function MusicPlaylist({ event, config, appearance, styles }) {
           )
         )}
 
-        {canRequestSongs && <SongRequestForm eventSlug={event.eventSlug} primaryColor={primaryColor} />}
+        {canRequestSongs && <SongRequestForm eventSlug={event.eventSlug} primaryColor={primaryColor} config={config} />}
       </motion.div>
     </section>
   )

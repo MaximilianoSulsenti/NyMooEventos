@@ -1,14 +1,15 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
-import { X, Copy, Check, Landmark } from 'lucide-react'
-import { shadeColor } from '../utils/color'
-import useLockBodyScroll from '../hooks/useLockBodyScroll'
+import { motion } from 'motion/react'
+import { Copy, Check, Landmark } from 'lucide-react'
+import { secondaryTextColor, shadeColor } from '../utils/color'
+import RsvpModalShell from './RsvpModalShell'
 
 function GiftModal({ config, primaryColor = '#a855f7', onClose }) {
-  useLockBodyScroll()
   const [copied, setCopied] = useState(false)
-  const light = shadeColor(primaryColor, 25)
-  const dark = shadeColor(primaryColor, -25)
+  const bg = config.modalBgColor || '#171717'
+  const textColor = config.modalTextColor || '#ffffff'
+  const mutedColor = secondaryTextColor(config.modalTextColor, '99')
+  const boxBg = shadeColor(bg, 12)
 
   const rows = [
     { label: 'Titular', value: config.holderName },
@@ -26,76 +27,58 @@ function GiftModal({ config, primaryColor = '#a855f7', onClose }) {
   }
 
   return (
-    <AnimatePresence>
+    <RsvpModalShell accentColor={primaryColor} bgColor={config.modalBgColor} textColor={config.modalTextColor} onClose={onClose}>
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+        initial={{ scale: 0, rotate: -20 }}
+        animate={{ scale: 1, rotate: 0 }}
+        transition={{ type: 'spring', stiffness: 260, damping: 16 }}
+        className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"
+        style={{ background: `${primaryColor}22`, color: primaryColor }}
       >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 10 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ duration: 0.25 }}
-          className="rounded-3xl p-px w-full max-w-md shadow-2xl"
-          style={{ background: `linear-gradient(160deg, ${light}90, transparent 45%, ${dark}70)` }}
-        >
-          <div className="bg-neutral-900 text-white rounded-[calc(1.5rem-1px)] p-6 relative max-h-[90vh] overflow-y-auto">
+        <Landmark className="w-7 h-7" />
+      </motion.div>
+
+      <h2 className="text-xl font-semibold text-center mb-1">Datos para tu regalo</h2>
+      <p className="text-sm text-center mb-6 break-words" style={{ color: mutedColor }}>
+        {config.customMessage || 'Gracias de corazón por pensar en nosotros.'}
+      </p>
+
+      <div className="rounded-2xl p-4 space-y-3" style={{ background: boxBg, border: `1px solid ${textColor}1a` }}>
+        {rows.map((row) => (
+          <div key={row.label} className="flex items-center justify-between gap-3">
+            <span className="text-sm shrink-0" style={{ color: mutedColor }}>
+              {row.label}
+            </span>
+            <span className="text-sm font-medium text-right truncate min-w-0" style={{ color: textColor }}>
+              {row.value}
+            </span>
+          </div>
+        ))}
+
+        <div className={rows.length > 0 ? 'pt-3' : ''} style={rows.length > 0 ? { borderTop: `1px solid ${textColor}1a` } : undefined}>
+          <p className="text-sm mb-1.5" style={{ color: mutedColor }}>
+            Alias / CBU
+          </p>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            <p
+              className="w-full min-w-0 truncate rounded-xl px-3 py-2 text-sm font-mono"
+              style={{ background: shadeColor(bg, 22), border: `1px solid ${textColor}1a`, color: textColor }}
+            >
+              {config.cbuAlias}
+            </p>
             <button
               type="button"
-              onClick={onClose}
-              className="absolute top-4 right-4 text-neutral-400 hover:text-white transition-colors"
-              aria-label="Cerrar"
+              onClick={handleCopy}
+              className="w-full sm:w-auto px-4 py-2 rounded-xl text-sm font-medium shrink-0 flex items-center justify-center gap-1.5 transition"
+              style={{ background: copied ? '#22c55e' : primaryColor, color: '#ffffff' }}
             >
-              <X className="w-5 h-5" />
+              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              {copied ? 'Copiado' : 'Copiar'}
             </button>
-
-            <motion.div
-              initial={{ scale: 0, rotate: -20 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ type: 'spring', stiffness: 260, damping: 16 }}
-              className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"
-              style={{ background: `${primaryColor}22`, color: primaryColor }}
-            >
-              <Landmark className="w-7 h-7" />
-            </motion.div>
-
-            <h2 className="text-xl font-semibold text-center mb-1">Datos para tu regalo</h2>
-            <p className="text-neutral-400 text-sm text-center mb-6 break-words">
-              {config.customMessage || 'Gracias de corazón por pensar en nosotros.'}
-            </p>
-
-            <div className="rounded-2xl bg-white/5 border border-white/10 p-4 space-y-3">
-              {rows.map((row) => (
-                <div key={row.label} className="flex items-center justify-between gap-3">
-                  <span className="text-neutral-500 text-sm shrink-0">{row.label}</span>
-                  <span className="text-white text-sm font-medium text-right truncate min-w-0">{row.value}</span>
-                </div>
-              ))}
-
-              <div className={rows.length > 0 ? 'pt-3 border-t border-white/10' : ''}>
-                <p className="text-neutral-500 text-sm mb-1.5">Alias / CBU</p>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                  <p className="w-full min-w-0 truncate rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm font-mono text-white">
-                    {config.cbuAlias}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={handleCopy}
-                    className="w-full sm:w-auto px-4 py-2 rounded-xl text-sm font-medium shrink-0 flex items-center justify-center gap-1.5 transition"
-                    style={{ background: copied ? '#22c55e' : primaryColor, color: '#ffffff' }}
-                  >
-                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    {copied ? 'Copiado' : 'Copiar'}
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
+        </div>
+      </div>
+    </RsvpModalShell>
   )
 }
 
