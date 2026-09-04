@@ -131,6 +131,22 @@ body {
   font-family: 'Freckle Face', fantasy;
 }
 
+.font-mrssaintdelafield {
+  font-family: 'Mrs Saint Delafield', cursive;
+}
+
+.font-beaurivage {
+  font-family: 'Beau Rivage', cursive;
+}
+
+.font-lavishlyyours {
+  font-family: 'Lavishly Yours', cursive;
+}
+
+.font-alexbrush {
+  font-family: 'Alex Brush', cursive;
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;

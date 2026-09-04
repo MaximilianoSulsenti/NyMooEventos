@@ -79,6 +79,10 @@ export const FONT_FAMILY_CLASSES = {
   silkscreen: 'font-silkscreen',
   nosifer: 'font-nosifer',
   freckleface: 'font-freckleface',
+  mrssaintdelafield: 'font-mrssaintdelafield',
+  beaurivage: 'font-beaurivage',
+  lavishlyyours: 'font-lavishlyyours',
+  alexbrush: 'font-alexbrush',
 }
 
 // titleFontFamily es opcional -- vacío/no elegido usa la misma tipografía

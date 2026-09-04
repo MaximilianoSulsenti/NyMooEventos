@@ -85,6 +85,10 @@ export const FONTS = [
   { value: 'silkscreen', label: 'Pixel retro (Silkscreen)' },
   { value: 'nosifer', label: 'Terror sangriento (Nosifer)' },
   { value: 'freckleface', label: 'Infantil redondeada (Freckle Face)' },
+  { value: 'mrssaintdelafield', label: 'Caligrafía clásica formal (Mrs Saint Delafield)' },
+  { value: 'beaurivage', label: 'Caligrafía francesa fina (Beau Rivage)' },
+  { value: 'lavishlyyours', label: 'Firma elegante (Lavishly Yours)' },
+  { value: 'alexbrush', label: 'Pincel clásico (Alex Brush)' },
 ]
 
 export const BG_TYPE_OPTIONS = [
