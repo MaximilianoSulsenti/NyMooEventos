@@ -1,40 +1,10 @@
-import { BG_TYPE_OPTIONS, GRADIENT_PRESETS, GRADIENT_DIRECTION_OPTIONS } from '../../sections/sectionDefs'
+import { BG_TYPE_OPTIONS, GRADIENT_PRESETS, GRADIENT_DIRECTION_OPTIONS, FONTS } from '../../sections/sectionDefs'
 import ImageUploadField from './ImageUploadField'
 import VideoUploadField from './VideoUploadField'
 import ColorPickerField from './ColorPickerField'
 import { BRAND } from '../../utils/brand'
 
 const THEMES = ['minimalista', 'moderno', 'vanguardista', 'romantica', 'bohemio', 'elegante', 'festivo']
-const FONTS = [
-  { value: 'sans', label: 'Sans-serif' },
-  { value: 'serif', label: 'Serif' },
-  { value: 'display', label: 'Elegante (Playfair Display)' },
-  { value: 'script', label: 'Manuscrita (Dancing Script)' },
-  { value: 'modern', label: 'Moderna (Poppins)' },
-  { value: 'greatvibes', label: 'Manuscrita fina (Great Vibes)' },
-  { value: 'cormorant', label: 'Clásica elegante (Cormorant Garamond)' },
-  { value: 'bebas', label: 'Bold festiva (Bebas Neue)' },
-  { value: 'chewy', label: 'Infantil y divertida (Chewy)' },
-  { value: 'hennypenny', label: 'Cuento infantil (Henny Penny)' },
-  { value: 'rubikspraypaint', label: 'Grafiti spray (Rubik Spray Paint)' },
-  { value: 'barriecito', label: 'Redondeada casual (Barriecito)' },
-  { value: 'festive', label: 'Festiva a mano (Festive)' },
-  { value: 'luxuriousscript', label: 'Caligrafía lujosa (Luxurious Script)' },
-  { value: 'monoton', label: 'Neón retro (Monoton)' },
-  { value: 'kablammo', label: 'Cómic explosivo (Kablammo)' },
-  { value: 'akronim', label: 'Gótica manuscrita (Akronim)' },
-  { value: 'nabla', label: '3D con volumen (Nabla)' },
-  { value: 'honk', label: 'Grafiti 3D (Honk)' },
-  { value: 'agudisplay', label: 'Redondeada gruesa (Agu Display)' },
-  { value: 'rubikmoonrocks', label: 'Burbuja divertida (Rubik Moonrocks)' },
-  { value: 'rubikvinyl', label: 'Sticker vinilo (Rubik Vinyl)' },
-  { value: 'rubikdistressed', label: 'Desgastada grunge (Rubik Distressed)' },
-  { value: 'frijole', label: 'Mexicana bold (Frijole)' },
-  { value: 'pressstart2p', label: 'Pixel arcade (Press Start 2P)' },
-  { value: 'silkscreen', label: 'Pixel retro (Silkscreen)' },
-  { value: 'nosifer', label: 'Terror sangriento (Nosifer)' },
-  { value: 'freckleface', label: 'Infantil redondeada (Freckle Face)' },
-]
 
 function AppearancePanel({ eventId, appearance, onChange }) {
   function update(patch) {

@@ -1,4 +1,4 @@
-import { BG_TYPE_OPTIONS, FONT_SIZE_OPTIONS } from '../../sections/sectionDefs'
+import { BG_TYPE_OPTIONS, FONT_SIZE_OPTIONS, FONTS } from '../../sections/sectionDefs'
 import ImageUploadField from './ImageUploadField'
 import VideoUploadField from './VideoUploadField'
 import { BRAND } from '../../utils/brand'
@@ -217,15 +217,11 @@ function EnvelopePanel({ eventId, settings, onChange }) {
               onChange={(e) => update({ fontFamily: e.target.value })}
               className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
             >
-              <option value="sans">Sans-serif</option>
-              <option value="serif">Serif</option>
-              <option value="display">Elegante (Playfair Display)</option>
-              <option value="script">Manuscrita (Dancing Script)</option>
-              <option value="modern">Moderna (Poppins)</option>
-              <option value="greatvibes">Manuscrita fina (Great Vibes)</option>
-              <option value="cormorant">Clásica elegante (Cormorant Garamond)</option>
-              <option value="bebas">Bold festiva (Bebas Neue)</option>
-              <option value="chewy">Infantil y divertida (Chewy)</option>
+              {FONTS.map((font) => (
+                <option key={font.value} value={font.value}>
+                  {font.label}
+                </option>
+              ))}
             </select>
           </div>
         </div>
