@@ -58,6 +58,7 @@ function SectionRenderer({ event }) {
         // siempre, esté o no activo el fondo global -- elegirlo a mano es
         // una señal explícita de querer eso ahí.
         const hasBgImage = config.bgType === 'imagen' && config.bgImageUrl
+        const hasBgGradient = config.bgType === 'gradiente' && config.bgGradientFrom && config.bgGradientTo
 
         return (
           <motion.div
@@ -74,6 +75,15 @@ function SectionRenderer({ event }) {
                 style={{
                   backgroundImage: `url(${config.bgImageUrl})`,
                   backgroundPosition: config.bgPosition || 'center',
+                  opacity: (config.bgOpacity ?? 100) / 100,
+                }}
+              />
+            )}
+            {hasBgGradient && (
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background: `linear-gradient(${config.bgGradientDirection || 'to bottom'}, ${config.bgGradientFrom}, ${config.bgGradientTo})`,
                   opacity: (config.bgOpacity ?? 100) / 100,
                 }}
               />

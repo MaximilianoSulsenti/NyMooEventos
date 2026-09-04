@@ -1,5 +1,15 @@
 function GlobalBackground({ appearance, fixed = true }) {
-  const { globalBgType, globalBgUrl, globalBgOpacity, globalBgGradient, backgroundColor } = appearance
+  const {
+    globalBgType,
+    globalBgUrl,
+    globalBgOpacity,
+    globalBgGradient,
+    globalBgGradientFrom,
+    globalBgGradientTo,
+    globalBgGradientDirection,
+    backgroundColor,
+  } = appearance
+  const isCustomGradient = globalBgGradient === '__custom__' && globalBgGradientFrom && globalBgGradientTo
 
   // El z-index negativo solo hace falta en la página pública (fixed=true),
   // donde este div escapa del flujo normal y necesita ir detrás de
@@ -32,7 +42,14 @@ function GlobalBackground({ appearance, fixed = true }) {
           style={{ opacity: (globalBgOpacity ?? 100) / 100 }}
         />
       )}
-      {globalBgGradient && <div className={`absolute inset-0 bg-gradient-to-b ${globalBgGradient}`} />}
+      {isCustomGradient ? (
+        <div
+          className="absolute inset-0"
+          style={{ background: `linear-gradient(${globalBgGradientDirection || 'to bottom'}, ${globalBgGradientFrom}, ${globalBgGradientTo})` }}
+        />
+      ) : (
+        globalBgGradient && <div className={`absolute inset-0 bg-gradient-to-b ${globalBgGradient}`} />
+      )}
     </div>
   )
 }

@@ -8,6 +8,7 @@ import {
 import ImageUploadField from './ImageUploadField'
 import ImageListField from './ImageListField'
 import RepeaterField from './RepeaterField'
+import ColorPickerField from './ColorPickerField'
 import { BRAND } from '../../utils/brand'
 
 const SECTIONS_WITH_TITLE_COLOR = [
@@ -67,32 +68,13 @@ function FieldInput({ eventId, field, config, onChange }) {
   }
 
   if (field.type === 'color') {
-    const current = value || '#ffffff'
     return (
-      <div>
-        <label className="block text-sm text-neutral-400 mb-1">{field.label}</label>
-        <div className="flex items-center gap-2">
-          <input
-            type="color"
-            value={current}
-            onChange={(e) => onChange(field.key, e.target.value)}
-            className="w-10 h-10 rounded cursor-pointer bg-transparent"
-          />
-          <input
-            type="text"
-            value={current}
-            onChange={(e) => onChange(field.key, e.target.value)}
-            className="flex-1 rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
-          />
-          <button
-            type="button"
-            onClick={() => onChange(field.key, '')}
-            className="text-xs text-neutral-500 hover:text-white transition shrink-0"
-          >
-            Restaurar
-          </button>
-        </div>
-      </div>
+      <ColorPickerField
+        label={field.label}
+        value={value}
+        onChange={(hex) => onChange(field.key, hex)}
+        allowReset
+      />
     )
   }
 

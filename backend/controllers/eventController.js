@@ -160,6 +160,9 @@ async function updateAppearance(req, res) {
     globalBgUrl,
     globalBgOpacity,
     globalBgGradient,
+    globalBgGradientFrom,
+    globalBgGradientTo,
+    globalBgGradientDirection,
   } = req.body;
 
   if (theme !== undefined) event.appearance.theme = theme;
@@ -173,6 +176,9 @@ async function updateAppearance(req, res) {
   if (globalBgUrl !== undefined) event.appearance.globalBgUrl = globalBgUrl;
   if (globalBgOpacity !== undefined) event.appearance.globalBgOpacity = globalBgOpacity;
   if (globalBgGradient !== undefined) event.appearance.globalBgGradient = globalBgGradient;
+  if (globalBgGradientFrom !== undefined) event.appearance.globalBgGradientFrom = globalBgGradientFrom;
+  if (globalBgGradientTo !== undefined) event.appearance.globalBgGradientTo = globalBgGradientTo;
+  if (globalBgGradientDirection !== undefined) event.appearance.globalBgGradientDirection = globalBgGradientDirection;
 
   await event.save();
   res.json(event);

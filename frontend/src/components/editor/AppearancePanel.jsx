@@ -1,6 +1,7 @@
-import { BG_TYPE_OPTIONS, GRADIENT_PRESETS } from '../../sections/sectionDefs'
+import { BG_TYPE_OPTIONS, GRADIENT_PRESETS, GRADIENT_DIRECTION_OPTIONS } from '../../sections/sectionDefs'
 import ImageUploadField from './ImageUploadField'
 import VideoUploadField from './VideoUploadField'
+import ColorPickerField from './ColorPickerField'
 import { BRAND } from '../../utils/brand'
 
 const THEMES = ['minimalista', 'moderno', 'vanguardista', 'romantica', 'bohemio', 'elegante', 'festivo']
@@ -15,28 +16,6 @@ const FONTS = [
   { value: 'bebas', label: 'Bold festiva (Bebas Neue)' },
   { value: 'chewy', label: 'Infantil y divertida (Chewy)' },
 ]
-
-function ColorField({ label, value, onChange }) {
-  return (
-    <div>
-      <label className="block text-sm text-neutral-400 mb-1">{label}</label>
-      <div className="flex items-center gap-2">
-        <input
-          type="color"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-10 h-10 rounded cursor-pointer bg-transparent"
-        />
-        <input
-          type="text"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="flex-1 rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
-        />
-      </div>
-    </div>
-  )
-}
 
 function AppearancePanel({ eventId, appearance, onChange }) {
   function update(patch) {
@@ -92,9 +71,9 @@ function AppearancePanel({ eventId, appearance, onChange }) {
         </select>
       </div>
 
-      <ColorField label="Color primario" value={appearance.primaryColor} onChange={(v) => update({ primaryColor: v })} />
-      <ColorField label="Color secundario" value={appearance.secondaryColor} onChange={(v) => update({ secondaryColor: v })} />
-      <ColorField label="Color de fondo" value={appearance.backgroundColor} onChange={(v) => update({ backgroundColor: v })} />
+      <ColorPickerField label="Color primario" value={appearance.primaryColor} onChange={(v) => update({ primaryColor: v })} />
+      <ColorPickerField label="Color secundario" value={appearance.secondaryColor} onChange={(v) => update({ secondaryColor: v })} />
+      <ColorPickerField label="Color de fondo" value={appearance.backgroundColor} onChange={(v) => update({ backgroundColor: v })} />
 
       <div className="pt-3 border-t border-white/10 space-y-3">
         <div className="flex items-center justify-between">
@@ -181,6 +160,35 @@ function AppearancePanel({ eventId, appearance, onChange }) {
                 ))}
               </select>
             </div>
+
+            {appearance.globalBgGradient === '__custom__' && (
+              <div className="space-y-3 pl-3 border-l-2 border-white/10">
+                <ColorPickerField
+                  label="Color inicial del degradado"
+                  value={appearance.globalBgGradientFrom || '#000000'}
+                  onChange={(v) => update({ globalBgGradientFrom: v })}
+                />
+                <ColorPickerField
+                  label="Color final del degradado"
+                  value={appearance.globalBgGradientTo || '#000000'}
+                  onChange={(v) => update({ globalBgGradientTo: v })}
+                />
+                <div>
+                  <label className="block text-sm text-neutral-400 mb-1">Dirección del degradado</label>
+                  <select
+                    value={appearance.globalBgGradientDirection || 'to bottom'}
+                    onChange={(e) => update({ globalBgGradientDirection: e.target.value })}
+                    className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)]"
+                  >
+                    {GRADIENT_DIRECTION_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

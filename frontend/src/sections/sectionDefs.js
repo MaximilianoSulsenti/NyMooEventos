@@ -40,6 +40,16 @@ export const GRADIENT_PRESETS = [
   { value: 'from-pink-900/40 via-transparent to-black/70', label: 'Rosa romántico' },
   { value: 'from-amber-900/40 via-transparent to-black/70', label: 'Dorado cálido' },
   { value: 'from-slate-800/50 via-transparent to-black/80', label: 'Elegante oscuro' },
+  { value: '__custom__', label: 'Personalizado (elegir 2 colores)' },
+]
+
+export const GRADIENT_DIRECTION_OPTIONS = [
+  { value: 'to bottom', label: 'De arriba a abajo' },
+  { value: 'to top', label: 'De abajo a arriba' },
+  { value: 'to right', label: 'De izquierda a derecha' },
+  { value: 'to left', label: 'De derecha a izquierda' },
+  { value: 'to bottom right', label: 'Diagonal ↘' },
+  { value: 'to bottom left', label: 'Diagonal ↙' },
 ]
 
 export const BG_TYPE_OPTIONS = [
@@ -98,6 +108,7 @@ export const BACKGROUND_FIELD_DEFS = [
     options: [
       { value: 'color', label: 'Color (usa el fondo general del tema)' },
       { value: 'imagen', label: 'Imagen' },
+      { value: 'gradiente', label: 'Degradado (dos colores)' },
     ],
   },
   { key: 'bgImageUrl', label: 'Imagen de fondo', type: 'image', showIf: (config) => config.bgType === 'imagen' },
@@ -115,13 +126,32 @@ export const BACKGROUND_FIELD_DEFS = [
     ],
   },
   {
+    key: 'bgGradientFrom',
+    label: 'Color inicial del degradado',
+    type: 'color',
+    showIf: (config) => config.bgType === 'gradiente',
+  },
+  {
+    key: 'bgGradientTo',
+    label: 'Color final del degradado',
+    type: 'color',
+    showIf: (config) => config.bgType === 'gradiente',
+  },
+  {
+    key: 'bgGradientDirection',
+    label: 'Dirección del degradado',
+    type: 'select',
+    options: GRADIENT_DIRECTION_OPTIONS,
+    showIf: (config) => config.bgType === 'gradiente',
+  },
+  {
     key: 'bgOpacity',
-    label: 'Opacidad de la imagen',
+    label: 'Opacidad del fondo',
     type: 'range',
     min: 0,
     max: 100,
     step: 5,
-    showIf: (config) => config.bgType === 'imagen',
+    showIf: (config) => config.bgType === 'imagen' || config.bgType === 'gradiente',
   },
 ]
 
