@@ -55,6 +55,82 @@ body {
   font-family: 'Chewy', cursive;
 }
 
+.font-hennypenny {
+  font-family: 'Henny Penny', fantasy;
+}
+
+.font-rubikspraypaint {
+  font-family: 'Rubik Spray Paint', fantasy;
+}
+
+.font-barriecito {
+  font-family: 'Barriecito', fantasy;
+}
+
+.font-festive {
+  font-family: 'Festive', cursive;
+}
+
+.font-luxuriousscript {
+  font-family: 'Luxurious Script', cursive;
+}
+
+.font-monoton {
+  font-family: 'Monoton', fantasy;
+}
+
+.font-kablammo {
+  font-family: 'Kablammo', fantasy;
+}
+
+.font-akronim {
+  font-family: 'Akronim', cursive;
+}
+
+.font-nabla {
+  font-family: 'Nabla', fantasy;
+}
+
+.font-honk {
+  font-family: 'Honk', fantasy;
+}
+
+.font-agudisplay {
+  font-family: 'Agu Display', fantasy;
+}
+
+.font-rubikmoonrocks {
+  font-family: 'Rubik Moonrocks', fantasy;
+}
+
+.font-rubikvinyl {
+  font-family: 'Rubik Vinyl', fantasy;
+}
+
+.font-rubikdistressed {
+  font-family: 'Rubik Distressed', fantasy;
+}
+
+.font-frijole {
+  font-family: 'Frijole', fantasy;
+}
+
+.font-pressstart2p {
+  font-family: 'Press Start 2P', monospace;
+}
+
+.font-silkscreen {
+  font-family: 'Silkscreen', monospace;
+}
+
+.font-nosifer {
+  font-family: 'Nosifer', fantasy;
+}
+
+.font-freckleface {
+  font-family: 'Freckle Face', fantasy;
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;
