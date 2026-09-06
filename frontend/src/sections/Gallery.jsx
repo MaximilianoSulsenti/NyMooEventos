@@ -71,6 +71,7 @@ function ClassicCarousel({ images }) {
 function Gallery({ config, styles }) {
   const images = Array.isArray(config.images) ? config.images : []
   const titleSize = config.fontSizeTitle || 'text-2xl'
+  const subtitleSize = config.fontSizeSubtitle || 'text-base'
 
   if (images.length === 0) return null
 
@@ -80,7 +81,7 @@ function Gallery({ config, styles }) {
         {config.title || 'Galería'}
       </h2>
       {config.subtitle && (
-        <p className="mb-6" style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+        <p className={`mb-6 ${subtitleSize}`} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
           {config.subtitle}
         </p>
       )}

@@ -12,7 +12,7 @@ import { secondaryTextColor, titleTextStyle } from '../utils/color'
 // pero agrupado bajo su propio título/subtítulo, con la opción de mostrar
 // los ítems en fila (tarjetas, como Fecha/Hora/Lugar lado a lado) o en
 // lista vertical.
-function DetailGroup({ group, appearance, config, styles, isFirst }) {
+function DetailGroup({ group, appearance, config, styles, isFirst, titleSize, subtitleSize, bodySize }) {
   const items = Array.isArray(group.items) ? group.items.filter((i) => i.label || i.text) : []
   if (!group.title && !group.subtitle && items.length === 0) return null
   const isHorizontal = (group.layout || 'horizontal') !== 'vertical'
@@ -20,13 +20,13 @@ function DetailGroup({ group, appearance, config, styles, isFirst }) {
   return (
     <div className={isFirst ? '' : 'mt-10'}>
       {group.title && (
-        <h3 className={`text-xl sm:text-2xl mb-1 ${styles.heading}`} style={{ color: config.textColor || undefined }}>
+        <h3 className={`${titleSize} mb-1 ${styles.heading}`} style={{ color: config.textColor || undefined }}>
           {group.title}
         </h3>
       )}
       {group.subtitle && (
         <p
-          className="text-[11px] uppercase tracking-[0.2em] mb-6"
+          className={`uppercase tracking-[0.2em] mb-6 ${subtitleSize}`}
           style={{ color: secondaryTextColor(config.textColor, '80') }}
         >
           {group.subtitle}
@@ -53,14 +53,14 @@ function DetailGroup({ group, appearance, config, styles, isFirst }) {
                   />
                   {item.label && (
                     <p
-                      className="text-[11px] font-semibold uppercase tracking-widest"
+                      className={`font-semibold uppercase tracking-widest ${bodySize}`}
                       style={{ color: secondaryTextColor(config.textColor, 'e6') }}
                     >
                       {item.label}
                     </p>
                   )}
                   {item.text && (
-                    <p className="text-sm italic text-center" style={{ color: config.textColor || undefined }}>
+                    <p className={`italic text-center ${bodySize}`} style={{ color: config.textColor || undefined }}>
                       {item.text}
                     </p>
                   )}
@@ -83,11 +83,15 @@ function DetailGroup({ group, appearance, config, styles, isFirst }) {
                   />
                   <div>
                     {item.label && (
-                      <p className="text-sm font-semibold" style={{ color: secondaryTextColor(config.textColor, 'e6') }}>
+                      <p className={`font-semibold ${bodySize}`} style={{ color: secondaryTextColor(config.textColor, 'e6') }}>
                         {item.label}
                       </p>
                     )}
-                    {item.text && <p style={{ color: secondaryTextColor(config.textColor, '99') }}>{item.text}</p>}
+                    {item.text && (
+                      <p className={bodySize} style={{ color: secondaryTextColor(config.textColor, '99') }}>
+                        {item.text}
+                      </p>
+                    )}
                   </div>
                 </div>
               )
@@ -143,7 +147,17 @@ function EventDetail({ event, config, appearance, styles }) {
       {useGroups ? (
         <div className="max-w-3xl mx-auto">
           {groups.map((group, index) => (
-            <DetailGroup key={index} group={group} appearance={appearance} config={config} styles={styles} isFirst={index === 0} />
+            <DetailGroup
+              key={index}
+              group={group}
+              appearance={appearance}
+              config={config}
+              styles={styles}
+              isFirst={index === 0}
+              titleSize={titleSize}
+              subtitleSize={subtitleSize}
+              bodySize={bodySize}
+            />
           ))}
         </div>
       ) : (

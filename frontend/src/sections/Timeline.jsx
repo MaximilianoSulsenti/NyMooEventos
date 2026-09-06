@@ -6,6 +6,8 @@ import { secondaryTextColor, titleTextStyle } from '../utils/color'
 function Timeline({ config, appearance, styles }) {
   const items = Array.isArray(config.items) ? config.items : []
   const titleSize = config.fontSizeTitle || 'text-lg'
+  const subtitleSize = config.fontSizeSubtitle || 'text-base'
+  const bodySize = config.fontSizeBody || 'text-base'
   if (items.length === 0) return null
 
   return (
@@ -14,7 +16,7 @@ function Timeline({ config, appearance, styles }) {
         {config.title || 'Cronograma'}
       </h2>
       {config.subtitle && (
-        <p className="mb-6" style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+        <p className={`mb-6 ${subtitleSize}`} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
           {config.subtitle}
         </p>
       )}
@@ -38,10 +40,12 @@ function Timeline({ config, appearance, styles }) {
                 iconClassName="w-4 h-4"
               />
               <div>
-                <span className="font-semibold text-sm" style={{ color: appearance.primaryColor }}>
+                <span className={`font-semibold ${bodySize}`} style={{ color: appearance.primaryColor }}>
                   {item.time}
                 </span>
-                <p style={{ color: secondaryTextColor(config.textColor, 'b3') }}>{item.label}</p>
+                <p className={bodySize} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+                  {item.label}
+                </p>
               </div>
             </motion.li>
           )

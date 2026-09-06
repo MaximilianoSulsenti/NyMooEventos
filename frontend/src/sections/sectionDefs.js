@@ -284,6 +284,12 @@ export const SECTION_FIELD_DEFS = {
     { key: 'dedication', label: 'Dedicatoria o lema (opcional)', type: 'text' },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
     { key: 'fontSizeSubtitle', label: 'Tamaño del subtítulo', type: 'select', options: FONT_SIZE_OPTIONS },
+    {
+      key: 'fontSizeBody',
+      label: 'Tamaño del texto secundario (frase chica, fecha, dedicatoria)',
+      type: 'select',
+      options: FONT_SIZE_OPTIONS,
+    },
   ],
   Countdown: [
     { key: 'title', label: 'Título de la sección', type: 'text' },
@@ -291,6 +297,13 @@ export const SECTION_FIELD_DEFS = {
     { key: 'shape', label: 'Forma de los contadores', type: 'select', options: COUNTDOWN_SHAPE_OPTIONS },
     { key: 'fontSizeTitle', label: 'Tamaño de los dígitos', type: 'select', options: FONT_SIZE_OPTIONS },
     { key: 'fontSizeSubtitle', label: 'Tamaño de las etiquetas', type: 'select', options: FONT_SIZE_OPTIONS },
+    { key: 'fontSizeSectionTitle', label: 'Tamaño del título de la sección', type: 'select', options: FONT_SIZE_OPTIONS },
+    {
+      key: 'fontSizeSectionSubtitle',
+      label: 'Tamaño del subtítulo de la sección',
+      type: 'select',
+      options: FONT_SIZE_OPTIONS,
+    },
     { key: 'labelColor', label: 'Color de las etiquetas (Días, Hs, Min, Seg)', type: 'color' },
   ],
   EventDetail: [
@@ -358,6 +371,7 @@ export const SECTION_FIELD_DEFS = {
     },
     { key: 'layout', label: 'Diseño', type: 'select', options: STORY_LAYOUT_OPTIONS },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
+    { key: 'fontSizeSubtitle', label: 'Tamaño del subtítulo', type: 'select', options: FONT_SIZE_OPTIONS },
     { key: 'fontSizeBody', label: 'Tamaño del texto', type: 'select', options: FONT_SIZE_OPTIONS },
   ],
   Gallery: [
@@ -366,6 +380,7 @@ export const SECTION_FIELD_DEFS = {
     { key: 'images', label: 'Fotos (sin límite)', type: 'imageList' },
     { key: 'layout', label: 'Diseño', type: 'select', options: GALLERY_LAYOUT_OPTIONS },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
+    { key: 'fontSizeSubtitle', label: 'Tamaño del subtítulo', type: 'select', options: FONT_SIZE_OPTIONS },
   ],
   LiveGallery: [
     { key: 'title', label: 'Título', type: 'text' },
@@ -374,6 +389,7 @@ export const SECTION_FIELD_DEFS = {
     { key: 'buttonText', label: 'Texto del botón', type: 'text' },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
     { key: 'fontSizeSubtitle', label: 'Tamaño del subtítulo', type: 'select', options: FONT_SIZE_OPTIONS },
+    { key: 'fontSizeBody', label: 'Tamaño del texto descriptivo', type: 'select', options: FONT_SIZE_OPTIONS },
   ],
   DigitalAlbumButton: [
     { key: 'title', label: 'Título', type: 'text' },
@@ -382,6 +398,7 @@ export const SECTION_FIELD_DEFS = {
     { key: 'buttonText', label: 'Texto del botón', type: 'text' },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
     { key: 'fontSizeSubtitle', label: 'Tamaño del subtítulo', type: 'select', options: FONT_SIZE_OPTIONS },
+    { key: 'fontSizeBody', label: 'Tamaño del texto descriptivo', type: 'select', options: FONT_SIZE_OPTIONS },
   ],
   Location: [
     { key: 'title', label: 'Título de la sección', type: 'text' },
@@ -401,10 +418,14 @@ export const SECTION_FIELD_DEFS = {
       ],
     },
     { key: 'fontSizeTitle', label: 'Tamaño del título de la sección', type: 'select', options: FONT_SIZE_OPTIONS },
+    { key: 'fontSizeSubtitle', label: 'Tamaño del subtítulo de la sección', type: 'select', options: FONT_SIZE_OPTIONS },
+    { key: 'fontSizeBody', label: 'Tamaño de la dirección', type: 'select', options: FONT_SIZE_OPTIONS },
   ],
   RSVP: [
     { key: 'title', label: 'Título', type: 'text' },
     { key: 'subtitle', label: 'Subtítulo (opcional)', type: 'text' },
+    { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
+    { key: 'fontSizeSubtitle', label: 'Tamaño del subtítulo', type: 'select', options: FONT_SIZE_OPTIONS },
     { key: 'buttonTextWhatsapp', label: 'Texto del botón (si confirman por WhatsApp)', type: 'text' },
     { key: 'buttonTextForm', label: 'Texto del botón (si confirman por formulario propio)', type: 'text' },
     { key: 'priceButtonText', label: 'Texto del link "Ver valor de la tarjeta" (opcional)', type: 'text' },
@@ -462,6 +483,8 @@ export const SECTION_FIELD_DEFS = {
     { key: 'image3', label: 'Imagen 3', type: 'image' },
     { key: 'images', label: 'Fotos adicionales (opcional, para sumar más de 3 al carrusel)', type: 'imageList' },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
+    { key: 'fontSizeSubtitle', label: 'Tamaño del subtítulo', type: 'select', options: FONT_SIZE_OPTIONS },
+    { key: 'fontSizeBody', label: 'Tamaño del pie de foto', type: 'select', options: FONT_SIZE_OPTIONS },
     { key: 'transitionSpeed', label: 'Velocidad de transición (segundos)', type: 'range', min: 2, max: 10, step: 1 },
   ],
   Info: [
@@ -484,12 +507,16 @@ export const SECTION_FIELD_DEFS = {
       ],
     },
     { key: 'fontSizeTitle', label: 'Tamaño de los títulos', type: 'select', options: FONT_SIZE_OPTIONS },
+    { key: 'fontSizeSubtitle', label: 'Tamaño del subtítulo de la sección', type: 'select', options: FONT_SIZE_OPTIONS },
+    { key: 'fontSizeBody', label: 'Tamaño de los bloques', type: 'select', options: FONT_SIZE_OPTIONS },
   ],
   MusicPlaylist: [
     { key: 'title', label: 'Título', type: 'text' },
     { key: 'subtitle', label: 'Subtítulo (opcional)', type: 'text' },
     { key: 'playlistUrl', label: 'Link de playlist (Spotify, YouTube o Apple Music)', type: 'text' },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
+    { key: 'fontSizeSubtitle', label: 'Tamaño del subtítulo', type: 'select', options: FONT_SIZE_OPTIONS },
+    { key: 'fontSizeBody', label: 'Tamaño del texto de sugerir canción', type: 'select', options: FONT_SIZE_OPTIONS },
   ],
   InstagramSection: [
     { key: 'title', label: 'Título (opcional)', type: 'text' },
@@ -515,10 +542,13 @@ export const SECTION_FIELD_DEFS = {
       ],
     },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
+    { key: 'fontSizeSubtitle', label: 'Tamaño del subtítulo', type: 'select', options: FONT_SIZE_OPTIONS },
+    { key: 'fontSizeBody', label: 'Tamaño del cronograma', type: 'select', options: FONT_SIZE_OPTIONS },
   ],
   Footer: [
     { key: 'text', label: 'Frase de cierre', type: 'text' },
     { key: 'fontSizeTitle', label: 'Tamaño del nombre del evento', type: 'select', options: FONT_SIZE_OPTIONS },
+    { key: 'fontSizeBody', label: 'Tamaño del texto y la firma', type: 'select', options: FONT_SIZE_OPTIONS },
     { key: 'signature', label: 'Firma', type: 'text' },
     {
       key: 'socialLinks',

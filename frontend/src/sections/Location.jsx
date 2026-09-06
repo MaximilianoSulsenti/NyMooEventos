@@ -13,6 +13,8 @@ function isEmbedUrl(url = '') {
 function Location({ config, appearance, styles }) {
   const locations = Array.isArray(config.locations) ? config.locations : []
   const titleSize = config.fontSizeTitle || 'text-lg'
+  const subtitleSize = config.fontSizeSubtitle || 'text-base'
+  const bodySize = config.fontSizeBody || 'text-sm'
   const primaryColor = appearance?.primaryColor
 
   if (locations.length === 0) return null
@@ -23,7 +25,7 @@ function Location({ config, appearance, styles }) {
         {config.title || 'Ubicación'}
       </h2>
       {config.subtitle && (
-        <p className="mb-6" style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+        <p className={`mb-6 ${subtitleSize}`} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
           {config.subtitle}
         </p>
       )}
@@ -63,7 +65,7 @@ function Location({ config, appearance, styles }) {
                 </p>
               )}
               {location.address && (
-                <p className="text-sm max-w-xs" style={{ color: secondaryTextColor(config.textColor, '99') }}>
+                <p className={`${bodySize} max-w-xs`} style={{ color: secondaryTextColor(config.textColor, '99') }}>
                   {location.address}
                 </p>
               )}

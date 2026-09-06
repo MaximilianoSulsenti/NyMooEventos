@@ -9,6 +9,7 @@ function Hero({ event, config, appearance, styles }) {
   const subtitle = config.subtitle || ''
   const titleSize = config.fontSizeTitle || 'text-4xl'
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
+  const bodySize = config.fontSizeBody || 'text-sm'
   const premiumGuest = usePremiumGuest(event)
   // Fecha/hora sofisticada en la portada -- opcional (config.showDate),
   // apagada por defecto para no cambiarle la cara a ninguna invitación ya
@@ -48,12 +49,12 @@ function Hero({ event, config, appearance, styles }) {
           </motion.p>
         )}
         {kicker && (
-          <p className="uppercase tracking-[0.3em] text-xs mb-4" style={{ color: appearance.primaryColor }}>
+          <p className={`uppercase tracking-[0.3em] ${bodySize} mb-4`} style={{ color: appearance.primaryColor }}>
             {kicker}
           </p>
         )}
         <h1
-          className={`${titleSize} md:text-5xl mb-3 ${styles.heading}`}
+          className={`${titleSize} mb-3 ${styles.heading}`}
           style={titleTextStyle(config)}
         >
           {title}
@@ -65,7 +66,7 @@ function Hero({ event, config, appearance, styles }) {
         )}
         {config.showDate && (
           <p
-            className="flex items-center justify-center gap-1.5 mt-2 text-xs sm:text-sm tracking-wide"
+            className={`flex items-center justify-center gap-1.5 mt-2 ${bodySize} tracking-wide`}
             style={{ color: secondaryTextColor(config.textColor, '99') }}
           >
             <CalendarDays className="w-3.5 h-3.5 shrink-0" style={{ color: appearance.primaryColor }} />
@@ -74,7 +75,7 @@ function Hero({ event, config, appearance, styles }) {
         )}
         <div className={`${styles.divider} my-6 mx-auto`} style={{ background: appearance.primaryColor }} />
         {config.dedication && (
-          <p className="text-sm italic mt-2 max-w-sm mx-auto" style={{ color: secondaryTextColor(config.textColor, '80') }}>
+          <p className={`${bodySize} italic mt-2 max-w-sm mx-auto`} style={{ color: secondaryTextColor(config.textColor, '80') }}>
             {config.dedication}
           </p>
         )}

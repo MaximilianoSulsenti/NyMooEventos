@@ -29,6 +29,8 @@ function Countdown({ event, config, appearance, styles }) {
     : SHAPE_CLASSES[config.shape] || SHAPE_CLASSES.square
   const digitSize = config.fontSizeTitle || 'text-2xl'
   const labelSize = config.fontSizeSubtitle || 'text-xs'
+  const sectionTitleSize = config.fontSizeSectionTitle || 'text-lg'
+  const sectionSubtitleSize = config.fontSizeSectionSubtitle || 'text-base'
 
   useEffect(() => {
     const interval = setInterval(() => setTimeLeft(getTimeLeft(event.date)), 1000)
@@ -44,11 +46,14 @@ function Countdown({ event, config, appearance, styles }) {
 
   return (
     <section className={`text-center px-6 ${styles.fontClass}`}>
-      <h2 className={`text-lg ${config.subtitle ? 'mb-1' : 'mb-6'} ${styles.heading}`} style={titleTextStyle(config)}>
+      <h2
+        className={`${sectionTitleSize} ${config.subtitle ? 'mb-1' : 'mb-6'} ${styles.heading}`}
+        style={titleTextStyle(config)}
+      >
         {config.title || 'Cuenta regresiva'}
       </h2>
       {config.subtitle && (
-        <p className="mb-6" style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+        <p className={`mb-6 ${sectionSubtitleSize}`} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
           {config.subtitle}
         </p>
       )}

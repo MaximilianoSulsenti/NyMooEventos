@@ -12,6 +12,8 @@ function SalonCarrousel({ config, styles }) {
   ].filter(Boolean)
   const speedMs = (config.transitionSpeed || 4) * 1000
   const titleSize = config.fontSizeTitle || 'text-lg'
+  const subtitleSize = config.fontSizeSubtitle || 'text-sm'
+  const bodySize = config.fontSizeBody || 'text-sm'
   const [index, setIndex] = useState(0)
   const [manualNav, setManualNav] = useState(0)
 
@@ -36,7 +38,7 @@ function SalonCarrousel({ config, styles }) {
         </h2>
       )}
       {config.subtitle && (
-        <p className="text-sm mb-4" style={{ color: secondaryTextColor(config.textColor, '99') }}>
+        <p className={`${subtitleSize} mb-4`} style={{ color: secondaryTextColor(config.textColor, '99') }}>
           {config.subtitle}
         </p>
       )}
@@ -58,7 +60,7 @@ function SalonCarrousel({ config, styles }) {
       </div>
 
       {config.caption && (
-        <p className="text-sm mt-3 italic" style={{ color: secondaryTextColor(config.textColor, '80') }}>
+        <p className={`${bodySize} mt-3 italic`} style={{ color: secondaryTextColor(config.textColor, '80') }}>
           {config.caption}
         </p>
       )}

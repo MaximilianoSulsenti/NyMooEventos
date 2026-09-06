@@ -56,6 +56,7 @@ function SongRequestForm({ eventSlug, primaryColor, config }) {
   // se ajusta solo con cualquier color que se elija.
   const textColor = config?.textColor || '#ffffff'
   const inputStyle = { color: textColor, background: `${textColor}0d`, borderColor: `${textColor}26` }
+  const bodySize = config?.fontSizeBody || 'text-sm'
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -79,7 +80,7 @@ function SongRequestForm({ eventSlug, primaryColor, config }) {
 
   return (
     <div className="w-full pt-5 mt-5 border-t border-white/10" style={{ '--accent': primaryColor }}>
-      <p className="text-sm mb-3" style={{ color: secondaryTextColor(textColor, 'b3') }}>
+      <p className={`${bodySize} mb-3`} style={{ color: secondaryTextColor(textColor, 'b3') }}>
         ¿Qué canción no puede faltar en la fiesta? 🎶
       </p>
 
@@ -144,6 +145,7 @@ function MusicPlaylist({ event, config, appearance, styles }) {
   const url = config.playlistUrl
   const embed = url ? toEmbedUrl(url) : null
   const titleSize = config.fontSizeTitle || 'text-lg'
+  const subtitleSize = config.fontSizeSubtitle || 'text-sm'
   const primaryColor = appearance?.primaryColor
   const canRequestSongs = Boolean(event?.activeModules?.guestControl)
 
@@ -176,7 +178,7 @@ function MusicPlaylist({ event, config, appearance, styles }) {
           {config.title || 'Playlist del evento'}
         </h2>
         {config.subtitle && (
-          <p className="text-sm -mt-2" style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+          <p className={`${subtitleSize} -mt-2`} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
             {config.subtitle}
           </p>
         )}
