@@ -32,9 +32,9 @@ const SECTIONS_WITH_TITLE_COLOR = [
 ]
 
 // Subconjunto de SECTIONS_WITH_TITLE_COLOR que además tiene un título
-// principal real (<h1>/<h2>) al que aplicarle el degradado -- RSVP y Footer
-// no tienen uno (su texto "título" ya es secundario/tenue), así que no
-// muestran este control, que ahí no haría nada.
+// principal real al que aplicarle el degradado -- Footer es la única que no
+// tiene uno (su texto "título" es la firma, ya tenue a propósito), así que
+// no muestra este control, que ahí no haría nada.
 const SECTIONS_WITH_TITLE_GRADIENT = [
   'Hero',
   'EventDetail',
@@ -44,6 +44,7 @@ const SECTIONS_WITH_TITLE_GRADIENT = [
   'LiveGallery',
   'DigitalAlbumButton',
   'Location',
+  'RSVP',
   'GiftRegistry',
   'SalonCarrousel',
   'Info',

@@ -10,7 +10,7 @@ import { WhatsappIcon } from '../components/icons/BrandIcons'
 import { glassStyle, glassBlurClass } from '../utils/glass'
 import { cn } from '../utils/cn'
 import { CARD_REVEAL } from '../utils/motionPresets'
-import { secondaryTextColor } from '../utils/color'
+import { secondaryTextColor, titleTextStyle } from '../utils/color'
 
 const WHATSAPP_GREEN = '#25D366'
 
@@ -63,7 +63,7 @@ function RSVPSection({ event, config, appearance, styles }) {
         />
 
         <div className="max-w-sm">
-          <p className={titleSize} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
+          <p className={titleSize} style={titleTextStyle(config)}>
             {config.title ||
               (isWhatsapp
                 ? 'Confirmá tu asistencia por WhatsApp, así lo vemos al toque.'

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'motion/react'
 import { Copy, Check, Landmark } from 'lucide-react'
-import { secondaryTextColor, shadeColor } from '../utils/color'
+import { secondaryTextColor, shadeColor, getContrastTextColor } from '../utils/color'
 import RsvpModalShell from './RsvpModalShell'
 
 function GiftModal({ config, primaryColor = '#a855f7', onClose }) {
@@ -70,7 +70,10 @@ function GiftModal({ config, primaryColor = '#a855f7', onClose }) {
               type="button"
               onClick={handleCopy}
               className="w-full sm:w-auto px-4 py-2 rounded-xl text-sm font-medium shrink-0 flex items-center justify-center gap-1.5 transition"
-              style={{ background: copied ? '#22c55e' : primaryColor, color: '#ffffff' }}
+              style={{
+                background: copied ? '#22c55e' : primaryColor,
+                color: getContrastTextColor(copied ? '#22c55e' : primaryColor),
+              }}
             >
               {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
               {copied ? 'Copiado' : 'Copiar'}
