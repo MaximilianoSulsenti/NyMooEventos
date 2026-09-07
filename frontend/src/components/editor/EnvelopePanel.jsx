@@ -1,4 +1,4 @@
-import { BG_TYPE_OPTIONS, FONT_SIZE_OPTIONS, FONTS } from '../../sections/sectionDefs'
+import { BG_TYPE_OPTIONS, BG_POSITION_OPTIONS, FONT_SIZE_OPTIONS, FONTS } from '../../sections/sectionDefs'
 import ImageUploadField from './ImageUploadField'
 import VideoUploadField from './VideoUploadField'
 import { BRAND } from '../../utils/brand'
@@ -205,6 +205,23 @@ function EnvelopePanel({ eventId, settings, onChange }) {
                     onChange={(e) => update({ bgOpacity: Number(e.target.value) })}
                     className="w-full accent-[var(--accent)]"
                   />
+                </div>
+              )}
+
+              {bgType !== 'color' && (
+                <div>
+                  <label className="block text-sm text-neutral-400 mb-1">Encuadre del fondo</label>
+                  <select
+                    value={settings.bgPosition || 'center'}
+                    onChange={(e) => update({ bgPosition: e.target.value })}
+                    className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+                  >
+                    {BG_POSITION_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               )}
             </>

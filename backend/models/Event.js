@@ -168,6 +168,7 @@ const eventSchema = new mongoose.Schema(
       bgColor: { type: String, default: '#0a0a0a' },
       bgUrl: { type: String, default: '' },
       bgOpacity: { type: Number, default: 100, min: 0, max: 100 },
+      bgPosition: { type: String, default: 'center' },
       titleText: { type: String, default: '' },
       subtitleText: { type: String, default: '' },
       // Mensaje que se muestra debajo del subtítulo para invitados SIN link

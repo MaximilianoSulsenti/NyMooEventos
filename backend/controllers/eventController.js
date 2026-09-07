@@ -194,6 +194,7 @@ async function updateEnvelopeSettings(req, res) {
     bgColor,
     bgUrl,
     bgOpacity,
+    bgPosition,
     titleText,
     subtitleText,
     welcomeMessage,
@@ -209,6 +210,7 @@ async function updateEnvelopeSettings(req, res) {
   if (bgColor !== undefined) event.envelopeSettings.bgColor = bgColor;
   if (bgUrl !== undefined) event.envelopeSettings.bgUrl = bgUrl;
   if (bgOpacity !== undefined) event.envelopeSettings.bgOpacity = bgOpacity;
+  if (bgPosition !== undefined) event.envelopeSettings.bgPosition = bgPosition;
   if (titleText !== undefined) event.envelopeSettings.titleText = titleText;
   if (subtitleText !== undefined) event.envelopeSettings.subtitleText = subtitleText;
   if (welcomeMessage !== undefined) event.envelopeSettings.welcomeMessage = welcomeMessage;

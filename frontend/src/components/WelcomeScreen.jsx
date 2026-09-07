@@ -18,8 +18,12 @@ function FullBackgroundContent({ settings, appearance, isAuto }) {
   if (settings.bgType === 'image' && settings.bgUrl) {
     return (
       <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${settings.bgUrl})`, opacity: (settings.bgOpacity ?? 100) / 100 }}
+        className="absolute inset-0 bg-cover"
+        style={{
+          backgroundImage: `url(${settings.bgUrl})`,
+          backgroundPosition: settings.bgPosition || 'center',
+          opacity: (settings.bgOpacity ?? 100) / 100,
+        }}
       />
     )
   }
@@ -32,7 +36,7 @@ function FullBackgroundContent({ settings, appearance, isAuto }) {
         loop
         playsInline
         className="absolute inset-0 w-full h-full object-cover"
-        style={{ opacity: (settings.bgOpacity ?? 100) / 100 }}
+        style={{ objectPosition: settings.bgPosition || 'center', opacity: (settings.bgOpacity ?? 100) / 100 }}
       />
     )
   }
