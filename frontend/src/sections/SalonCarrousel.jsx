@@ -14,6 +14,7 @@ function SalonCarrousel({ config, styles }) {
   const titleSize = config.fontSizeTitle || 'text-lg'
   const subtitleSize = config.fontSizeSubtitle || 'text-sm'
   const bodySize = config.fontSizeBody || 'text-sm'
+  const secondaryColor = config.textColorSecondary || config.textColor
   const [index, setIndex] = useState(0)
   const [manualNav, setManualNav] = useState(0)
 
@@ -38,7 +39,7 @@ function SalonCarrousel({ config, styles }) {
         </h2>
       )}
       {config.subtitle && (
-        <p className={`${subtitleSize} mb-4`} style={{ color: secondaryTextColor(config.textColor, '99') }}>
+        <p className={`${subtitleSize} mb-4`} style={{ color: secondaryTextColor(secondaryColor, '99') }}>
           {config.subtitle}
         </p>
       )}
@@ -60,7 +61,7 @@ function SalonCarrousel({ config, styles }) {
       </div>
 
       {config.caption && (
-        <p className={`${bodySize} mt-3 italic`} style={{ color: secondaryTextColor(config.textColor, '80') }}>
+        <p className={`${bodySize} mt-3 italic`} style={{ color: secondaryTextColor(secondaryColor, '80') }}>
           {config.caption}
         </p>
       )}

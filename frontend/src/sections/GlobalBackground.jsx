@@ -7,6 +7,7 @@ function GlobalBackground({ appearance, fixed = true }) {
     globalBgGradientFrom,
     globalBgGradientTo,
     globalBgGradientDirection,
+    globalBgPosition,
     backgroundColor,
   } = appearance
   const isCustomGradient = globalBgGradient === '__custom__' && globalBgGradientFrom && globalBgGradientTo
@@ -27,8 +28,12 @@ function GlobalBackground({ appearance, fixed = true }) {
     >
       {globalBgType === 'image' && globalBgUrl && (
         <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${globalBgUrl})`, opacity: (globalBgOpacity ?? 100) / 100 }}
+          className="absolute inset-0 bg-cover"
+          style={{
+            backgroundImage: `url(${globalBgUrl})`,
+            backgroundPosition: globalBgPosition || 'center',
+            opacity: (globalBgOpacity ?? 100) / 100,
+          }}
         />
       )}
       {globalBgType === 'video' && globalBgUrl && (
@@ -39,7 +44,7 @@ function GlobalBackground({ appearance, fixed = true }) {
           loop
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
-          style={{ opacity: (globalBgOpacity ?? 100) / 100 }}
+          style={{ objectPosition: globalBgPosition || 'center', opacity: (globalBgOpacity ?? 100) / 100 }}
         />
       )}
       {isCustomGradient ? (

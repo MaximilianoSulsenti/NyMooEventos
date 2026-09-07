@@ -10,6 +10,7 @@ function Hero({ event, config, appearance, styles }) {
   const titleSize = config.fontSizeTitle || 'text-4xl'
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const bodySize = config.fontSizeBody || 'text-sm'
+  const secondaryColor = config.textColorSecondary || config.textColor
   const premiumGuest = usePremiumGuest(event)
   // Fecha/hora sofisticada en la portada -- opcional (config.showDate),
   // apagada por defecto para no cambiarle la cara a ninguna invitación ya
@@ -60,14 +61,14 @@ function Hero({ event, config, appearance, styles }) {
           {title}
         </h1>
         {subtitle && (
-          <p className={`mt-2 ${subtitleSize}`} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+          <p className={`mt-2 ${subtitleSize}`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
             {subtitle}
           </p>
         )}
         {config.showDate && (
           <p
             className={`flex items-center justify-center gap-1.5 mt-2 ${bodySize} tracking-wide`}
-            style={{ color: secondaryTextColor(config.textColor, '99') }}
+            style={{ color: secondaryTextColor(secondaryColor, '99') }}
           >
             <CalendarDays className="w-3.5 h-3.5 shrink-0" style={{ color: appearance.primaryColor }} />
             {formattedDate} · {formattedTime} hs
@@ -75,7 +76,7 @@ function Hero({ event, config, appearance, styles }) {
         )}
         <div className={`${styles.divider} my-6 mx-auto`} style={{ background: appearance.primaryColor }} />
         {config.dedication && (
-          <p className={`${bodySize} italic mt-2 max-w-sm mx-auto`} style={{ color: secondaryTextColor(config.textColor, '80') }}>
+          <p className={`${bodySize} italic mt-2 max-w-sm mx-auto`} style={{ color: secondaryTextColor(secondaryColor, '80') }}>
             {config.dedication}
           </p>
         )}

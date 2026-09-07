@@ -10,6 +10,7 @@ import { secondaryTextColor, titleTextStyle } from '../utils/color'
 function InfoCard({ item, appearance, styles, config, isOpen, onToggle }) {
   const Icon = resolveIcon(item.icon, `${item.title || ''} ${item.body || ''}`)
   const bodySize = config.fontSizeBody || 'text-base'
+  const secondaryColor = config.textColorSecondary || config.textColor
 
   return (
     <motion.div
@@ -33,7 +34,7 @@ function InfoCard({ item, appearance, styles, config, isOpen, onToggle }) {
           {item.title}
         </span>
         <motion.span animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
-          <ChevronDown className="w-4 h-4" style={{ color: secondaryTextColor(config.textColor, '80') }} />
+          <ChevronDown className="w-4 h-4" style={{ color: secondaryTextColor(secondaryColor, '80') }} />
         </motion.span>
       </button>
       <AnimatePresence initial={false}>
@@ -51,7 +52,7 @@ function InfoCard({ item, appearance, styles, config, isOpen, onToggle }) {
               exit={{ opacity: 0, filter: 'blur(4px)' }}
               transition={{ duration: 0.3, delay: 0.05 }}
               className={`px-4 pb-4 pl-16 leading-relaxed whitespace-pre-line ${bodySize}`}
-              style={{ color: secondaryTextColor(config.textColor, '99') }}
+              style={{ color: secondaryTextColor(secondaryColor, '99') }}
             >
               {item.body}
             </motion.p>
@@ -67,6 +68,7 @@ function Info({ config, appearance, styles }) {
   const [openIndex, setOpenIndex] = useState(0)
   const titleSize = config.fontSizeTitle || 'text-lg'
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
+  const secondaryColor = config.textColorSecondary || config.textColor
 
   if (items.length === 0) return null
 
@@ -79,7 +81,7 @@ function Info({ config, appearance, styles }) {
         {config.title || 'Información adicional'}
       </h2>
       {config.subtitle && (
-        <p className={`text-center mb-6 ${subtitleSize}`} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+        <p className={`text-center mb-6 ${subtitleSize}`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
           {config.subtitle}
         </p>
       )}

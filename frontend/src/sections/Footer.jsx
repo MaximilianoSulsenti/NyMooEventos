@@ -37,6 +37,7 @@ function Footer({ event, config, appearance, styles }) {
   const primaryColor = appearance?.primaryColor
   const nameSize = config.fontSizeTitle || 'text-2xl'
   const bodySize = config.fontSizeBody || 'text-sm'
+  const secondaryColor = config.textColorSecondary || config.textColor
 
   return (
     <section className={`relative text-center px-6 pt-14 pb-12 overflow-hidden ${styles.fontClass}`}>
@@ -60,7 +61,7 @@ function Footer({ event, config, appearance, styles }) {
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
         className={`${bodySize} italic max-w-md mx-auto`}
-        style={{ color: secondaryTextColor(config.textColor, '99') }}
+        style={{ color: secondaryTextColor(secondaryColor, '99') }}
       >
         {config.text || `Con cariño, esperamos verte en ${event.eventName}.`}
       </motion.p>
@@ -110,7 +111,7 @@ function Footer({ event, config, appearance, styles }) {
           viewport={{ once: true }}
           transition={{ delay: 0.2, duration: 0.6 }}
           className={`${bodySize} mt-8 uppercase tracking-[0.15em]`}
-          style={{ color: secondaryTextColor(config.textColor, '4d') }}
+          style={{ color: secondaryTextColor(secondaryColor, '4d') }}
         >
           {config.signature}
         </motion.p>

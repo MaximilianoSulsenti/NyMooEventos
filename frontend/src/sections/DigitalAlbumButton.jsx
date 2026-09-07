@@ -19,6 +19,7 @@ function DigitalAlbumButton({ event, config, appearance, styles }) {
   const titleSize = config.fontSizeTitle || 'text-2xl'
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const bodySize = config.fontSizeBody || 'text-sm'
+  const secondaryColor = config.textColorSecondary || config.textColor
   const moduleActive = Boolean(event.activeModules?.photoCollection)
 
   // Antes esta sección se ocultaba entera (return null) si el módulo no
@@ -33,11 +34,11 @@ function DigitalAlbumButton({ event, config, appearance, styles }) {
           {config.title || 'Álbum digital del evento'}
         </h2>
         {config.subtitle && (
-          <p className={`mb-2 ${subtitleSize}`} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+          <p className={`mb-2 ${subtitleSize}`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
             {config.subtitle}
           </p>
         )}
-        <p className={`${bodySize} mb-6 max-w-sm mx-auto break-words`} style={{ color: secondaryTextColor(config.textColor, '99') }}>
+        <p className={`${bodySize} mb-6 max-w-sm mx-auto break-words`} style={{ color: secondaryTextColor(secondaryColor, '99') }}>
           {config.description || 'Compartí tus fotos del evento y quedan guardadas en nuestro álbum digital.'}
         </p>
 

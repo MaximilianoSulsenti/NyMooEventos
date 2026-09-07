@@ -14,6 +14,7 @@ function GiftRegistry({ config, appearance, styles }) {
   const primaryColor = appearance?.primaryColor
   const titleSize = config.fontSizeTitle || 'text-2xl'
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
+  const secondaryColor = config.textColorSecondary || config.textColor
 
   if (!config.cbuAlias && !config.holderName) return null
 
@@ -44,7 +45,7 @@ function GiftRegistry({ config, appearance, styles }) {
           {config.title || 'Lista de regalos'}
         </h2>
 
-        <p className={`max-w-sm ${subtitleSize}`} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+        <p className={`max-w-sm ${subtitleSize}`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
           {config.subtitle || 'Tu presencia ya es un regalo, pero si querés sumar un detalle para nuestra nueva etapa, esto te va a servir.'}
         </p>
 

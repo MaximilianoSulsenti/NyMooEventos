@@ -27,6 +27,7 @@ function LiveGallery({ event, config, appearance, styles }) {
   const titleSize = config.fontSizeTitle || 'text-2xl'
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const bodySize = config.fontSizeBody || 'text-sm'
+  const secondaryColor = config.textColorSecondary || config.textColor
   const moduleActive = Boolean(event.activeModules?.liveGallery)
 
   return (
@@ -36,11 +37,11 @@ function LiveGallery({ event, config, appearance, styles }) {
           {config.title || 'Galería en vivo'}
         </h2>
         {config.subtitle && (
-          <p className={`mb-2 ${subtitleSize}`} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+          <p className={`mb-2 ${subtitleSize}`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
             {config.subtitle}
           </p>
         )}
-        <p className={`${bodySize} mb-6 max-w-sm mx-auto break-words`} style={{ color: secondaryTextColor(config.textColor, '99') }}>
+        <p className={`${bodySize} mb-6 max-w-sm mx-auto break-words`} style={{ color: secondaryTextColor(secondaryColor, '99') }}>
           {config.description || 'Compartí tus fotos del evento y miralas en vivo en la pantalla del salón el día de la fiesta.'}
         </p>
 

@@ -156,6 +156,7 @@ const eventSchema = new mongoose.Schema(
       globalBgGradientFrom: { type: String, default: '' },
       globalBgGradientTo: { type: String, default: '' },
       globalBgGradientDirection: { type: String, default: 'to bottom' },
+      globalBgPosition: { type: String, default: 'center' },
     },
     // El nombre del campo (envelopeSettings) quedó del diseño anterior con
     // forma de sobre -- se mantiene así para no pedir una migración de datos

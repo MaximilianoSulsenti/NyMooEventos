@@ -31,6 +31,7 @@ function Countdown({ event, config, appearance, styles }) {
   const labelSize = config.fontSizeSubtitle || 'text-xs'
   const sectionTitleSize = config.fontSizeSectionTitle || 'text-lg'
   const sectionSubtitleSize = config.fontSizeSectionSubtitle || 'text-base'
+  const secondaryColor = config.textColorSecondary || config.textColor
 
   useEffect(() => {
     const interval = setInterval(() => setTimeLeft(getTimeLeft(event.date)), 1000)
@@ -53,7 +54,7 @@ function Countdown({ event, config, appearance, styles }) {
         {config.title || 'Cuenta regresiva'}
       </h2>
       {config.subtitle && (
-        <p className={`mb-6 ${sectionSubtitleSize}`} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+        <p className={`mb-6 ${sectionSubtitleSize}`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
           {config.subtitle}
         </p>
       )}

@@ -37,6 +37,7 @@ function RSVPSection({ event, config, appearance, styles }) {
   const priceButtonColor = config.priceButtonColor || config.textColor || '#ffffff'
   const titleSize = config.fontSizeTitle || 'text-base'
   const subtitleSize = config.fontSizeSubtitle || 'text-sm'
+  const secondaryColor = config.textColorSecondary || config.textColor
 
   return (
     <section className={`px-6 ${styles.fontClass}`}>
@@ -62,14 +63,14 @@ function RSVPSection({ event, config, appearance, styles }) {
         />
 
         <div className="max-w-sm">
-          <p className={titleSize} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+          <p className={titleSize} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
             {config.title ||
               (isWhatsapp
                 ? 'Confirmá tu asistencia por WhatsApp, así lo vemos al toque.'
                 : 'Tu presencia es el mejor regalo. Contanos si nos acompañás.')}
           </p>
           {config.subtitle && (
-            <p className={`${subtitleSize} mt-1`} style={{ color: secondaryTextColor(config.textColor, '99') }}>
+            <p className={`${subtitleSize} mt-1`} style={{ color: secondaryTextColor(secondaryColor, '99') }}>
               {config.subtitle}
             </p>
           )}

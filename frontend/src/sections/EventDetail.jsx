@@ -13,6 +13,7 @@ import { secondaryTextColor, titleTextStyle } from '../utils/color'
 // los ítems en fila (tarjetas, como Fecha/Hora/Lugar lado a lado) o en
 // lista vertical.
 function DetailGroup({ group, appearance, config, styles, isFirst, titleSize, subtitleSize, bodySize }) {
+  const secondaryColor = config.textColorSecondary || config.textColor
   const items = Array.isArray(group.items) ? group.items.filter((i) => i.label || i.text) : []
   if (!group.title && !group.subtitle && items.length === 0) return null
   const isHorizontal = (group.layout || 'horizontal') !== 'vertical'
@@ -27,7 +28,7 @@ function DetailGroup({ group, appearance, config, styles, isFirst, titleSize, su
       {group.subtitle && (
         <p
           className={`uppercase tracking-[0.2em] mb-6 ${subtitleSize}`}
-          style={{ color: secondaryTextColor(config.textColor, '80') }}
+          style={{ color: secondaryTextColor(secondaryColor, '80') }}
         >
           {group.subtitle}
         </p>
@@ -54,7 +55,7 @@ function DetailGroup({ group, appearance, config, styles, isFirst, titleSize, su
                   {item.label && (
                     <p
                       className={`font-semibold uppercase tracking-widest ${bodySize}`}
-                      style={{ color: secondaryTextColor(config.textColor, 'e6') }}
+                      style={{ color: secondaryTextColor(secondaryColor, 'e6') }}
                     >
                       {item.label}
                     </p>
@@ -83,12 +84,12 @@ function DetailGroup({ group, appearance, config, styles, isFirst, titleSize, su
                   />
                   <div>
                     {item.label && (
-                      <p className={`font-semibold ${bodySize}`} style={{ color: secondaryTextColor(config.textColor, 'e6') }}>
+                      <p className={`font-semibold ${bodySize}`} style={{ color: secondaryTextColor(secondaryColor, 'e6') }}>
                         {item.label}
                       </p>
                     )}
                     {item.text && (
-                      <p className={bodySize} style={{ color: secondaryTextColor(config.textColor, '99') }}>
+                      <p className={bodySize} style={{ color: secondaryTextColor(secondaryColor, '99') }}>
                         {item.text}
                       </p>
                     )}
@@ -109,6 +110,7 @@ function EventDetail({ event, config, appearance, styles }) {
   const weekday = eventDate.toLocaleDateString('es-ES', { weekday: 'long' })
   const formattedTime = eventDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
   const bodySize = config.fontSizeBody || 'text-base'
+  const secondaryColor = config.textColorSecondary || config.textColor
   const alignment = config.alignment || 'text-center'
   const titleSize = config.fontSizeTitle || 'text-2xl'
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
@@ -139,7 +141,7 @@ function EventDetail({ event, config, appearance, styles }) {
         </h2>
       )}
       {config.subtitle && (
-        <p className={`mb-5 ${subtitleSize}`} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+        <p className={`mb-5 ${subtitleSize}`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
           {config.subtitle}
         </p>
       )}
@@ -183,7 +185,7 @@ function EventDetail({ event, config, appearance, styles }) {
               <div className="flex flex-col items-center shrink-0">
                 <span
                   className="text-[11px] uppercase tracking-[0.2em]"
-                  style={{ color: secondaryTextColor(config.textColor, '80') }}
+                  style={{ color: secondaryTextColor(secondaryColor, '80') }}
                 >
                   {weekday}
                 </span>
@@ -192,7 +194,7 @@ function EventDetail({ event, config, appearance, styles }) {
                 </span>
                 <span
                   className="text-sm uppercase tracking-widest"
-                  style={{ color: secondaryTextColor(config.textColor, 'b3') }}
+                  style={{ color: secondaryTextColor(secondaryColor, 'b3') }}
                 >
                   {month}
                 </span>
@@ -203,7 +205,7 @@ function EventDetail({ event, config, appearance, styles }) {
 
               <p
                 className="font-medium flex items-center gap-2"
-                style={{ color: secondaryTextColor(config.textColor, 'e6') }}
+                style={{ color: secondaryTextColor(secondaryColor, 'e6') }}
               >
                 <Clock className="w-4 h-4 shrink-0" style={{ color: appearance.primaryColor }} />
                 {formattedTime} hs
@@ -214,7 +216,7 @@ function EventDetail({ event, config, appearance, styles }) {
           {config.description && (
             <p
               className={cn('px-8 text-center', config.hideDate ? 'pt-7' : 'pt-4', bodySize)}
-              style={{ color: secondaryTextColor(config.textColor, '99') }}
+              style={{ color: secondaryTextColor(secondaryColor, '99') }}
             >
               {config.description}
             </p>
@@ -240,12 +242,12 @@ function EventDetail({ event, config, appearance, styles }) {
                     />
                     <div>
                       {detail.label && (
-                        <p className="text-sm font-semibold" style={{ color: secondaryTextColor(config.textColor, 'e6') }}>
+                        <p className="text-sm font-semibold" style={{ color: secondaryTextColor(secondaryColor, 'e6') }}>
                           {detail.label}
                         </p>
                       )}
                       {detail.text && (
-                        <p className={bodySize} style={{ color: secondaryTextColor(config.textColor, '99') }}>
+                        <p className={bodySize} style={{ color: secondaryTextColor(secondaryColor, '99') }}>
                           {detail.text}
                         </p>
                       )}

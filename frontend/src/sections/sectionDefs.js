@@ -102,6 +102,14 @@ export const BG_TYPE_OPTIONS = [
   { value: 'video', label: 'Video' },
 ]
 
+export const BG_POSITION_OPTIONS = [
+  { value: 'center', label: 'Centro' },
+  { value: 'top', label: 'Arriba' },
+  { value: 'bottom', label: 'Abajo' },
+  { value: 'left', label: 'Izquierda' },
+  { value: 'right', label: 'Derecha' },
+]
+
 export { EVENT_ICON_OPTIONS, EVENT_ICON_OPTIONS as INFO_ICON_OPTIONS } from './eventIcons'
 import { EVENT_ICON_OPTIONS } from './eventIcons'
 
@@ -161,13 +169,7 @@ export const BACKGROUND_FIELD_DEFS = [
     label: 'Encuadre de la imagen',
     type: 'select',
     showIf: (config) => config.bgType === 'imagen',
-    options: [
-      { value: 'center', label: 'Centro' },
-      { value: 'top', label: 'Arriba' },
-      { value: 'bottom', label: 'Abajo' },
-      { value: 'left', label: 'Izquierda' },
-      { value: 'right', label: 'Derecha' },
-    ],
+    options: BG_POSITION_OPTIONS,
   },
   {
     key: 'bgGradientFrom',
@@ -202,7 +204,14 @@ export const BACKGROUND_FIELD_DEFS = [
 // Campo compartido para el color del texto de cada sección (por defecto
 // blanco) -- afecta título, subtítulo, cuerpo y demás texto de esa sección
 // (ver secondaryTextColor en utils/color.js), no solo el título.
-export const TEXT_FIELD_DEFS = [{ key: 'textColor', label: 'Color del texto', type: 'color' }]
+export const TEXT_FIELD_DEFS = [
+  { key: 'textColor', label: 'Color del texto', type: 'color' },
+  {
+    key: 'textColorSecondary',
+    label: 'Color secundario (dedicatoria, descripciones, subtítulos, etc.)',
+    type: 'color',
+  },
+]
 
 // Degradado opcional para el TÍTULO principal de la sección únicamente (no
 // el subtítulo/cuerpo, que siguen derivando de textColor de arriba vía

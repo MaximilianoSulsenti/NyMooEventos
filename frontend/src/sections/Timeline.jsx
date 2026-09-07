@@ -8,6 +8,7 @@ function Timeline({ config, appearance, styles }) {
   const titleSize = config.fontSizeTitle || 'text-lg'
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const bodySize = config.fontSizeBody || 'text-base'
+  const secondaryColor = config.textColorSecondary || config.textColor
   if (items.length === 0) return null
 
   return (
@@ -16,7 +17,7 @@ function Timeline({ config, appearance, styles }) {
         {config.title || 'Cronograma'}
       </h2>
       {config.subtitle && (
-        <p className={`mb-6 ${subtitleSize}`} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+        <p className={`mb-6 ${subtitleSize}`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
           {config.subtitle}
         </p>
       )}
@@ -43,7 +44,7 @@ function Timeline({ config, appearance, styles }) {
                 <span className={`font-semibold ${bodySize}`} style={{ color: appearance.primaryColor }}>
                   {item.time}
                 </span>
-                <p className={bodySize} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+                <p className={bodySize} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
                   {item.label}
                 </p>
               </div>

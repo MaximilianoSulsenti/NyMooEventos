@@ -8,6 +8,7 @@ function Story({ config, appearance, styles }) {
   const titleSize = config.fontSizeTitle || 'text-2xl'
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const bodySize = config.fontSizeBody || 'text-base'
+  const secondaryColor = config.textColorSecondary || config.textColor
 
   if (!config.title && !config.body && milestones.length === 0) return null
 
@@ -22,7 +23,7 @@ function Story({ config, appearance, styles }) {
         </h2>
       )}
       {config.subtitle && (
-        <p className={`mb-4 ${subtitleSize}`} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+        <p className={`mb-4 ${subtitleSize}`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
           {config.subtitle}
         </p>
       )}
@@ -30,7 +31,7 @@ function Story({ config, appearance, styles }) {
       {config.body && (
         <p
           className={`whitespace-pre-line mb-8 ${bodySize}`}
-          style={{ color: secondaryTextColor(config.textColor, 'b3') }}
+          style={{ color: secondaryTextColor(secondaryColor, 'b3') }}
         >
           {config.body}
         </p>
@@ -73,7 +74,7 @@ function Story({ config, appearance, styles }) {
                 </p>
               )}
               {milestone.subtitle && (
-                <p className={`mt-1 ${bodySize}`} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+                <p className={`mt-1 ${bodySize}`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
                   {milestone.subtitle}
                 </p>
               )}

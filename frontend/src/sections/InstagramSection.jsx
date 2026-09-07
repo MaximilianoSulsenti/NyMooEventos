@@ -17,6 +17,7 @@ function InstagramSection({ config, styles }) {
 
   const titleSize = config.fontSizeTitle || 'text-2xl'
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
+  const secondaryColor = config.textColorSecondary || config.textColor
   const gradient = config.accentColor
     ? `linear-gradient(135deg, ${config.accentColor}, ${INSTAGRAM_PINK})`
     : INSTAGRAM_GRADIENT
@@ -50,7 +51,7 @@ function InstagramSection({ config, styles }) {
           </h2>
         )}
 
-        <p className={`max-w-sm ${subtitleSize}`} style={{ color: secondaryTextColor(config.textColor, 'b3') }}>
+        <p className={`max-w-sm ${subtitleSize}`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
           {config.subtitle || 'Compartí tus mejores momentos y etiquetanos para que no nos perdamos ninguna foto.'}
         </p>
 
