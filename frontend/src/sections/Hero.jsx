@@ -1,10 +1,33 @@
-import { motion } from 'motion/react'
-import { Sparkles, CalendarDays } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { motion, AnimatePresence } from 'motion/react'
+import { Sparkles, CalendarDays, ChevronDown } from 'lucide-react'
 import usePremiumGuest from '../hooks/usePremiumGuest'
 import { secondaryTextColor, titleTextStyle, secondaryGlassStyle } from '../utils/color'
 import { cn } from '../utils/cn'
 
-function Hero({ event, config, appearance, styles }) {
+function Hero({ event, config, appearance, styles, revealed = true }) {
+  // Pista sutil de "seguí bajando" -- aparece recién a los pocos segundos de
+  // que la Portada es realmente visible (no desde que carga la página: si
+  // hay sobre de bienvenida, Hero ya está montado detrás tapado, así que el
+  // conteo arranca cuando se abre, no antes) y desaparece apenas el
+  // visitante hace scroll, así no queda pegada arriba de otras secciones.
+  const [showScrollHint, setShowScrollHint] = useState(false)
+  useEffect(() => {
+    if (!revealed) return undefined
+    const timer = setTimeout(() => setShowScrollHint(true), 2500)
+    function handleScroll() {
+      if (window.scrollY > 40) {
+        setShowScrollHint(false)
+        window.removeEventListener('scroll', handleScroll)
+      }
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [revealed])
+
   const kicker = config.kicker || 'Te invitamos a celebrar'
   const title = config.title || event.eventName
   const subtitle = config.subtitle || ''
@@ -99,6 +122,22 @@ function Hero({ event, config, appearance, styles }) {
           </p>
         )}
       </motion.div>
+
+      <AnimatePresence>
+        {showScrollHint && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-20 pointer-events-none"
+          >
+            <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}>
+              <ChevronDown className="w-6 h-6" style={{ color: appearance.primaryColor }} />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   )
 }

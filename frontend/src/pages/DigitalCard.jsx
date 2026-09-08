@@ -128,7 +128,7 @@ function DigitalCard() {
         animate={introOpen ? { opacity: 1, scale: 1 } : {}}
         transition={{ duration: 0.6, ease: 'easeOut' }}
       >
-        <SectionRenderer event={event} />
+        <SectionRenderer event={event} revealed={introOpen} />
       </motion.div>
     </div>
   )

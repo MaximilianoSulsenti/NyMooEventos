@@ -36,7 +36,7 @@ const SECTION_COMPONENTS = {
   Footer,
 }
 
-function SectionRenderer({ event }) {
+function SectionRenderer({ event, revealed = true }) {
   const appearance = event.appearance || {}
   const styles = getThemeStyles(appearance.theme, appearance.fontFamily, appearance.titleFontFamily)
 
@@ -89,7 +89,7 @@ function SectionRenderer({ event }) {
               />
             )}
             <div className="relative z-10">
-              <Component event={event} config={config} appearance={appearance} styles={styles} />
+              <Component event={event} config={config} appearance={appearance} styles={styles} revealed={revealed} />
             </div>
           </motion.div>
         )
