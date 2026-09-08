@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import { motion } from 'motion/react'
 import { cn } from '../utils/cn'
 import { resolveIcon } from './eventIcons'
 import AnimatedIcon from '../components/AnimatedIcon'
 import Button from '../components/ui/Button'
+import RsvpModalShell from '../components/RsvpModalShell'
 import { glassStyle, glassBlurClass } from '../utils/glass'
 import { secondaryTextColor, titleTextStyle } from '../utils/color'
 
@@ -11,6 +13,11 @@ function isEmbedUrl(url = '') {
 }
 
 function Location({ config, appearance, styles }) {
+  // Antes el botón navegaba directo (target="_blank") -- en el celular eso
+  // saltaba de golpe a la app de Google Maps sin avisar. Ahora primero
+  // abre esta confirmación chica; el link real recién vive adentro, en el
+  // botón del modal.
+  const [confirmLocation, setConfirmLocation] = useState(null)
   const locations = Array.isArray(config.locations) ? config.locations : []
   const titleSize = config.fontSizeTitle || 'text-lg'
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
@@ -84,10 +91,8 @@ function Location({ config, appearance, styles }) {
               ) : (
                 location.mapUrl && (
                   <Button
-                    as="a"
-                    href={location.mapUrl}
-                    target="_blank"
-                    rel="noreferrer"
+                    type="button"
+                    onClick={() => setConfirmLocation(location)}
                     primaryColor={primaryColor}
                     className="mt-2 px-5 py-2 text-sm"
                   >
@@ -99,6 +104,32 @@ function Location({ config, appearance, styles }) {
           )
         })}
       </div>
+
+      {confirmLocation && (
+        <RsvpModalShell accentColor={primaryColor} onClose={() => setConfirmLocation(null)}>
+          <div className="text-center">
+            <AnimatedIcon
+              icon={resolveIcon(confirmLocation.icon, confirmLocation.label)}
+              className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3"
+              style={{ background: `${primaryColor}22`, color: primaryColor }}
+              iconClassName="w-6 h-6"
+            />
+            {confirmLocation.label && <p className="font-semibold text-lg mb-1">{confirmLocation.label}</p>}
+            {confirmLocation.address && <p className="text-sm text-white/70 mb-5">{confirmLocation.address}</p>}
+            <Button
+              as="a"
+              href={confirmLocation.mapUrl}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => setConfirmLocation(null)}
+              primaryColor={primaryColor}
+              className="w-full px-5 py-2.5 text-sm"
+            >
+              {config.mapsButtonText || 'Ver en Google Maps'}
+            </Button>
+          </div>
+        </RsvpModalShell>
+      )}
     </section>
   )
 }
