@@ -10,7 +10,7 @@ import { WhatsappIcon } from '../components/icons/BrandIcons'
 import { glassStyle, glassBlurClass } from '../utils/glass'
 import { cn } from '../utils/cn'
 import { CARD_REVEAL } from '../utils/motionPresets'
-import { secondaryTextColor, titleTextStyle } from '../utils/color'
+import { secondaryTextColor, titleTextStyle, secondaryGlassStyle } from '../utils/color'
 
 const WHATSAPP_GREEN = '#25D366'
 
@@ -38,6 +38,8 @@ function RSVPSection({ event, config, appearance, styles }) {
   const titleSize = config.fontSizeTitle || 'text-base'
   const subtitleSize = config.fontSizeSubtitle || 'text-sm'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const glassBg = config.textGlassBg === 'si'
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
 
   return (
     <section className={`px-6 ${styles.fontClass}`}>
@@ -70,7 +72,10 @@ function RSVPSection({ event, config, appearance, styles }) {
                 : 'Tu presencia es el mejor regalo. Contanos si nos acompañás.')}
           </p>
           {config.subtitle && (
-            <p className={`${subtitleSize} mt-1`} style={{ color: secondaryTextColor(secondaryColor, '99') }}>
+            <p
+              className={cn(subtitleSize, 'mt-1', glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+              style={{ color: secondaryTextColor(secondaryColor, '99'), ...glassBgStyle }}
+            >
               {config.subtitle}
             </p>
           )}

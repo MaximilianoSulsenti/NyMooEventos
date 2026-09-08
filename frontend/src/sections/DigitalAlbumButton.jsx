@@ -5,7 +5,8 @@ import Button from '../components/ui/Button'
 import UploadPhotosModal from '../components/UploadPhotosModal'
 import ModulePreviewModal from '../components/ModulePreviewModal'
 import { CARD_REVEAL } from '../utils/motionPresets'
-import { secondaryTextColor, titleTextStyle } from '../utils/color'
+import { cn } from '../utils/cn'
+import { secondaryTextColor, titleTextStyle, secondaryGlassStyle } from '../utils/color'
 
 const PREVIEW_PARAGRAPHS = [
   'En este espacio van a poder revivir los momentos más especiales del evento a través de las fotos que suban los invitados.',
@@ -20,6 +21,8 @@ function DigitalAlbumButton({ event, config, appearance, styles }) {
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const bodySize = config.fontSizeBody || 'text-sm'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const glassBg = config.textGlassBg === 'si'
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
   const moduleActive = Boolean(event.activeModules?.photoCollection)
 
   // Antes esta sección se ocultaba entera (return null) si el módulo no
@@ -34,11 +37,17 @@ function DigitalAlbumButton({ event, config, appearance, styles }) {
           {config.title || 'Álbum digital del evento'}
         </h2>
         {config.subtitle && (
-          <p className={`mb-2 ${subtitleSize}`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
+          <p
+            className={cn('mb-2', subtitleSize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+            style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+          >
             {config.subtitle}
           </p>
         )}
-        <p className={`${bodySize} mb-6 max-w-sm mx-auto break-words`} style={{ color: secondaryTextColor(secondaryColor, '99') }}>
+        <p
+          className={cn(bodySize, 'mb-6 max-w-sm mx-auto break-words', glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+          style={{ color: secondaryTextColor(secondaryColor, '99'), ...glassBgStyle }}
+        >
           {config.description || 'Compartí tus fotos del evento y quedan guardadas en nuestro álbum digital.'}
         </p>
 

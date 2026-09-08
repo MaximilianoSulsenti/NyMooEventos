@@ -1,6 +1,7 @@
 import { motion } from 'motion/react'
 import { Heart } from 'lucide-react'
-import { secondaryTextColor, titleTextStyle } from '../utils/color'
+import { cn } from '../utils/cn'
+import { secondaryTextColor, titleTextStyle, secondaryGlassStyle } from '../utils/color'
 
 function Story({ config, appearance, styles }) {
   const milestones = Array.isArray(config.milestones) ? config.milestones : []
@@ -9,6 +10,8 @@ function Story({ config, appearance, styles }) {
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const bodySize = config.fontSizeBody || 'text-base'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const glassBg = config.textGlassBg === 'si'
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
 
   if (!config.title && !config.body && milestones.length === 0) return null
 
@@ -23,15 +26,18 @@ function Story({ config, appearance, styles }) {
         </h2>
       )}
       {config.subtitle && (
-        <p className={`mb-4 ${subtitleSize}`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
+        <p
+          className={cn('mb-4', subtitleSize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+          style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+        >
           {config.subtitle}
         </p>
       )}
       <div className={`${styles.divider} mx-auto mb-4`} style={{ background: appearance.primaryColor }} />
       {config.body && (
         <p
-          className={`whitespace-pre-line mb-8 ${bodySize}`}
-          style={{ color: secondaryTextColor(secondaryColor, 'b3') }}
+          className={cn('whitespace-pre-line mb-8', bodySize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+          style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
         >
           {config.body}
         </p>
@@ -74,7 +80,10 @@ function Story({ config, appearance, styles }) {
                 </p>
               )}
               {milestone.subtitle && (
-                <p className={`mt-1 ${bodySize}`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
+                <p
+                  className={cn('mt-1', bodySize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+                  style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+                >
                   {milestone.subtitle}
                 </p>
               )}

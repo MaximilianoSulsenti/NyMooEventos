@@ -5,12 +5,14 @@ import { cn } from '../utils/cn'
 import { resolveIcon } from './eventIcons'
 import AnimatedIcon from '../components/AnimatedIcon'
 import { glassStyle, glassBlurClass } from '../utils/glass'
-import { secondaryTextColor, titleTextStyle } from '../utils/color'
+import { secondaryTextColor, titleTextStyle, secondaryGlassStyle } from '../utils/color'
 
 function InfoCard({ item, appearance, styles, config, isOpen, onToggle }) {
   const Icon = resolveIcon(item.icon, `${item.title || ''} ${item.body || ''}`)
   const bodySize = config.fontSizeBody || 'text-base'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const glassBg = config.textGlassBg === 'si'
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
 
   return (
     <motion.div
@@ -51,8 +53,12 @@ function InfoCard({ item, appearance, styles, config, isOpen, onToggle }) {
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               exit={{ opacity: 0, filter: 'blur(4px)' }}
               transition={{ duration: 0.3, delay: 0.05 }}
-              className={`px-4 pb-4 pl-16 leading-relaxed whitespace-pre-line ${bodySize}`}
-              style={{ color: secondaryTextColor(secondaryColor, '99') }}
+              className={cn(
+                'px-4 pb-4 pl-16 leading-relaxed whitespace-pre-line',
+                bodySize,
+                glassBg && 'rounded-2xl backdrop-blur-md py-1.5'
+              )}
+              style={{ color: secondaryTextColor(secondaryColor, '99'), ...glassBgStyle }}
             >
               {item.body}
             </motion.p>
@@ -69,6 +75,8 @@ function Info({ config, appearance, styles }) {
   const titleSize = config.fontSizeTitle || 'text-lg'
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const glassBg = config.textGlassBg === 'si'
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
 
   if (items.length === 0) return null
 
@@ -81,7 +89,10 @@ function Info({ config, appearance, styles }) {
         {config.title || 'Información adicional'}
       </h2>
       {config.subtitle && (
-        <p className={`text-center mb-6 ${subtitleSize}`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
+        <p
+          className={cn('text-center mb-6', subtitleSize, glassBg && 'w-fit mx-auto backdrop-blur-md rounded-2xl px-4 py-1.5')}
+          style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+        >
           {config.subtitle}
         </p>
       )}

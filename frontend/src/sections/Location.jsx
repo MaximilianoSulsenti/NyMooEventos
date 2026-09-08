@@ -6,7 +6,7 @@ import AnimatedIcon from '../components/AnimatedIcon'
 import Button from '../components/ui/Button'
 import RsvpModalShell from '../components/RsvpModalShell'
 import { glassStyle, glassBlurClass } from '../utils/glass'
-import { secondaryTextColor, titleTextStyle } from '../utils/color'
+import { secondaryTextColor, titleTextStyle, secondaryGlassStyle } from '../utils/color'
 
 function isEmbedUrl(url = '') {
   return url.includes('google.com/maps/embed')
@@ -23,6 +23,8 @@ function Location({ config, appearance, styles }) {
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const bodySize = config.fontSizeBody || 'text-sm'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const glassBg = config.textGlassBg === 'si'
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
   const primaryColor = appearance?.primaryColor
 
   if (locations.length === 0) return null
@@ -33,7 +35,10 @@ function Location({ config, appearance, styles }) {
         {config.title || 'Ubicación'}
       </h2>
       {config.subtitle && (
-        <p className={`mb-6 ${subtitleSize}`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
+        <p
+          className={cn('mb-6', subtitleSize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+          style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+        >
           {config.subtitle}
         </p>
       )}
@@ -73,7 +78,10 @@ function Location({ config, appearance, styles }) {
                 </p>
               )}
               {location.address && (
-                <p className={`${bodySize} max-w-xs`} style={{ color: secondaryTextColor(secondaryColor, '99') }}>
+                <p
+                  className={cn(bodySize, 'max-w-xs', glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+                  style={{ color: secondaryTextColor(secondaryColor, '99'), ...glassBgStyle }}
+                >
                   {location.address}
                 </p>
               )}

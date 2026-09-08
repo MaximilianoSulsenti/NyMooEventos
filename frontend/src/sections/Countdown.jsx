@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
 import { cn } from '../utils/cn'
 import { glassStyle, glassBlurClass } from '../utils/glass'
-import { secondaryTextColor, titleTextStyle } from '../utils/color'
+import { secondaryTextColor, titleTextStyle, secondaryGlassStyle } from '../utils/color'
 
 function getTimeLeft(target) {
   const diff = Math.max(0, new Date(target).getTime() - Date.now())
@@ -32,6 +32,8 @@ function Countdown({ event, config, appearance, styles }) {
   const sectionTitleSize = config.fontSizeSectionTitle || 'text-lg'
   const sectionSubtitleSize = config.fontSizeSectionSubtitle || 'text-base'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const glassBg = config.textGlassBg === 'si'
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
 
   useEffect(() => {
     const interval = setInterval(() => setTimeLeft(getTimeLeft(event.date)), 1000)
@@ -54,7 +56,10 @@ function Countdown({ event, config, appearance, styles }) {
         {config.title || 'Cuenta regresiva'}
       </h2>
       {config.subtitle && (
-        <p className={`mb-6 ${sectionSubtitleSize}`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
+        <p
+          className={cn('mb-6', sectionSubtitleSize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+          style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+        >
           {config.subtitle}
         </p>
       )}

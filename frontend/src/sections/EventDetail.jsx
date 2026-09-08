@@ -5,7 +5,7 @@ import { resolveIcon } from './eventIcons'
 import AnimatedIcon from '../components/AnimatedIcon'
 import { glassStyle, glassBlurClass } from '../utils/glass'
 import { CARD_REVEAL } from '../utils/motionPresets'
-import { secondaryTextColor, titleTextStyle } from '../utils/color'
+import { secondaryTextColor, titleTextStyle, secondaryGlassStyle } from '../utils/color'
 
 // Un grupo de detalles (ej. "Ceremonia Religiosa" con Fecha/Hora/Lugar) --
 // mismo AnimatedIcon/label/text que el bloque de "detalles" de siempre,
@@ -14,6 +14,8 @@ import { secondaryTextColor, titleTextStyle } from '../utils/color'
 // lista vertical.
 function DetailGroup({ group, appearance, config, styles, isFirst, titleSize, subtitleSize, bodySize }) {
   const secondaryColor = config.textColorSecondary || config.textColor
+  const glassBg = config.textGlassBg === 'si'
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
   const items = Array.isArray(group.items) ? group.items.filter((i) => i.label || i.text) : []
   if (!group.title && !group.subtitle && items.length === 0) return null
   const isHorizontal = (group.layout || 'horizontal') !== 'vertical'
@@ -27,8 +29,8 @@ function DetailGroup({ group, appearance, config, styles, isFirst, titleSize, su
       )}
       {group.subtitle && (
         <p
-          className={`uppercase tracking-[0.2em] mb-6 ${subtitleSize}`}
-          style={{ color: secondaryTextColor(secondaryColor, '80') }}
+          className={cn('uppercase tracking-[0.2em] mb-6', subtitleSize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+          style={{ color: secondaryTextColor(secondaryColor, '80'), ...glassBgStyle }}
         >
           {group.subtitle}
         </p>
@@ -54,8 +56,8 @@ function DetailGroup({ group, appearance, config, styles, isFirst, titleSize, su
                   />
                   {item.label && (
                     <p
-                      className={`font-semibold uppercase tracking-widest ${bodySize}`}
-                      style={{ color: secondaryTextColor(secondaryColor, 'e6') }}
+                      className={cn('font-semibold uppercase tracking-widest', bodySize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+                      style={{ color: secondaryTextColor(secondaryColor, 'e6'), ...glassBgStyle }}
                     >
                       {item.label}
                     </p>
@@ -84,12 +86,18 @@ function DetailGroup({ group, appearance, config, styles, isFirst, titleSize, su
                   />
                   <div>
                     {item.label && (
-                      <p className={`font-semibold ${bodySize}`} style={{ color: secondaryTextColor(secondaryColor, 'e6') }}>
+                      <p
+                        className={cn('font-semibold', bodySize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+                        style={{ color: secondaryTextColor(secondaryColor, 'e6'), ...glassBgStyle }}
+                      >
                         {item.label}
                       </p>
                     )}
                     {item.text && (
-                      <p className={bodySize} style={{ color: secondaryTextColor(secondaryColor, '99') }}>
+                      <p
+                        className={cn(bodySize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+                        style={{ color: secondaryTextColor(secondaryColor, '99'), ...glassBgStyle }}
+                      >
                         {item.text}
                       </p>
                     )}
@@ -111,6 +119,8 @@ function EventDetail({ event, config, appearance, styles }) {
   const formattedTime = eventDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
   const bodySize = config.fontSizeBody || 'text-base'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const glassBg = config.textGlassBg === 'si'
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
   const alignment = config.alignment || 'text-center'
   const titleSize = config.fontSizeTitle || 'text-2xl'
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
@@ -141,7 +151,10 @@ function EventDetail({ event, config, appearance, styles }) {
         </h2>
       )}
       {config.subtitle && (
-        <p className={`mb-5 ${subtitleSize}`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
+        <p
+          className={cn('mb-5', subtitleSize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+          style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+        >
           {config.subtitle}
         </p>
       )}
@@ -184,8 +197,8 @@ function EventDetail({ event, config, appearance, styles }) {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-5 sm:gap-8 px-8 pt-7">
               <div className="flex flex-col items-center shrink-0">
                 <span
-                  className="text-[11px] uppercase tracking-[0.2em]"
-                  style={{ color: secondaryTextColor(secondaryColor, '80') }}
+                  className={cn('text-[11px] uppercase tracking-[0.2em]', glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+                  style={{ color: secondaryTextColor(secondaryColor, '80'), ...glassBgStyle }}
                 >
                   {weekday}
                 </span>
@@ -193,8 +206,8 @@ function EventDetail({ event, config, appearance, styles }) {
                   {day}
                 </span>
                 <span
-                  className="text-sm uppercase tracking-widest"
-                  style={{ color: secondaryTextColor(secondaryColor, 'b3') }}
+                  className={cn('text-sm uppercase tracking-widest', glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+                  style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
                 >
                   {month}
                 </span>
@@ -204,8 +217,8 @@ function EventDetail({ event, config, appearance, styles }) {
               <div className="sm:hidden w-12 h-px bg-white/10" />
 
               <p
-                className="font-medium flex items-center gap-2"
-                style={{ color: secondaryTextColor(secondaryColor, 'e6') }}
+                className={cn('font-medium flex items-center gap-2', glassBg && 'backdrop-blur-md rounded-2xl px-4 py-1.5')}
+                style={{ color: secondaryTextColor(secondaryColor, 'e6'), ...glassBgStyle }}
               >
                 <Clock className="w-4 h-4 shrink-0" style={{ color: appearance.primaryColor }} />
                 {formattedTime} hs
@@ -215,8 +228,8 @@ function EventDetail({ event, config, appearance, styles }) {
 
           {config.description && (
             <p
-              className={cn('px-8 text-center', config.hideDate ? 'pt-7' : 'pt-4', bodySize)}
-              style={{ color: secondaryTextColor(secondaryColor, '99') }}
+              className={cn('px-8 text-center', config.hideDate ? 'pt-7' : 'pt-4', bodySize, glassBg && 'backdrop-blur-md rounded-2xl py-1.5')}
+              style={{ color: secondaryTextColor(secondaryColor, '99'), ...glassBgStyle }}
             >
               {config.description}
             </p>
@@ -242,12 +255,18 @@ function EventDetail({ event, config, appearance, styles }) {
                     />
                     <div>
                       {detail.label && (
-                        <p className="text-sm font-semibold" style={{ color: secondaryTextColor(secondaryColor, 'e6') }}>
+                        <p
+                          className={cn('text-sm font-semibold', glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+                          style={{ color: secondaryTextColor(secondaryColor, 'e6'), ...glassBgStyle }}
+                        >
                           {detail.label}
                         </p>
                       )}
                       {detail.text && (
-                        <p className={bodySize} style={{ color: secondaryTextColor(secondaryColor, '99') }}>
+                        <p
+                          className={cn(bodySize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+                          style={{ color: secondaryTextColor(secondaryColor, '99'), ...glassBgStyle }}
+                        >
                           {detail.text}
                         </p>
                       )}

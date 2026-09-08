@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import ThreeDPhotoCarousel from '../components/ui/ThreeDPhotoCarousel'
 import CarouselArrows from '../components/ui/CarouselArrows'
-import { secondaryTextColor, titleTextStyle } from '../utils/color'
+import { cn } from '../utils/cn'
+import { secondaryTextColor, titleTextStyle, secondaryGlassStyle } from '../utils/color'
 
 function BentoGrid({ images }) {
   const spanClasses = [
@@ -73,6 +74,8 @@ function Gallery({ config, styles }) {
   const titleSize = config.fontSizeTitle || 'text-2xl'
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const glassBg = config.textGlassBg === 'si'
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
 
   if (images.length === 0) return null
 
@@ -82,7 +85,10 @@ function Gallery({ config, styles }) {
         {config.title || 'Galería'}
       </h2>
       {config.subtitle && (
-        <p className={`mb-6 ${subtitleSize}`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
+        <p
+          className={cn('mb-6', subtitleSize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+          style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+        >
           {config.subtitle}
         </p>
       )}

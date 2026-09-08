@@ -1,7 +1,8 @@
 import { motion } from 'motion/react'
 import { Mail, Phone, Music2, Globe } from 'lucide-react'
 import { InstagramIcon, WhatsappIcon, FacebookIcon, TiktokIcon, SpotifyIcon, YoutubeIcon } from '../components/icons/BrandIcons'
-import { secondaryTextColor } from '../utils/color'
+import { cn } from '../utils/cn'
+import { secondaryTextColor, secondaryGlassStyle } from '../utils/color'
 
 const ICON_RULES = [
   { keywords: ['whatsapp', 'wsp'], icon: WhatsappIcon },
@@ -38,6 +39,8 @@ function Footer({ event, config, appearance, styles }) {
   const nameSize = config.fontSizeTitle || 'text-2xl'
   const bodySize = config.fontSizeBody || 'text-sm'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const glassBg = config.textGlassBg === 'si'
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
 
   return (
     <section className={`relative text-center px-6 pt-14 pb-12 overflow-hidden ${styles.fontClass}`}>
@@ -60,8 +63,8 @@ function Footer({ event, config, appearance, styles }) {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className={`${bodySize} italic max-w-md mx-auto`}
-        style={{ color: secondaryTextColor(secondaryColor, '99') }}
+        className={cn(bodySize, 'italic max-w-md mx-auto', glassBg && 'w-fit backdrop-blur-md rounded-2xl px-4 py-1.5')}
+        style={{ color: secondaryTextColor(secondaryColor, '99'), ...glassBgStyle }}
       >
         {config.text || `Con cariño, esperamos verte en ${event.eventName}.`}
       </motion.p>
@@ -110,8 +113,8 @@ function Footer({ event, config, appearance, styles }) {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2, duration: 0.6 }}
-          className={`${bodySize} mt-8 uppercase tracking-[0.15em]`}
-          style={{ color: secondaryTextColor(secondaryColor, '4d') }}
+          className={cn(bodySize, 'mt-8 uppercase tracking-[0.15em]', glassBg && 'w-fit mx-auto backdrop-blur-md rounded-2xl px-4 py-1.5')}
+          style={{ color: secondaryTextColor(secondaryColor, '4d'), ...glassBgStyle }}
         >
           {config.signature}
         </motion.p>

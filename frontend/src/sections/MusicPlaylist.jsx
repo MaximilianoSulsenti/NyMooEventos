@@ -5,7 +5,7 @@ import api from '../services/api'
 import Button from '../components/ui/Button'
 import AnimatedIcon from '../components/AnimatedIcon'
 import { glassStyle, glassBlurClass } from '../utils/glass'
-import { secondaryTextColor, titleTextStyle } from '../utils/color'
+import { secondaryTextColor, titleTextStyle, secondaryGlassStyle } from '../utils/color'
 import { cn } from '../utils/cn'
 import { CARD_REVEAL } from '../utils/motionPresets'
 
@@ -58,6 +58,8 @@ function SongRequestForm({ eventSlug, primaryColor, config }) {
   const inputStyle = { color: textColor, background: `${textColor}0d`, borderColor: `${textColor}26` }
   const bodySize = config?.fontSizeBody || 'text-sm'
   const secondaryColor = config?.textColorSecondary || textColor
+  const glassBg = config?.textGlassBg === 'si'
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -81,7 +83,10 @@ function SongRequestForm({ eventSlug, primaryColor, config }) {
 
   return (
     <div className="w-full pt-5 mt-5 border-t border-white/10" style={{ '--accent': primaryColor }}>
-      <p className={`${bodySize} mb-3`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
+      <p
+        className={cn(bodySize, 'mb-3', glassBg && 'w-fit mx-auto backdrop-blur-md rounded-2xl px-4 py-1.5')}
+        style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+      >
         ¿Qué canción no puede faltar en la fiesta? 🎶
       </p>
 
@@ -148,6 +153,8 @@ function MusicPlaylist({ event, config, appearance, styles }) {
   const titleSize = config.fontSizeTitle || 'text-lg'
   const subtitleSize = config.fontSizeSubtitle || 'text-sm'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const glassBg = config.textGlassBg === 'si'
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
   const primaryColor = appearance?.primaryColor
   const canRequestSongs = Boolean(event?.activeModules?.guestControl)
 
@@ -180,7 +187,10 @@ function MusicPlaylist({ event, config, appearance, styles }) {
           {config.title || 'Playlist del evento'}
         </h2>
         {config.subtitle && (
-          <p className={`${subtitleSize} -mt-2`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
+          <p
+            className={cn(subtitleSize, '-mt-2', glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+            style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+          >
             {config.subtitle}
           </p>
         )}

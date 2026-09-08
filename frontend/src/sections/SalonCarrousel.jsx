@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import CarouselArrows from '../components/ui/CarouselArrows'
-import { secondaryTextColor, titleTextStyle } from '../utils/color'
+import { cn } from '../utils/cn'
+import { secondaryTextColor, titleTextStyle, secondaryGlassStyle } from '../utils/color'
 
 function SalonCarrousel({ config, styles }) {
   const images = [
@@ -15,6 +16,8 @@ function SalonCarrousel({ config, styles }) {
   const subtitleSize = config.fontSizeSubtitle || 'text-sm'
   const bodySize = config.fontSizeBody || 'text-sm'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const glassBg = config.textGlassBg === 'si'
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
   const [index, setIndex] = useState(0)
   const [manualNav, setManualNav] = useState(0)
 
@@ -39,7 +42,10 @@ function SalonCarrousel({ config, styles }) {
         </h2>
       )}
       {config.subtitle && (
-        <p className={`${subtitleSize} mb-4`} style={{ color: secondaryTextColor(secondaryColor, '99') }}>
+        <p
+          className={cn(subtitleSize, 'mb-4', glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+          style={{ color: secondaryTextColor(secondaryColor, '99'), ...glassBgStyle }}
+        >
           {config.subtitle}
         </p>
       )}
@@ -61,7 +67,10 @@ function SalonCarrousel({ config, styles }) {
       </div>
 
       {config.caption && (
-        <p className={`${bodySize} mt-3 italic`} style={{ color: secondaryTextColor(secondaryColor, '80') }}>
+        <p
+          className={cn(bodySize, 'mt-3 italic', glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+          style={{ color: secondaryTextColor(secondaryColor, '80'), ...glassBgStyle }}
+        >
           {config.caption}
         </p>
       )}

@@ -54,6 +54,20 @@ export function secondaryTextColor(textColor, opacityHex) {
   return `${textColor || '#ffffff'}${opacityHex}`
 }
 
+// Fondo "vidriado" opcional detrás de un texto secundario -- pensado para
+// cuando el fondo de la sección es un video/imagen y el texto se pierde en
+// algún momento. El tinte se calcula por contraste contra el propio color
+// del texto (getContrastTextColor), nunca fijo, así siempre se lee bien sin
+// importar qué combinación de colores se elija.
+export function secondaryGlassStyle(secondaryColor) {
+  const tint = getContrastTextColor(secondaryColor || '#ffffff')
+  return {
+    background: `${tint}1a`,
+    border: `1px solid ${tint}26`,
+    boxShadow: `inset 0 1px 0 ${tint}1a, inset 0 -1px 0 ${tint}0d`,
+  }
+}
+
 // Style para el título principal de una sección -- degradado de dos colores
 // (background-clip: text) si está activado y ambos colores están cargados,
 // si no el color simple de siempre. Pensado como reemplazo directo de

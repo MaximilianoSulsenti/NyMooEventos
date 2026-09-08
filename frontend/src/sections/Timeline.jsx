@@ -1,7 +1,8 @@
 import { motion } from 'motion/react'
 import { resolveIcon } from './eventIcons'
 import AnimatedIcon from '../components/AnimatedIcon'
-import { secondaryTextColor, titleTextStyle } from '../utils/color'
+import { cn } from '../utils/cn'
+import { secondaryTextColor, titleTextStyle, secondaryGlassStyle } from '../utils/color'
 
 function Timeline({ config, appearance, styles }) {
   const items = Array.isArray(config.items) ? config.items : []
@@ -9,6 +10,8 @@ function Timeline({ config, appearance, styles }) {
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const bodySize = config.fontSizeBody || 'text-base'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const glassBg = config.textGlassBg === 'si'
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
   if (items.length === 0) return null
 
   return (
@@ -17,7 +20,10 @@ function Timeline({ config, appearance, styles }) {
         {config.title || 'Cronograma'}
       </h2>
       {config.subtitle && (
-        <p className={`mb-6 ${subtitleSize}`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
+        <p
+          className={cn('mb-6', subtitleSize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+          style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+        >
           {config.subtitle}
         </p>
       )}
@@ -44,7 +50,10 @@ function Timeline({ config, appearance, styles }) {
                 <span className={`font-semibold ${bodySize}`} style={{ color: appearance.primaryColor }}>
                   {item.time}
                 </span>
-                <p className={bodySize} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
+                <p
+                  className={cn(bodySize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+                  style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+                >
                   {item.label}
                 </p>
               </div>

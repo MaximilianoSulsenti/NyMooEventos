@@ -1,7 +1,8 @@
 import { motion } from 'motion/react'
 import { Sparkles, CalendarDays } from 'lucide-react'
 import usePremiumGuest from '../hooks/usePremiumGuest'
-import { secondaryTextColor, titleTextStyle } from '../utils/color'
+import { secondaryTextColor, titleTextStyle, secondaryGlassStyle } from '../utils/color'
+import { cn } from '../utils/cn'
 
 function Hero({ event, config, appearance, styles }) {
   const kicker = config.kicker || 'Te invitamos a celebrar'
@@ -11,6 +12,8 @@ function Hero({ event, config, appearance, styles }) {
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const bodySize = config.fontSizeBody || 'text-sm'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const glassBg = config.textGlassBg === 'si'
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
   const premiumGuest = usePremiumGuest(event)
   // Fecha/hora sofisticada en la portada -- opcional (config.showDate),
   // apagada por defecto para no cambiarle la cara a ninguna invitación ya
@@ -61,14 +64,22 @@ function Hero({ event, config, appearance, styles }) {
           {title}
         </h1>
         {subtitle && (
-          <p className={`mt-2 ${subtitleSize}`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
+          <p
+            className={cn('mt-2', subtitleSize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+            style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+          >
             {subtitle}
           </p>
         )}
         {config.showDate && (
           <p
-            className={`flex items-center justify-center gap-1.5 mt-2 ${bodySize} tracking-wide`}
-            style={{ color: secondaryTextColor(secondaryColor, '99') }}
+            className={cn(
+              'flex items-center justify-center gap-1.5 mt-2 w-fit mx-auto',
+              bodySize,
+              'tracking-wide',
+              glassBg && 'backdrop-blur-md rounded-2xl px-4 py-1.5'
+            )}
+            style={{ color: secondaryTextColor(secondaryColor, '99'), ...glassBgStyle }}
           >
             <CalendarDays className="w-3.5 h-3.5 shrink-0" style={{ color: appearance.primaryColor }} />
             {formattedDate} · {formattedTime} hs
@@ -76,7 +87,14 @@ function Hero({ event, config, appearance, styles }) {
         )}
         <div className={`${styles.divider} my-6 mx-auto`} style={{ background: appearance.primaryColor }} />
         {config.dedication && (
-          <p className={`${bodySize} italic mt-2 max-w-sm mx-auto`} style={{ color: secondaryTextColor(secondaryColor, '80') }}>
+          <p
+            className={cn(
+              bodySize,
+              'italic mt-2 max-w-sm mx-auto',
+              glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5'
+            )}
+            style={{ color: secondaryTextColor(secondaryColor, '80'), ...glassBgStyle }}
+          >
             {config.dedication}
           </p>
         )}

@@ -5,7 +5,7 @@ import { InstagramIcon } from '../components/icons/BrandIcons'
 import { glassStyle, glassBlurClass } from '../utils/glass'
 import { cn } from '../utils/cn'
 import { CARD_REVEAL } from '../utils/motionPresets'
-import { secondaryTextColor, titleTextStyle } from '../utils/color'
+import { secondaryTextColor, titleTextStyle, secondaryGlassStyle } from '../utils/color'
 
 // Degradado clásico de Instagram, usado cuando el admin no eligió un color
 // de acento propio en el editor.
@@ -18,6 +18,8 @@ function InstagramSection({ config, styles }) {
   const titleSize = config.fontSizeTitle || 'text-2xl'
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const glassBg = config.textGlassBg === 'si'
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
   const gradient = config.accentColor
     ? `linear-gradient(135deg, ${config.accentColor}, ${INSTAGRAM_PINK})`
     : INSTAGRAM_GRADIENT
@@ -51,7 +53,10 @@ function InstagramSection({ config, styles }) {
           </h2>
         )}
 
-        <p className={`max-w-sm ${subtitleSize}`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
+        <p
+          className={cn('max-w-sm', subtitleSize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+          style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+        >
           {config.subtitle || 'Compartí tus mejores momentos y etiquetanos para que no nos perdamos ninguna foto.'}
         </p>
 

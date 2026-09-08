@@ -211,6 +211,12 @@ export const TEXT_FIELD_DEFS = [
     label: 'Color secundario (dedicatoria, descripciones, subtítulos, etc.)',
     type: 'color',
   },
+  {
+    key: 'textGlassBg',
+    label: 'Fondo vidriado detrás del texto secundario (útil sobre fondos de video/imagen)',
+    type: 'select',
+    options: YES_NO_OPTIONS,
+  },
 ]
 
 // Degradado opcional para el TÍTULO principal de la sección únicamente (no

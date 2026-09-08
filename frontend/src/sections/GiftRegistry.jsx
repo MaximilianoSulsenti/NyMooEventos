@@ -7,7 +7,7 @@ import AnimatedIcon from '../components/AnimatedIcon'
 import { glassStyle, glassBlurClass } from '../utils/glass'
 import { cn } from '../utils/cn'
 import { CARD_REVEAL } from '../utils/motionPresets'
-import { secondaryTextColor, titleTextStyle } from '../utils/color'
+import { secondaryTextColor, titleTextStyle, secondaryGlassStyle } from '../utils/color'
 
 function GiftRegistry({ config, appearance, styles }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -15,6 +15,8 @@ function GiftRegistry({ config, appearance, styles }) {
   const titleSize = config.fontSizeTitle || 'text-2xl'
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const glassBg = config.textGlassBg === 'si'
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
 
   if (!config.cbuAlias && !config.holderName) return null
 
@@ -45,7 +47,10 @@ function GiftRegistry({ config, appearance, styles }) {
           {config.title || 'Lista de regalos'}
         </h2>
 
-        <p className={`max-w-sm ${subtitleSize}`} style={{ color: secondaryTextColor(secondaryColor, 'b3') }}>
+        <p
+          className={cn('max-w-sm', subtitleSize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+          style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+        >
           {config.subtitle || 'Tu presencia ya es un regalo, pero si querés sumar un detalle para nuestra nueva etapa, esto te va a servir.'}
         </p>
 
