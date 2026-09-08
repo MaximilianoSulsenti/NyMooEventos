@@ -200,9 +200,11 @@ async function updateEnvelopeSettings(req, res) {
     welcomeMessage,
     buttonText,
     fontFamily,
+    titleFontFamily,
     fontSizeTitle,
     fontSizeSubtitle,
     textColor,
+    textGlassBg,
   } = req.body;
 
   if (enabled !== undefined) event.envelopeSettings.enabled = enabled;
@@ -216,9 +218,11 @@ async function updateEnvelopeSettings(req, res) {
   if (welcomeMessage !== undefined) event.envelopeSettings.welcomeMessage = welcomeMessage;
   if (buttonText !== undefined) event.envelopeSettings.buttonText = buttonText;
   if (fontFamily !== undefined) event.envelopeSettings.fontFamily = fontFamily;
+  if (titleFontFamily !== undefined) event.envelopeSettings.titleFontFamily = titleFontFamily;
   if (fontSizeTitle !== undefined) event.envelopeSettings.fontSizeTitle = fontSizeTitle;
   if (fontSizeSubtitle !== undefined) event.envelopeSettings.fontSizeSubtitle = fontSizeSubtitle;
   if (textColor !== undefined) event.envelopeSettings.textColor = textColor;
+  if (textGlassBg !== undefined) event.envelopeSettings.textGlassBg = textGlassBg;
 
   await event.save();
   res.json(event);

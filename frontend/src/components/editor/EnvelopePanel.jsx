@@ -1,4 +1,4 @@
-import { BG_TYPE_OPTIONS, BG_POSITION_OPTIONS, FONT_SIZE_OPTIONS, FONTS } from '../../sections/sectionDefs'
+import { BG_TYPE_OPTIONS, BG_POSITION_OPTIONS, FONT_SIZE_OPTIONS, FONTS, YES_NO_OPTIONS } from '../../sections/sectionDefs'
 import ImageUploadField from './ImageUploadField'
 import VideoUploadField from './VideoUploadField'
 import { BRAND } from '../../utils/brand'
@@ -237,6 +237,39 @@ function EnvelopePanel({ eventId, settings, onChange }) {
               {FONTS.map((font) => (
                 <option key={font.value} value={font.value}>
                   {font.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm text-neutral-400 mb-1">Tipografía del título (opcional)</label>
+            <select
+              value={settings.titleFontFamily || ''}
+              onChange={(e) => update({ titleFontFamily: e.target.value })}
+              className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+            >
+              <option value="">Igual que el texto</option>
+              {FONTS.map((font) => (
+                <option key={font.value} value={font.value}>
+                  {font.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm text-neutral-400 mb-1">
+              Fondo vidriado detrás del texto (útil sobre fondos de video/imagen)
+            </label>
+            <select
+              value={settings.textGlassBg || ''}
+              onChange={(e) => update({ textGlassBg: e.target.value })}
+              className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+            >
+              {YES_NO_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
                 </option>
               ))}
             </select>

@@ -178,6 +178,13 @@ const eventSchema = new mongoose.Schema(
       welcomeMessage: { type: String, default: '' },
       buttonText: { type: String, default: 'Abrir invitación' },
       fontFamily: { type: String, default: 'sans' },
+      // Tipografía aparte para el título grande, igual que Portada
+      // (fontFamily/titleFontFamily) -- vacío = usa la misma que el resto
+      // del texto de esta pantalla, sin romper eventos ya creados.
+      titleFontFamily: { type: String, default: '' },
+      // Fondo vidriado opcional detrás del título/subtítulo/mensaje --
+      // mismo campo y mismo criterio que section.config.textGlassBg.
+      textGlassBg: { type: String, default: '' },
       // Más grandes que antes (text-base/text-sm) -- eran los tamaños de
       // cuando esto vivía adentro de una tarjeta chica de sobre; a pantalla
       // completa quedaban perdidos. Eventos ya creados guardan su propio
