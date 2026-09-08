@@ -63,7 +63,7 @@ function Footer({ event, config, appearance, styles }) {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className={cn(bodySize, 'italic max-w-md mx-auto', glassBg && 'w-fit backdrop-blur-md rounded-2xl px-4 py-1.5')}
+        className={cn(bodySize, 'italic max-w-md mx-auto', glassBg && 'w-fit backdrop-blur-lg rounded-2xl px-4 py-1.5')}
         style={{ color: secondaryTextColor(secondaryColor, '99'), ...glassBgStyle }}
       >
         {config.text || `Con cariño, esperamos verte en ${event.eventName}.`}
@@ -113,7 +113,7 @@ function Footer({ event, config, appearance, styles }) {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2, duration: 0.6 }}
-          className={cn(bodySize, 'mt-8 uppercase tracking-[0.15em]', glassBg && 'w-fit mx-auto backdrop-blur-md rounded-2xl px-4 py-1.5')}
+          className={cn(bodySize, 'mt-8 uppercase tracking-[0.15em]', glassBg && 'w-fit mx-auto backdrop-blur-lg rounded-2xl px-4 py-1.5')}
           style={{ color: secondaryTextColor(secondaryColor, '4d'), ...glassBgStyle }}
         >
           {config.signature}

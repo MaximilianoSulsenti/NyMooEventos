@@ -84,7 +84,7 @@ function SongRequestForm({ eventSlug, primaryColor, config }) {
   return (
     <div className="w-full pt-5 mt-5 border-t border-white/10" style={{ '--accent': primaryColor }}>
       <p
-        className={cn(bodySize, 'mb-3', glassBg && 'w-fit mx-auto backdrop-blur-md rounded-2xl px-4 py-1.5')}
+        className={cn(bodySize, 'mb-3', glassBg && 'w-fit mx-auto backdrop-blur-lg rounded-2xl px-4 py-1.5')}
         style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
       >
         ¿Qué canción no puede faltar en la fiesta? 🎶
@@ -188,7 +188,7 @@ function MusicPlaylist({ event, config, appearance, styles }) {
         </h2>
         {config.subtitle && (
           <p
-            className={cn(subtitleSize, '-mt-2', glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+            className={cn(subtitleSize, '-mt-2', glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5')}
             style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
           >
             {config.subtitle}

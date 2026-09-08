@@ -54,7 +54,7 @@ function InstagramSection({ config, styles }) {
         )}
 
         <p
-          className={cn('max-w-sm', subtitleSize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+          className={cn('max-w-sm', subtitleSize, glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5')}
           style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
         >
           {config.subtitle || 'Compartí tus mejores momentos y etiquetanos para que no nos perdamos ninguna foto.'}

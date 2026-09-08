@@ -21,7 +21,7 @@ function Timeline({ config, appearance, styles }) {
       </h2>
       {config.subtitle && (
         <p
-          className={cn('mb-6', subtitleSize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+          className={cn('mb-6', subtitleSize, glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5')}
           style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
         >
           {config.subtitle}
@@ -51,7 +51,7 @@ function Timeline({ config, appearance, styles }) {
                   {item.time}
                 </span>
                 <p
-                  className={cn(bodySize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+                  className={cn(bodySize, glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5')}
                   style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
                 >
                   {item.label}

@@ -41,14 +41,14 @@ function LiveGallery({ event, config, appearance, styles }) {
         </h2>
         {config.subtitle && (
           <p
-            className={cn('mb-2', subtitleSize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+            className={cn('mb-2', subtitleSize, glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5')}
             style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
           >
             {config.subtitle}
           </p>
         )}
         <p
-          className={cn(bodySize, 'mb-6 max-w-sm mx-auto break-words', glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+          className={cn(bodySize, 'mb-6 max-w-sm mx-auto break-words', glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5')}
           style={{ color: secondaryTextColor(secondaryColor, '99'), ...glassBgStyle }}
         >
           {config.description || 'Compartí tus fotos del evento y miralas en vivo en la pantalla del salón el día de la fiesta.'}

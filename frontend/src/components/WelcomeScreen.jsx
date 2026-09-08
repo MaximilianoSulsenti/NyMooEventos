@@ -295,7 +295,7 @@ function WelcomeScreen({ settings, appearance, guestName, welcomeMessage, onOpen
               settings.fontSizeTitle || 'text-2xl',
               'font-semibold tracking-wide drop-shadow-lg',
               titleFontClass,
-              glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5'
+              glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5'
             )}
             style={{ color: resolvedTextColor, ...glassBgStyle }}
             initial={{ opacity: 0, y: 10 }}
@@ -312,7 +312,7 @@ function WelcomeScreen({ settings, appearance, guestName, welcomeMessage, onOpen
               settings.fontSizeSubtitle || 'text-base',
               'drop-shadow',
               fontClass,
-              glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5'
+              glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5'
             )}
             style={{ color: `${resolvedTextColor}d9`, ...glassBgStyle }}
             initial={{ opacity: 0, y: 10 }}
@@ -328,7 +328,7 @@ function WelcomeScreen({ settings, appearance, guestName, welcomeMessage, onOpen
             className={cn(
               'text-sm max-w-sm drop-shadow',
               fontClass,
-              glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5'
+              glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5'
             )}
             style={{ color: `${resolvedTextColor}b3`, ...glassBgStyle }}
             initial={{ opacity: 0, y: 10 }}

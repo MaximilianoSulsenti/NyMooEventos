@@ -57,7 +57,7 @@ function Countdown({ event, config, appearance, styles }) {
       </h2>
       {config.subtitle && (
         <p
-          className={cn('mb-6', sectionSubtitleSize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+          className={cn('mb-6', sectionSubtitleSize, glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5')}
           style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
         >
           {config.subtitle}

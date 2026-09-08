@@ -88,7 +88,7 @@ function Hero({ event, config, appearance, styles, revealed = true }) {
         </h1>
         {subtitle && (
           <p
-            className={cn('mt-2', subtitleSize, glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+            className={cn('mt-2', subtitleSize, glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5')}
             style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
           >
             {subtitle}
@@ -100,7 +100,7 @@ function Hero({ event, config, appearance, styles, revealed = true }) {
               'flex items-center justify-center gap-1.5 mt-2 w-fit mx-auto',
               bodySize,
               'tracking-wide',
-              glassBg && 'backdrop-blur-md rounded-2xl px-4 py-1.5'
+              glassBg && 'backdrop-blur-lg rounded-2xl px-4 py-1.5'
             )}
             style={{ color: secondaryTextColor(secondaryColor, '99'), ...glassBgStyle }}
           >
@@ -114,7 +114,7 @@ function Hero({ event, config, appearance, styles, revealed = true }) {
             className={cn(
               bodySize,
               'italic mt-2 max-w-sm mx-auto',
-              glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5'
+              glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5'
             )}
             style={{ color: secondaryTextColor(secondaryColor, '80'), ...glassBgStyle }}
           >

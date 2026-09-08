@@ -43,7 +43,7 @@ function SalonCarrousel({ config, styles }) {
       )}
       {config.subtitle && (
         <p
-          className={cn(subtitleSize, 'mb-4', glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+          className={cn(subtitleSize, 'mb-4', glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5')}
           style={{ color: secondaryTextColor(secondaryColor, '99'), ...glassBgStyle }}
         >
           {config.subtitle}
@@ -68,7 +68,7 @@ function SalonCarrousel({ config, styles }) {
 
       {config.caption && (
         <p
-          className={cn(bodySize, 'mt-3 italic', glassBg && 'inline-block backdrop-blur-md rounded-2xl px-4 py-1.5')}
+          className={cn(bodySize, 'mt-3 italic', glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5')}
           style={{ color: secondaryTextColor(secondaryColor, '80'), ...glassBgStyle }}
         >
           {config.caption}

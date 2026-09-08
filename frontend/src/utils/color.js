@@ -58,13 +58,17 @@ export function secondaryTextColor(textColor, opacityHex) {
 // cuando el fondo de la sección es un video/imagen y el texto se pierde en
 // algún momento. El tinte se calcula por contraste contra el propio color
 // del texto (getContrastTextColor), nunca fijo, así siempre se lee bien sin
-// importar qué combinación de colores se elija.
+// importar qué combinación de colores se elija. La opacidad del tinte (40 ~
+// 25%) es a propósito bastante más marcada que un glassmorphism típico --
+// con un fondo real de foto/video de por medio, un vidrio demasiado sutil
+// no alcanza a tapar lo suficiente como para garantizar lectura; la sombra
+// exterior oscura suma separación del fondo sin depender del color elegido.
 export function secondaryGlassStyle(secondaryColor) {
   const tint = getContrastTextColor(secondaryColor || '#ffffff')
   return {
-    background: `${tint}1a`,
-    border: `1px solid ${tint}26`,
-    boxShadow: `inset 0 1px 0 ${tint}1a, inset 0 -1px 0 ${tint}0d`,
+    background: `${tint}40`,
+    border: `1px solid ${tint}4d`,
+    boxShadow: `inset 0 1px 0 ${tint}33, inset 0 -1px 0 ${tint}1a, 0 4px 20px -4px rgba(0,0,0,0.35)`,
   }
 }
 
