@@ -220,9 +220,20 @@ function AppearancePanel({ eventId, appearance, onChange }) {
             value={appearance.shareDescription || ''}
             onChange={(e) => update({ shareDescription: e.target.value })}
             rows={2}
+            maxLength={160}
             placeholder="Ej: Los invitamos a celebrar con nosotros -- mirá todos los detalles acá."
             className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
           />
+          {/* WhatsApp corta la descripción de la tarjetita con "..." pasado
+              cierto largo -- no depende de nosotros, lo decide su propia
+              interfaz. Este aviso ayuda a que el texto entre completo, en
+              vez de que el organizador se entere recién al compartirlo. */}
+          <p
+            className={`text-xs mt-1 ${(appearance.shareDescription || '').length > 100 ? 'text-amber-400' : 'text-neutral-500'}`}
+          >
+            {(appearance.shareDescription || '').length}/100 caracteres recomendados -- pasado ese largo, WhatsApp
+            suele cortar el texto con "..." en la tarjetita.
+          </p>
         </div>
       </div>
     </div>
