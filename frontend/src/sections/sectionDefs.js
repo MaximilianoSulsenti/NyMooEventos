@@ -150,6 +150,29 @@ export const YES_NO_OPTIONS = [
   { value: 'si', label: 'Sí' },
 ]
 
+// Animación con la que aparece la sección entera al hacer scroll hasta ella
+// -- antes era siempre la misma (fade + subida desde abajo) para las 16
+// secciones, ahora es elegible por sección. El valor vacío ('') es "Desde
+// abajo", así una invitación vieja sin este campo cargado se ve exactamente
+// igual que antes. Deslizar desde un costado nunca genera scroll horizontal
+// porque la página ya recorta ese overflow (ver DigitalCard.jsx), así que es
+// seguro en mobile.
+export const ENTRANCE_ANIMATION_OPTIONS = [
+  { value: '', label: 'Desde abajo (clásica)' },
+  { value: 'left', label: 'Desde la izquierda' },
+  { value: 'right', label: 'Desde la derecha' },
+  { value: 'fade', label: 'Solo aparecer (sin movimiento)' },
+]
+
+export const ANIMATION_FIELD_DEFS = [
+  {
+    key: 'entranceAnimation',
+    label: 'Animación de entrada al hacer scroll',
+    type: 'select',
+    options: ENTRANCE_ANIMATION_OPTIONS,
+  },
+]
+
 // Campos comunes a toda sección (capas de fondo). Se editan aparte, en un bloque
 // compartido, en vez de repetirse en SECTION_FIELD_DEFS.
 export const BACKGROUND_FIELD_DEFS = [

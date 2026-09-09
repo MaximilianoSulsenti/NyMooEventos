@@ -17,6 +17,17 @@ import Timeline from './Timeline'
 import Footer from './Footer'
 import { getThemeStyles } from './theming'
 
+// Antes las 16 secciones aparecían siempre igual al hacer scroll (fade +
+// subida desde abajo). Ahora es elegible por sección (ver
+// ANIMATION_FIELD_DEFS en sectionDefs.js) -- sin elegir nada (undefined/'')
+// se comporta exactamente igual que antes.
+const ENTRANCE_ANIMATIONS = {
+  '': { initial: { opacity: 0, y: 30 }, whileInView: { opacity: 1, y: 0 } },
+  left: { initial: { opacity: 0, x: -60 }, whileInView: { opacity: 1, x: 0 } },
+  right: { initial: { opacity: 0, x: 60 }, whileInView: { opacity: 1, x: 0 } },
+  fade: { initial: { opacity: 0 }, whileInView: { opacity: 1 } },
+}
+
 const SECTION_COMPONENTS = {
   Hero,
   Countdown,
@@ -59,12 +70,13 @@ function SectionRenderer({ event, revealed = true }) {
         // una señal explícita de querer eso ahí.
         const hasBgImage = config.bgType === 'imagen' && config.bgImageUrl
         const hasBgGradient = config.bgType === 'gradiente' && config.bgGradientFrom && config.bgGradientTo
+        const entranceAnimation = ENTRANCE_ANIMATIONS[config.entranceAnimation] || ENTRANCE_ANIMATIONS['']
 
         return (
           <motion.div
             key={section.id}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={entranceAnimation.initial}
+            whileInView={entranceAnimation.whileInView}
             viewport={{ once: true, margin: '-100px' }}
             transition={{ duration: 0.6 }}
             className={`relative ${index > 0 ? 'bg-black/5' : ''} ${styles.sectionWrapper}`}

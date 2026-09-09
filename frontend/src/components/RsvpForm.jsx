@@ -82,10 +82,12 @@ function RsvpForm({
 
   // Después de confirmar, el modal se cierra solo para que se vuelva a ver
   // la invitación -- antes se quedaba trabado en la pantalla de "gracias"
-  // hasta que alguien tocara la X a propósito.
+  // hasta que alguien tocara la X a propósito. 6s (antes 3.5s) porque el
+  // mensaje ahora es más largo (encabezado + línea + texto) y con 3.5s no
+  // daba tiempo a leerlo entero.
   useEffect(() => {
     if (status !== 'success') return undefined
-    const timeout = setTimeout(onClose, 3500)
+    const timeout = setTimeout(onClose, 6000)
     return () => clearTimeout(timeout)
   }, [status, onClose])
 

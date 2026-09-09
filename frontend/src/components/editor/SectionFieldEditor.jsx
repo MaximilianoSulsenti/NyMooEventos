@@ -1,6 +1,7 @@
 import {
   SECTION_FIELD_DEFS,
   BACKGROUND_FIELD_DEFS,
+  ANIMATION_FIELD_DEFS,
   TEXT_FIELD_DEFS,
   TITLE_GRADIENT_FIELD_DEFS,
   GLASS_FIELD_DEFS,
@@ -194,6 +195,13 @@ function SectionFieldEditor({ eventId, sectionId, config, onChange }) {
       <div className="space-y-3 pt-3 border-t border-white/10">
         <p className="text-xs uppercase tracking-widest text-neutral-500">Fondo de la sección</p>
         {BACKGROUND_FIELD_DEFS.filter((field) => !field.showIf || field.showIf(config)).map((field) => (
+          <FieldInput key={field.key} eventId={eventId} field={field} config={config} onChange={updateField} />
+        ))}
+      </div>
+
+      <div className="space-y-3 pt-3 border-t border-white/10">
+        <p className="text-xs uppercase tracking-widest text-neutral-500">Animación</p>
+        {ANIMATION_FIELD_DEFS.map((field) => (
           <FieldInput key={field.key} eventId={eventId} field={field} config={config} onChange={updateField} />
         ))}
       </div>
