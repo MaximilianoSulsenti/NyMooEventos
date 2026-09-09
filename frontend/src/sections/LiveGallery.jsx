@@ -54,14 +54,21 @@ function LiveGallery({ event, config, appearance, styles }) {
           {config.description || 'Compartí tus fotos del evento y miralas en vivo en la pantalla del salón el día de la fiesta.'}
         </p>
 
-        <Button
-          type="button"
-          onClick={() => (moduleActive ? setIsModalOpen(true) : setShowPreview(true))}
-          primaryColor={appearance.primaryColor}
-        >
-          <Camera className="w-4 h-4" />
-          {config.buttonText || 'Subir fotos'}
-        </Button>
+        {/* Envuelto en un div propio -- el párrafo de arriba pasa a
+            "inline-block" cuando el fondo vidriado está activo (para que el
+            recuadro abrace solo el texto), y sin este wrapper de bloque el
+            botón quedaba flotando al lado en vez de debajo en pantallas
+            anchas. */}
+        <div>
+          <Button
+            type="button"
+            onClick={() => (moduleActive ? setIsModalOpen(true) : setShowPreview(true))}
+            primaryColor={appearance.primaryColor}
+          >
+            <Camera className="w-4 h-4" />
+            {config.buttonText || 'Subir fotos'}
+          </Button>
+        </div>
       </motion.div>
 
       {isModalOpen && (
