@@ -157,6 +157,13 @@ const eventSchema = new mongoose.Schema(
       globalBgGradientTo: { type: String, default: '' },
       globalBgGradientDirection: { type: String, default: 'to bottom' },
       globalBgPosition: { type: String, default: 'center' },
+      // Imagen/descripción que se ven cuando alguien comparte el link de la
+      // invitación (o de las demás páginas públicas del evento) por
+      // WhatsApp/Instagram/Facebook -- sin esto, esos links mostraban
+      // siempre la tarjeta genérica de NyMoo en vez de algo del evento del
+      // cliente. Vacío = cae a esa tarjeta genérica de siempre.
+      shareImageUrl: { type: String, default: '' },
+      shareDescription: { type: String, default: '' },
     },
     // El nombre del campo (envelopeSettings) quedó del diseño anterior con
     // forma de sobre -- se mantiene así para no pedir una migración de datos

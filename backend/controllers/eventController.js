@@ -164,6 +164,8 @@ async function updateAppearance(req, res) {
     globalBgGradientTo,
     globalBgGradientDirection,
     globalBgPosition,
+    shareImageUrl,
+    shareDescription,
   } = req.body;
 
   if (theme !== undefined) event.appearance.theme = theme;
@@ -181,6 +183,8 @@ async function updateAppearance(req, res) {
   if (globalBgGradientTo !== undefined) event.appearance.globalBgGradientTo = globalBgGradientTo;
   if (globalBgGradientDirection !== undefined) event.appearance.globalBgGradientDirection = globalBgGradientDirection;
   if (globalBgPosition !== undefined) event.appearance.globalBgPosition = globalBgPosition;
+  if (shareImageUrl !== undefined) event.appearance.shareImageUrl = shareImageUrl;
+  if (shareDescription !== undefined) event.appearance.shareDescription = shareDescription;
 
   await event.save();
   res.json(event);

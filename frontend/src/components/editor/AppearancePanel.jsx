@@ -198,6 +198,33 @@ function AppearancePanel({ eventId, appearance, onChange }) {
           </div>
         )}
       </div>
+
+      <div className="pt-3 border-t border-white/10 space-y-3">
+        <div>
+          <p className="text-sm font-medium">Al compartir el link (WhatsApp, Instagram, etc.)</p>
+          <p className="text-xs text-neutral-500 mt-0.5">
+            Sin esto, el link de la invitación (y de las demás páginas públicas del evento) muestra la tarjeta genérica
+            de NyMoo. Cargando esto acá, en cambio se ve el evento del cliente -- NyMoo queda mencionado igual, solo que
+            más discreto.
+          </p>
+        </div>
+        <ImageUploadField
+          eventId={eventId}
+          label="Imagen para compartir (ideal 1200x630, horizontal)"
+          value={appearance.shareImageUrl || ''}
+          onChange={(url) => update({ shareImageUrl: url })}
+        />
+        <div>
+          <label className="block text-sm text-neutral-400 mb-1">Descripción para compartir (opcional)</label>
+          <textarea
+            value={appearance.shareDescription || ''}
+            onChange={(e) => update({ shareDescription: e.target.value })}
+            rows={2}
+            placeholder="Ej: Los invitamos a celebrar con nosotros -- mirá todos los detalles acá."
+            className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+          />
+        </div>
+      </div>
     </div>
   )
 }
