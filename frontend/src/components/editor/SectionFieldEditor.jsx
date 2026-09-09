@@ -218,9 +218,11 @@ function SectionFieldEditor({ eventId, sectionId, config, onChange }) {
       {fields.length > 0 && (
         <div className="space-y-3 pt-3 border-t border-white/10">
           <p className="text-xs uppercase tracking-widest text-neutral-500">Contenido</p>
-          {fields.map((field) => (
-            <FieldInput key={field.key} eventId={eventId} field={field} config={config} onChange={updateField} />
-          ))}
+          {fields
+            .filter((field) => !field.showIf || field.showIf(config))
+            .map((field) => (
+              <FieldInput key={field.key} eventId={eventId} field={field} config={config} onChange={updateField} />
+            ))}
         </div>
       )}
     </div>

@@ -317,6 +317,13 @@ export const SECTION_FIELD_DEFS = {
       type: 'select',
       options: YES_NO_OPTIONS,
     },
+    {
+      key: 'dateFormat',
+      label:
+        'Formato personalizado de esa línea (opcional) -- usá {fecha} y {hora} donde quieras que aparezcan, ej: "Nos vemos el {fecha} a las {hora}hs"',
+      type: 'text',
+      showIf: (config) => config.showDate === 'si',
+    },
     { key: 'title', label: 'Título', type: 'text' },
     { key: 'subtitle', label: 'Subtítulo', type: 'text' },
     { key: 'dedication', label: 'Dedicatoria o lema (opcional)', type: 'text' },

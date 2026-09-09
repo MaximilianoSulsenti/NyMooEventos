@@ -46,6 +46,13 @@ function Hero({ event, config, appearance, styles, revealed = true }) {
   const eventDate = new Date(event.date)
   const formattedDate = eventDate.toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' })
   const formattedTime = eventDate.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })
+  // Formato personalizable con marcadores -- siempre calculado a partir de la
+  // fecha real del evento (nunca texto suelto), así si más adelante se
+  // corrige la fecha/hora del evento, esta línea se actualiza sola sin
+  // tener que volver a escribirla a mano. Sin nada cargado, cae al formato
+  // de siempre.
+  const dateTemplate = (config.dateFormat || '').trim() || '{fecha} · {hora} hs'
+  const dateText = dateTemplate.replace(/\{fecha\}/g, formattedDate).replace(/\{hora\}/g, formattedTime)
   // {nombre} en el template se reemplaza por el nombre real del invitado VIP.
   const vipGreeting = (config.vipGreeting || '¡Hola, {nombre}! Están cordialmente invitados').replace(
     '{nombre}',
@@ -105,7 +112,7 @@ function Hero({ event, config, appearance, styles, revealed = true }) {
             style={{ color: secondaryTextColor(secondaryColor, '99'), ...glassBgStyle }}
           >
             <CalendarDays className="w-3.5 h-3.5 shrink-0" style={{ color: appearance.primaryColor }} />
-            {formattedDate} · {formattedTime} hs
+            {dateText}
           </p>
         )}
         <div className={`${styles.divider} my-6 mx-auto`} style={{ background: appearance.primaryColor }} />
