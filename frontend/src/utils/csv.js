@@ -2,21 +2,6 @@ function escapeCsvValue(value) {
   return `"${String(value ?? '').replace(/"/g, '""')}"`
 }
 
-export function guestsToCsv(guests) {
-  const extraQuestions = [...new Set(guests.flatMap((guest) => Object.keys(guest.extraAnswers || {})))]
-
-  const header = ['Nombre', 'Estado', 'Acompañantes', 'Restricciones alimentarias', 'Canción sugerida', ...extraQuestions]
-  const rows = guests.map((guest) => [
-    guest.name,
-    guest.rsvpCompleted === false ? 'Solo canción (sin RSVP)' : guest.status,
-    guest.companionsCount,
-    guest.dietaryRestrictions,
-    guest.songRequest,
-    ...extraQuestions.map((question) => guest.extraAnswers?.[question] || ''),
-  ])
-  return [header, ...rows].map((row) => row.map(escapeCsvValue).join(',')).join('\n')
-}
-
 export function messagesToCsv(photos) {
   const header = ['Nombre', 'Comentario', 'Fecha']
   const rows = photos.map((photo) => [

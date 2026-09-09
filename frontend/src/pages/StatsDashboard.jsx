@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { motion } from 'motion/react'
-import { Download, Users, UserCheck, UserX, Clock, Armchair, Music4, CalendarClock, Images } from 'lucide-react'
+import { FileSpreadsheet, Printer, Users, UserCheck, UserX, Clock, Armchair, Music4, CalendarClock, Images } from 'lucide-react'
 import api from '../services/api'
 import PageBackground from '../components/PageBackground'
 import BrandLogos from '../components/BrandLogos'
 import GlassPanel from '../components/ui/GlassPanel'
 import StatCard from '../components/dashboard/StatCard'
 import GuestsTable from '../components/dashboard/GuestsTable'
+import GuestsPrintView from '../components/dashboard/GuestsPrintView'
 import PremiumGuestsPanel from '../components/dashboard/PremiumGuestsPanel'
 import { getThemeStyles } from '../sections/theming'
-import { guestsToCsv, downloadCsv } from '../utils/csv'
+import { downloadGuestsExcel } from '../utils/guestsExcel'
 import { BRAND } from '../utils/brand'
 import { getContrastTextColor } from '../utils/color'
 
@@ -22,6 +23,7 @@ function StatsDashboard() {
   const [event, setEvent] = useState(null)
   const [guests, setGuests] = useState([])
   const [loadState, setLoadState] = useState('loading') // loading | ready | forbidden | error
+  const [printMode, setPrintMode] = useState(false)
 
   useEffect(() => {
     if (!token) {
@@ -95,11 +97,13 @@ function StatsDashboard() {
   const styles = getThemeStyles(event?.uploadPageSettings?.theme)
   const primaryColor = event?.appearance?.primaryColor || '#a855f7'
 
+  // Solo confirmados en ambos: es lo que se usa para el conteo real
+  // (catering, mesas, etc.), no tiene sentido mezclarlo con
+  // pendientes/declinados.
+  const confirmedGuests = guests.filter((g) => g.status === 'confirmado')
+
   function handleExport() {
-    // Solo confirmados: es lo que se usa para el conteo real (catering,
-    // mesas, etc.), no tiene sentido mezclarlo con pendientes/declinados.
-    const csv = guestsToCsv(guests.filter((g) => g.status === 'confirmado'))
-    downloadCsv(csv, `confirmados-${eventSlug}.csv`)
+    downloadGuestsExcel(event.eventName, confirmedGuests)
   }
 
   return (
@@ -117,8 +121,18 @@ function StatsDashboard() {
               className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition hover:brightness-110 shadow-lg"
               style={{ background: primaryColor, color: getContrastTextColor(primaryColor) }}
             >
-              <Download className="w-4 h-4" />
-              Exportar CSV
+              <FileSpreadsheet className="w-4 h-4" />
+              Exportar Excel
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setPrintMode(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border border-white/10 backdrop-blur-sm transition hover:brightness-110"
+              style={{ background: 'rgba(255,255,255,0.06)', color: '#ffffff' }}
+            >
+              <Printer className="w-4 h-4" />
+              Imprimir / PDF
             </button>
 
             {event.activeModules?.liveGallery && (
@@ -239,6 +253,10 @@ function StatsDashboard() {
           />
         )}
       </GlassPanel>
+
+      {printMode && (
+        <GuestsPrintView eventName={event.eventName} guests={confirmedGuests} onClose={() => setPrintMode(false)} />
+      )}
     </div>
   )
 }

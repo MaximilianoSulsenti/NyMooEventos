@@ -62,7 +62,17 @@ function GuestsTable({ guests, onDelete }) {
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3">{guest.companionsCount}</td>
+                  <td className="px-4 py-3">
+                    <div>{guest.companionsCount}</div>
+                    {guest.companionNames?.length > 0 && (
+                      <div
+                        className="text-xs text-neutral-500 mt-0.5 max-w-[180px] truncate"
+                        title={guest.companionNames.join(', ')}
+                      >
+                        {guest.companionNames.join(', ')}
+                      </div>
+                    )}
+                  </td>
                   <td className="px-4 py-3 text-neutral-400">{guest.dietaryRestrictions || '—'}</td>
                   <td className="px-4 py-3 text-neutral-400 max-w-[160px] truncate">{guest.songRequest || '—'}</td>
                   <td className="px-4 py-3 text-right">

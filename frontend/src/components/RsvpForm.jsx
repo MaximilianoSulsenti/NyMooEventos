@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
-import { X, Check, Lock, Plus } from 'lucide-react'
+import { X, Check, Lock, Plus, PartyPopper, HeartHandshake } from 'lucide-react'
 import api from '../services/api'
 import Button from './ui/Button'
 import RsvpModalShell from './RsvpModalShell'
@@ -97,6 +97,29 @@ function RsvpForm({
   const inputBg = shadeColor(bg, 12)
   const inputStyle = { background: inputBg, color: textColor, borderColor: `${textColor}1a` }
 
+  // Mensaje final de RSVP -- antes era el mismo ícono/tono para confirmar Y
+  // para avisar que no van a poder venir, lo que quedaba frío para una
+  // invitación de evento. Ahora cada desenlace tiene su propio ícono, color
+  // y texto: confirmar es una celebración (color de acento), declinar es un
+  // agradecimiento cálido pero sobrio (tono neutro, no un error/alerta).
+  const successOutcome = mode === 'whatsapp' ? 'whatsapp' : attending
+  const isDeclined = successOutcome === 'declinado'
+  const SuccessIcon = successOutcome === 'confirmado' ? PartyPopper : successOutcome === 'declinado' ? HeartHandshake : Check
+  const successIconColor = isDeclined ? mutedColor : primaryColor
+  const successIconBg = isDeclined ? `${textColor}14` : `${primaryColor}22`
+  const successHeading =
+    successOutcome === 'confirmado'
+      ? `¡Nos vemos ahí, ${name}!`
+      : successOutcome === 'declinado'
+        ? `Gracias por avisarnos, ${name}`
+        : `¡Gracias, ${name}!`
+  const successBody =
+    successOutcome === 'whatsapp'
+      ? 'Se abrió WhatsApp con tu mensaje listo -- enviálo para confirmar tu asistencia.'
+      : successOutcome === 'confirmado'
+        ? 'Tu lugar ya está reservado. Vamos a estar contando los días para celebrar junto a vos.'
+        : 'Vamos a extrañarte, pero entendemos -- gracias por tomarte el tiempo de contarnos.'
+
   function updateCompanionName(index, value) {
     setCompanionNames((prev) => prev.map((n, i) => (i === index ? value : n)))
   }
@@ -157,25 +180,24 @@ function RsvpForm({
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="py-8 text-center space-y-3"
+          className="py-8 text-center space-y-4"
         >
           <motion.div
             initial={{ scale: 0, rotate: -30 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: 'spring', stiffness: 260, damping: 16 }}
-            className="w-14 h-14 rounded-full flex items-center justify-center mx-auto"
-            style={{ background: `${primaryColor}22`, color: primaryColor }}
+            className="w-16 h-16 rounded-full flex items-center justify-center mx-auto"
+            style={{ background: successIconBg, color: successIconColor }}
           >
-            <Check className="w-7 h-7" />
+            <SuccessIcon className="w-8 h-8" />
           </motion.div>
-          <p className="text-xl font-medium">¡Gracias, {name}!</p>
-          <p style={{ color: mutedColor }}>
-            {mode === 'whatsapp'
-              ? 'Se abrió WhatsApp con tu mensaje listo -- enviálo para confirmar tu asistencia.'
-              : attending === 'confirmado'
-                ? '¡Genial! Registramos tu asistencia -- te esperamos en el evento.'
-                : 'Registramos que no vas a poder acompañarnos. ¡Gracias por avisarnos!'}
-          </p>
+          <div className="space-y-2">
+            <p className="text-xl font-semibold tracking-wide">{successHeading}</p>
+            <div className="w-10 h-px mx-auto" style={{ background: successIconColor }} />
+            <p className="text-sm max-w-xs mx-auto leading-relaxed" style={{ color: mutedColor }}>
+              {successBody}
+            </p>
+          </div>
         </motion.div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4" style={{ '--accent': primaryColor }}>
