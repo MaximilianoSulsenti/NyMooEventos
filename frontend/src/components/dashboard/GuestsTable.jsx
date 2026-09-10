@@ -30,9 +30,14 @@ function GuestsTable({ guests, onDelete }) {
   }
 
   return (
-    <div className="rounded-2xl bg-white/5 border border-white/10 overflow-x-auto">
+    // max-h + overflow-y: con muchos invitados, la tabla no alarga la página
+    // entera -- queda con su propio scroll interno, mostrando de entrada
+    // unas 10-12 filas. El encabezado va "sticky" (fondo sólido propio, no
+    // el bg-white/5 translúcido del contenedor) para que las columnas se
+    // sigan viendo mientras se scrollea el resto para abajo.
+    <div className="rounded-2xl bg-white/5 border border-white/10 overflow-x-auto overflow-y-auto max-h-[600px]">
       <table className="w-full text-sm text-left">
-        <thead className="text-white/50 border-b border-white/10">
+        <thead className="text-white/50 border-b border-white/10 sticky top-0 z-10 bg-neutral-900">
           <tr>
             <th className="px-4 py-3 font-medium">Nombre</th>
             <th className="px-4 py-3 font-medium">Estado</th>

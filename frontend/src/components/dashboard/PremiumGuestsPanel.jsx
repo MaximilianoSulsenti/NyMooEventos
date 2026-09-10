@@ -139,7 +139,10 @@ function PremiumGuestsPanel({ eventSlug, eventName, token, guests, onGuestsChang
           Todavía no cargaste ningún invitado VIP.
         </div>
       ) : (
-        <div className="space-y-2">
+        // Mismo criterio que GuestsTable -- con muchos VIP cargados, la
+        // lista queda con su propio scroll interno en vez de alargar toda
+        // la página.
+        <div className="space-y-2 max-h-[600px] overflow-y-auto pr-1">
           {premiumGuests.map((guest) => {
             // encodeURIComponent es clave acá: el slug de un evento puede
             // tener espacios u otros caracteres, y sin encodear, al pegar
