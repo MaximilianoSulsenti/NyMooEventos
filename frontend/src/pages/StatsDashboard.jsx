@@ -241,8 +241,10 @@ function StatsDashboard() {
           />
         </div>
 
-        <GuestsTable guests={guests} onDelete={handleDeleteGuest} />
-
+        {/* Arriba de la tabla de invitados a propósito -- con muchos
+            invitados cargados, esa tabla se hace larga y antes había que
+            scrollear hasta el final para llegar acá, tanto para gestionar
+            los VIP ya creados como para cargar uno nuevo. */}
         {event.activeModules?.vipInvitations && (
           <PremiumGuestsPanel
             eventSlug={eventSlug}
@@ -252,6 +254,8 @@ function StatsDashboard() {
             onGuestsChange={refreshGuests}
           />
         )}
+
+        <GuestsTable guests={guests} onDelete={handleDeleteGuest} />
       </GlassPanel>
 
       {printMode && (
