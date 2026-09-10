@@ -82,7 +82,6 @@ function DigitalCard() {
 
   const appearance = event.appearance || {}
   const styles = getThemeStyles(appearance.theme, appearance.fontFamily)
-  const heroConfig = event.sections?.find((s) => s.id === 'Hero')?.config || {}
 
   return (
     <div className={`relative min-h-screen w-full overflow-x-hidden text-white ${styles.fontClass}`}>
@@ -99,18 +98,12 @@ function DigitalCard() {
           settings={event.envelopeSettings}
           appearance={appearance}
           guestName={premiumGuest?.name}
-          welcomeMessage={
-            // VIP (link con ?guest=<passcode>, Nymoo VIVE): usa el mismo
-            // saludo ya armado para la Portada (Hero.config.vipGreeting),
-            // no un mensaje aparte -- así no hay que cargarlo dos veces.
-            // Sin invitado VIP: el mensaje propio de esta pantalla.
-            premiumGuest
-              ? (heroConfig.vipGreeting || '¡Hola, {nombre}! Están cordialmente invitados').replace(
-                  '{nombre}',
-                  premiumGuest.name
-                )
-              : event.envelopeSettings.welcomeMessage || ''
-          }
+          // El saludo VIP ("¡Hola, {nombre}! Están cordialmente invitados")
+          // vive únicamente en la Portada (Hero.config.vipGreeting) -- antes
+          // se repetía acá también, mostrando el mismo mensaje dos veces
+          // (sobre y portada). Esta pantalla ya personaliza con el nombre
+          // vía el nameplate de arriba ("Invitación para {guestName}").
+          welcomeMessage={event.envelopeSettings.welcomeMessage || ''}
           onOpen={() => setIntroOpen(true)}
         />
       )}
