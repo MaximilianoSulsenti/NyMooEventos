@@ -66,10 +66,10 @@ function GuestBankPanel({ allGuests, pendingGuests, onAddGuests, onRemoveGuest, 
       setConfirmedState('done')
       setConfirmedMessage(
         newCount > 0
-          ? `Se importaron ${newCount} invitado${newCount === 1 ? '' : 's'} confirmado${newCount === 1 ? '' : 's'}${
+          ? `Se importaron ${newCount} persona${newCount === 1 ? '' : 's'} confirmada${newCount === 1 ? '' : 's'} (invitados y acompañantes)${
               total - newCount > 0 ? ` (${total - newCount} ya estaban en la lista)` : ''
             }.`
-          : 'Todos los confirmados ya estaban en la lista.'
+          : 'Todos los confirmados y sus acompañantes ya estaban en la lista.'
       )
     } catch {
       setConfirmedState('error')

@@ -109,15 +109,23 @@ function TableOrganizer() {
 
   // Evita que el cliente tenga que exportar el Excel de confirmados desde
   // el panel de estadísticas y volver a subirlo acá -- trae los mismos
-  // datos (invitados con status "confirmado") directo del RSVP.
+  // datos (invitados con status "confirmado") directo del RSVP. Cada
+  // acompañante entra como su propia persona a sentar (el organizador de
+  // mesas no tiene noción de "grupo familiar", cada nombre es un asiento
+  // independiente), así que se suman igual que el invitado titular.
   async function handleImportConfirmed() {
     const { data } = isClientMode
       ? await api.get(`/guests/client/${eventSlug}`, { params: { token } })
       : await api.get(`/guests/event/${eventId}`)
 
-    const confirmedNames = data
+    const rawNames = data
       .filter((g) => g.status === 'confirmado' && g.rsvpCompleted !== false)
-      .map((g) => g.name)
+      .flatMap((g) => [g.name, ...(Array.isArray(g.companionNames) ? g.companionNames.filter(Boolean) : [])])
+    // Deduplicado acá mismo (no solo dentro de addGuests) para que "total"
+    // en el mensaje de abajo refleje la cantidad real de personas distintas
+    // -- puede pasar que un invitado y su propio acompañante compartan
+    // nombre y apellido.
+    const confirmedNames = [...new Set(rawNames.map((n) => n.trim()).filter(Boolean))]
 
     const existing = new Set(organizer.guests)
     const newCount = confirmedNames.filter((n) => !existing.has(n)).length

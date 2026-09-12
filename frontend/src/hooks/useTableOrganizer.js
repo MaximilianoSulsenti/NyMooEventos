@@ -24,8 +24,19 @@ function useTableOrganizer(initialGuests = [], initialTables = []) {
 
   function addGuests(names) {
     setGuests((prev) => {
+      // El Set se va completando A MEDIDA que se recorre `names` (no solo
+      // con `prev`) -- si no, dos nombres iguales dentro del MISMO lote a
+      // importar (ej. un invitado y un acompañante que coinciden en nombre
+      // y apellido) pasaban los dos el filtro y quedaban duplicados.
       const existing = new Set(prev)
-      const additions = names.map((n) => n.trim()).filter((n) => n && !existing.has(n))
+      const additions = []
+      names.forEach((raw) => {
+        const n = raw.trim()
+        if (n && !existing.has(n)) {
+          existing.add(n)
+          additions.push(n)
+        }
+      })
       return additions.length > 0 ? [...prev, ...additions] : prev
     })
   }
