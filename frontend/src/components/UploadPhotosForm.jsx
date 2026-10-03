@@ -26,6 +26,7 @@ function readVideoDuration(file) {
 
 function UploadPhotosForm({ eventSlug, primaryColor = '#a855f7', allowVideos = false }) {
   const fileInputRef = useRef(null)
+  const cameraInputRef = useRef(null)
   const [items, setItems] = useState([]) // { file, type: 'image' | 'video' }
   const [comment, setComment] = useState('')
   const [guestName, setGuestName] = useState(() => {
@@ -203,6 +204,20 @@ function UploadPhotosForm({ eventSlug, primaryColor = '#a855f7', allowVideos = f
         </div>
       )}
 
+      {/* Dos inputs separados a propósito -- un solo <input multiple> sin
+          "capture" hace que el celular salte directo al selector de
+          galería y nunca ofrezca la cámara (y "capture" no es compatible
+          con "multiple": el navegador prioriza uno sobre el otro). Este de
+          acá SÍ tiene capture="environment" para abrir la cámara trasera
+          directo, sin elegir varios archivos a la vez. */}
+      <input
+        ref={cameraInputRef}
+        type="file"
+        accept={allowVideos ? 'image/*,video/*' : 'image/*'}
+        capture="environment"
+        onChange={handleFileChange}
+        className="hidden"
+      />
       <input
         ref={fileInputRef}
         type="file"
@@ -212,20 +227,26 @@ function UploadPhotosForm({ eventSlug, primaryColor = '#a855f7', allowVideos = f
         className="hidden"
       />
 
-      <Button
-        type="button"
-        as="button"
-        onClick={() => fileInputRef.current?.click()}
-        primaryColor={items.length === 0 ? primaryColor : undefined}
-        className={items.length > 0 ? 'bg-white/10' : ''}
-      >
-        <Camera className="w-4 h-4" />
-        {items.length > 0
-          ? 'Elegir otros archivos'
-          : allowVideos
-            ? 'Tomar foto o video, o elegir de la galería'
-            : 'Tomar foto o elegir de la galería'}
-      </Button>
+      <div className="flex flex-col gap-2">
+        <Button
+          type="button"
+          as="button"
+          onClick={() => cameraInputRef.current?.click()}
+          primaryColor={items.length === 0 ? primaryColor : undefined}
+          className={items.length > 0 ? 'bg-white/10' : ''}
+        >
+          <Camera className="w-4 h-4" />
+          {allowVideos ? 'Tomar foto o video' : 'Tomar foto'}
+        </Button>
+        <Button
+          type="button"
+          as="button"
+          onClick={() => fileInputRef.current?.click()}
+          className="bg-white/10"
+        >
+          {items.length > 0 ? 'Elegir otros archivos de la galería' : 'Elegir de la galería'}
+        </Button>
+      </div>
       {warning && <p className="text-yellow-400 text-xs text-center">{warning}</p>}
 
       <input
