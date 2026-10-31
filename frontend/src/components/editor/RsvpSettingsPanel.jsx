@@ -18,7 +18,7 @@ const RSVP_TYPE_OPTIONS = [
   },
 ]
 
-function RsvpSettingsPanel({ eventId, event, settings, onChange }) {
+function RsvpSettingsPanel({ eventId, event, settings, onChange, onEventChange }) {
   const rsvpType = settings.rsvpType || 'intermedio_db'
   const [saveState, setSaveState] = useState('idle') // idle | saving | saved | error
 
@@ -33,8 +33,22 @@ function RsvpSettingsPanel({ eventId, event, settings, onChange }) {
   async function handleTypeChange(value) {
     update({ rsvpType: value })
     setSaveState('saving')
+    // Elegir un plan acá es una señal clara de que se quiere usar la
+    // sección de RSVP -- antes, aunque se eligiera un plan y se activara la
+    // sección, no se veía nada en la invitación pública hasta acordarse de
+    // ir aparte a "Módulos" (en el panel del evento) y prender "Control de
+    // invitados", un paso separado y nada obvio. Activarlo acá mismo evita
+    // ese quilombo.
+    const needsGuestControl = !event?.activeModules?.guestControl
     try {
-      await api.patch(`/events/${eventId}/rsvp-settings`, { rsvpType: value })
+      const calls = [api.patch(`/events/${eventId}/rsvp-settings`, { rsvpType: value })]
+      if (needsGuestControl) {
+        calls.push(api.patch(`/events/${eventId}/modules`, { guestControl: true }))
+      }
+      await Promise.all(calls)
+      if (needsGuestControl) {
+        onEventChange?.((prev) => (prev ? { ...prev, activeModules: { ...prev.activeModules, guestControl: true } } : prev))
+      }
       setSaveState('saved')
       setTimeout(() => setSaveState('idle'), 1500)
     } catch {
