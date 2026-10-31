@@ -53,6 +53,38 @@ function Hero({ event, config, appearance, styles, revealed = true }) {
   // de siempre.
   const dateTemplate = (config.dateFormat || '').trim() || '{fecha} · {hora} hs'
   const dateText = dateTemplate.replace(/\{fecha\}/g, formattedDate).replace(/\{hora\}/g, formattedTime)
+  const dateAbove = config.datePosition === 'arriba'
+  const dateDividers = config.dateDividers === 'si'
+  // Línea de fecha reusable: se arma una sola vez y se ubica arriba del
+  // título o abajo del subtítulo según config.datePosition, con la
+  // posibilidad de agregarle líneas separadoras a los costados (estilo
+  // "——— 15.06.2022 ———") en vez del simple renglón de siempre.
+  const dateLineText = config.showDate && (
+    <p
+      className={cn(
+        'inline-flex items-center justify-center gap-1.5 whitespace-nowrap',
+        bodySize,
+        'tracking-wide',
+        glassBg && 'backdrop-blur-lg rounded-2xl px-4 py-1.5'
+      )}
+      style={{ color: secondaryTextColor(secondaryColor, '99'), ...glassBgStyle }}
+    >
+      <CalendarDays className="w-3.5 h-3.5 shrink-0" style={{ color: appearance.primaryColor }} />
+      {dateText}
+    </p>
+  )
+  // Ancho fijo (no flex-1) a propósito -- el contenedor padre (motion.div de
+  // arriba) no tiene un ancho propio, se ajusta al contenido, así que un
+  // "crecer para llenar el espacio disponible" no tiene de dónde crecer y
+  // termina en 0. Con ancho fijo además queda más parecido a la referencia:
+  // líneas cortas a los costados, no una barra de punta a punta.
+  const dateLine = config.showDate && (
+    <div className="flex items-center justify-center gap-3">
+      {dateDividers && <span className="h-px w-8 sm:w-12 shrink-0" style={{ background: `${appearance.primaryColor}4d` }} />}
+      {dateLineText}
+      {dateDividers && <span className="h-px w-8 sm:w-12 shrink-0" style={{ background: `${appearance.primaryColor}4d` }} />}
+    </div>
+  )
   // {nombre} en el template se reemplaza por el nombre real del invitado VIP.
   const vipGreeting = (config.vipGreeting || '¡Hola, {nombre}! Están cordialmente invitados').replace(
     '{nombre}',
@@ -87,6 +119,7 @@ function Hero({ event, config, appearance, styles, revealed = true }) {
             {kicker}
           </p>
         )}
+        {dateAbove && <div className="mb-4">{dateLine}</div>}
         <h1
           className={`${titleSize} mb-3 ${styles.heading}`}
           style={titleTextStyle(config)}
@@ -101,20 +134,7 @@ function Hero({ event, config, appearance, styles, revealed = true }) {
             {subtitle}
           </p>
         )}
-        {config.showDate && (
-          <p
-            className={cn(
-              'flex items-center justify-center gap-1.5 mt-2 w-fit mx-auto',
-              bodySize,
-              'tracking-wide',
-              glassBg && 'backdrop-blur-lg rounded-2xl px-4 py-1.5'
-            )}
-            style={{ color: secondaryTextColor(secondaryColor, '99'), ...glassBgStyle }}
-          >
-            <CalendarDays className="w-3.5 h-3.5 shrink-0" style={{ color: appearance.primaryColor }} />
-            {dateText}
-          </p>
-        )}
+        {!dateAbove && <div className="mt-2">{dateLine}</div>}
         <div className={`${styles.divider} my-6 mx-auto`} style={{ background: appearance.primaryColor }} />
         {config.dedication && (
           <p

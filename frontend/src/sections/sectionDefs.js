@@ -25,7 +25,10 @@ export const FONT_SIZE_OPTIONS = [
   { value: 'text-lg', label: 'Mediano' },
   { value: 'text-2xl', label: 'Grande' },
   { value: 'text-3xl', label: 'Muy grande' },
+  { value: 'text-4xl', label: 'Extra grande' },
   { value: 'text-5xl', label: 'Enorme' },
+  { value: 'text-6xl', label: 'Gigante' },
+  { value: 'text-7xl', label: 'Colosal' },
 ]
 
 export const ALIGNMENT_OPTIONS = [
@@ -322,6 +325,23 @@ export const SECTION_FIELD_DEFS = {
       label:
         'Formato personalizado de esa línea (opcional) -- usá {fecha} y {hora} donde quieras que aparezcan, ej: "Nos vemos el {fecha} a las {hora}hs"',
       type: 'text',
+      showIf: (config) => config.showDate === 'si',
+    },
+    {
+      key: 'datePosition',
+      label: 'Posición de la fecha',
+      type: 'select',
+      options: [
+        { value: 'abajo', label: 'Debajo del subtítulo (clásica)' },
+        { value: 'arriba', label: 'Arriba del título' },
+      ],
+      showIf: (config) => config.showDate === 'si',
+    },
+    {
+      key: 'dateDividers',
+      label: '¿Mostrar líneas separadoras a los costados de la fecha?',
+      type: 'select',
+      options: YES_NO_OPTIONS,
       showIf: (config) => config.showDate === 'si',
     },
     { key: 'title', label: 'Título', type: 'text' },
