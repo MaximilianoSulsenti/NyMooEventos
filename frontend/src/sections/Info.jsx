@@ -12,7 +12,7 @@ function InfoCard({ item, appearance, styles, config, isOpen, onToggle }) {
   const bodySize = config.fontSizeBody || 'text-base'
   const secondaryColor = config.textColorSecondary || config.textColor
   const glassBg = config.textGlassBg === 'si'
-  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor, config.textGlassOpacity) : null
 
   return (
     <motion.div
@@ -76,9 +76,9 @@ function Info({ config, appearance, styles }) {
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const secondaryColor = config.textColorSecondary || config.textColor
   const glassBg = config.textGlassBg === 'si'
-  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor, config.textGlassOpacity) : null
   const titleGlassBg = config.titleGlassBg === 'si'
-  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config)) : null
+  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config), config.textGlassOpacity) : null
 
   if (items.length === 0) return null
 

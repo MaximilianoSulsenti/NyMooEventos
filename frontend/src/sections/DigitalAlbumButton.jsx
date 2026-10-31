@@ -22,9 +22,9 @@ function DigitalAlbumButton({ event, config, appearance, styles }) {
   const bodySize = config.fontSizeBody || 'text-sm'
   const secondaryColor = config.textColorSecondary || config.textColor
   const glassBg = config.textGlassBg === 'si'
-  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor, config.textGlassOpacity) : null
   const titleGlassBg = config.titleGlassBg === 'si'
-  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config)) : null
+  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config), config.textGlassOpacity) : null
   const moduleActive = Boolean(event.activeModules?.photoCollection)
 
   // Antes esta sección se ocultaba entera (return null) si el módulo no

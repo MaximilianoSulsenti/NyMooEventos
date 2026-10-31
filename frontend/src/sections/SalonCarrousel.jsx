@@ -17,9 +17,9 @@ function SalonCarrousel({ config, styles }) {
   const bodySize = config.fontSizeBody || 'text-sm'
   const secondaryColor = config.textColorSecondary || config.textColor
   const glassBg = config.textGlassBg === 'si'
-  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor, config.textGlassOpacity) : null
   const titleGlassBg = config.titleGlassBg === 'si'
-  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config)) : null
+  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config), config.textGlassOpacity) : null
   const [index, setIndex] = useState(0)
   const [manualNav, setManualNav] = useState(0)
 

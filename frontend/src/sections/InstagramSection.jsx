@@ -19,9 +19,9 @@ function InstagramSection({ config, styles }) {
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const secondaryColor = config.textColorSecondary || config.textColor
   const glassBg = config.textGlassBg === 'si'
-  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor, config.textGlassOpacity) : null
   const titleGlassBg = config.titleGlassBg === 'si'
-  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config)) : null
+  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config), config.textGlassOpacity) : null
   const gradient = config.accentColor
     ? `linear-gradient(135deg, ${config.accentColor}, ${INSTAGRAM_PINK})`
     : INSTAGRAM_GRADIENT

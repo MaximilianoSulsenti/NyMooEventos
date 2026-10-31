@@ -249,6 +249,15 @@ export const TEXT_FIELD_DEFS = [
     type: 'select',
     options: YES_NO_OPTIONS,
   },
+  {
+    key: 'textGlassOpacity',
+    label: 'Opacidad del vidriado (título y texto secundario)',
+    type: 'range',
+    min: 0,
+    max: 60,
+    step: 5,
+    showIf: (config) => config.titleGlassBg === 'si' || config.textGlassBg === 'si',
+  },
 ]
 
 // Degradado opcional para el TÍTULO principal de la sección únicamente (no

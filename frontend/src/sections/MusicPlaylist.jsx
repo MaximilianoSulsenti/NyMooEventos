@@ -59,7 +59,7 @@ function SongRequestForm({ eventSlug, primaryColor, config }) {
   const bodySize = config?.fontSizeBody || 'text-sm'
   const secondaryColor = config?.textColorSecondary || textColor
   const glassBg = config?.textGlassBg === 'si'
-  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor, config?.textGlassOpacity) : null
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -154,9 +154,9 @@ function MusicPlaylist({ event, config, appearance, styles }) {
   const subtitleSize = config.fontSizeSubtitle || 'text-sm'
   const secondaryColor = config.textColorSecondary || config.textColor
   const glassBg = config.textGlassBg === 'si'
-  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor, config.textGlassOpacity) : null
   const titleGlassBg = config.titleGlassBg === 'si'
-  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config)) : null
+  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config), config.textGlassOpacity) : null
   const primaryColor = appearance?.primaryColor
   const canRequestSongs = Boolean(event?.activeModules?.guestControl)
 

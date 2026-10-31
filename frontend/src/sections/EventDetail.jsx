@@ -15,9 +15,9 @@ import { secondaryTextColor, titleTextStyle, secondaryGlassStyle, titleGlassColo
 function DetailGroup({ group, appearance, config, styles, isFirst, titleSize, subtitleSize, bodySize }) {
   const secondaryColor = config.textColorSecondary || config.textColor
   const glassBg = config.textGlassBg === 'si'
-  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor, config.textGlassOpacity) : null
   const titleGlassBg = config.titleGlassBg === 'si'
-  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config)) : null
+  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config), config.textGlassOpacity) : null
   const items = Array.isArray(group.items) ? group.items.filter((i) => i.label || i.text) : []
   if (!group.title && !group.subtitle && items.length === 0) return null
   const isHorizontal = (group.layout || 'horizontal') !== 'vertical'
@@ -125,9 +125,9 @@ function EventDetail({ event, config, appearance, styles }) {
   const bodySize = config.fontSizeBody || 'text-base'
   const secondaryColor = config.textColorSecondary || config.textColor
   const glassBg = config.textGlassBg === 'si'
-  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
+  const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor, config.textGlassOpacity) : null
   const titleGlassBg = config.titleGlassBg === 'si'
-  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config)) : null
+  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config), config.textGlassOpacity) : null
   const alignment = config.alignment || 'text-center'
   const titleSize = config.fontSizeTitle || 'text-2xl'
   const subtitleSize = config.fontSizeSubtitle || 'text-base'

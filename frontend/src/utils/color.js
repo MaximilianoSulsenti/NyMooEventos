@@ -58,22 +58,27 @@ export function secondaryTextColor(textColor, opacityHex) {
 // cuando el fondo de la sección es un video/imagen y el texto se pierde en
 // algún momento. El tinte se calcula por contraste contra el propio color
 // del texto (getContrastTextColor), nunca fijo, así siempre se lee bien sin
-// importar qué combinación de colores se elija. La opacidad del tinte (40 ~
-// 25%) es a propósito bastante más marcada que un glassmorphism típico --
-// con un fondo real de foto/video de por medio, un vidrio demasiado sutil
-// no alcanza a tapar lo suficiente como para garantizar lectura; la sombra
-// exterior oscura suma separación del fondo sin depender del color elegido.
-export function secondaryGlassStyle(secondaryColor) {
+// importar qué combinación de colores se elija. La opacidad del tinte es
+// editable (ver config.textGlassOpacity en TEXT_FIELD_DEFS); sin elegir
+// nada cae a 25%, a propósito bastante más marcada que un glassmorphism
+// típico -- con un fondo real de foto/video de por medio, un vidrio
+// demasiado sutil no alcanza a tapar lo suficiente como para garantizar
+// lectura; la sombra exterior oscura suma separación del fondo sin
+// depender del color elegido.
+export function secondaryGlassStyle(secondaryColor, opacityPercent) {
   const tint = getContrastTextColor(secondaryColor || '#ffffff')
+  const [r, g, b] = hexToRgb(tint)
+  const opacity = Math.min(100, Math.max(0, opacityPercent ?? 25))
+  const alpha = (delta) => Math.min(100, Math.max(0, opacity + delta)) / 100
   // backgroundColor, no el shorthand "background" -- el título en modo
   // degradado pinta su relleno con backgroundImage (ver titleTextStyle), y
   // el shorthand "background" resetea backgroundImage a "none" cuando se
   // mezcla después en el mismo style, lo que deja el texto invisible
   // (color ya es transparent ahí). backgroundColor no toca backgroundImage.
   return {
-    backgroundColor: `${tint}40`,
-    border: `1px solid ${tint}4d`,
-    boxShadow: `inset 0 1px 0 ${tint}33, inset 0 -1px 0 ${tint}1a, 0 4px 20px -4px rgba(0,0,0,0.35)`,
+    backgroundColor: `rgba(${r}, ${g}, ${b}, ${alpha(0)})`,
+    border: `1px solid rgba(${r}, ${g}, ${b}, ${alpha(5)})`,
+    boxShadow: `inset 0 1px 0 rgba(${r}, ${g}, ${b}, ${alpha(-5)}), inset 0 -1px 0 rgba(${r}, ${g}, ${b}, ${alpha(-15)}), 0 4px 20px -4px rgba(0,0,0,0.35)`,
   }
 }
 
