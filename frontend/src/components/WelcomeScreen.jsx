@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'motion/react'
+import { Music2, VolumeX } from 'lucide-react'
 import { cn } from '../utils/cn'
 import { getContrastTextColor, extractDominantColor, extractDominantColorFromVideo, secondaryGlassStyle } from '../utils/color'
 import { FONT_FAMILY_CLASSES } from '../sections/theming'
@@ -161,7 +162,7 @@ const QUADRANTS = [
   { key: 'br', top: '50%', left: '50%', exitX: '100%', exitY: '100%', bgOffsetX: '-50vw', bgOffsetY: '-50vh' },
 ]
 
-function WelcomeScreen({ settings, appearance, guestName, welcomeMessage, onOpen }) {
+function WelcomeScreen({ settings, appearance, guestName, welcomeMessage, hasMusic = false, onOpen }) {
   const [opening, setOpening] = useState(false)
   const [mediaColor, setMediaColor] = useState(null)
   const fontClass = FONT_FAMILY_CLASSES[settings.fontFamily] || 'font-sans'
@@ -215,9 +216,9 @@ function WelcomeScreen({ settings, appearance, guestName, welcomeMessage, onOpen
   const glassBg = settings.textGlassBg === 'si'
   const glassBgStyle = glassBg ? secondaryGlassStyle(resolvedTextColor) : null
 
-  function handleOpen() {
+  function handleOpen(withMusic) {
     setOpening(true)
-    setTimeout(onOpen, 950)
+    setTimeout(() => onOpen(withMusic), 950)
   }
 
   return (
@@ -339,22 +340,64 @@ function WelcomeScreen({ settings, appearance, guestName, welcomeMessage, onOpen
           </motion.p>
         )}
 
-        <motion.div
-          className="mt-4"
-          animate={{ y: [0, -5, 0] }}
-          transition={{ repeat: Infinity, duration: 2.6, ease: 'easeInOut' }}
-        >
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.55 }}>
-            <Button
-              type="button"
-              onClick={handleOpen}
-              primaryColor={appearance.primaryColor}
-              className={cn('px-10 sm:px-12 py-3.5 sm:py-4 tracking-wide text-base', fontClass)}
+        {hasMusic ? (
+          <motion.div
+            className="mt-4 flex flex-col items-center gap-3"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.55 }}
+          >
+            {/* Texto chico y sutil a propósito -- es una aclaración, no un
+                título más: la decisión real está en los dos botones de abajo. */}
+            <p
+              className={cn('flex items-center gap-1.5 text-xs italic', fontClass)}
+              style={{ color: `${resolvedTextColor}80` }}
             >
-              {settings.buttonText || 'Abrir invitación'}
-            </Button>
+              <Music2 className="w-3.5 h-3.5 shrink-0" />
+              {settings.musicPromptText || 'La música de fondo es parte de la experiencia'}
+            </p>
+            <motion.div
+              className="flex flex-wrap items-center justify-center gap-2.5"
+              animate={{ y: [0, -5, 0] }}
+              transition={{ repeat: Infinity, duration: 2.6, ease: 'easeInOut' }}
+            >
+              <Button
+                type="button"
+                onClick={() => handleOpen(true)}
+                primaryColor={appearance.primaryColor}
+                className={cn('px-6 py-2.5 text-sm tracking-wide', fontClass)}
+              >
+                <Music2 className="w-3.5 h-3.5" />
+                {settings.buttonTextWithMusic || 'Ingresar con música'}
+              </Button>
+              <Button
+                type="button"
+                onClick={() => handleOpen(false)}
+                className={cn('px-6 py-2.5 text-sm tracking-wide', fontClass)}
+              >
+                <VolumeX className="w-3.5 h-3.5" />
+                {settings.buttonTextNoMusic || 'Ingresar sin música'}
+              </Button>
+            </motion.div>
           </motion.div>
-        </motion.div>
+        ) : (
+          <motion.div
+            className="mt-4"
+            animate={{ y: [0, -5, 0] }}
+            transition={{ repeat: Infinity, duration: 2.6, ease: 'easeInOut' }}
+          >
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.55 }}>
+              <Button
+                type="button"
+                onClick={() => handleOpen(false)}
+                primaryColor={appearance.primaryColor}
+                className={cn('px-10 sm:px-12 py-3.5 sm:py-4 tracking-wide text-base', fontClass)}
+              >
+                {settings.buttonText || 'Abrir invitación'}
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
       </motion.div>
     </div>
   )

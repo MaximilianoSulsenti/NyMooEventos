@@ -15,6 +15,12 @@ function DigitalCard() {
   const [event, setEvent] = useState(null)
   const [loadState, setLoadState] = useState('loading') // loading | ready | not-found | error
   const [introOpen, setIntroOpen] = useState(false)
+  // Si no hay sobre de bienvenida, la música (cuando está activada) se
+  // comporta como siempre: intenta arrancar sola apenas carga la tarjeta
+  // (ver más abajo, se inicializa en true junto con introOpen). Con sobre
+  // de bienvenida, arranca en false y la decide el invitado con los
+  // botones "Ingresar con/sin música" (ver WelcomeScreen).
+  const [musicConsent, setMusicConsent] = useState(false)
   // Invitación VIP (Nymoo VIVE): si la URL trae ?guest=<passcode>, resuelve
   // el nombre del invitado para saludarlo por su nombre en la pantalla de
   // bienvenida -- mismo hook que ya usa Hero.jsx para el pill "¡Hola, {nombre}!".
@@ -29,6 +35,7 @@ function DigitalCard() {
         if (!isMounted) return
         setEvent(data)
         setIntroOpen(!data.envelopeSettings?.enabled)
+        setMusicConsent(!data.envelopeSettings?.enabled)
         setLoadState('ready')
       })
       .catch((err) => {
@@ -104,7 +111,11 @@ function DigitalCard() {
           // (sobre y portada). Esta pantalla ya personaliza con el nombre
           // vía el nameplate de arriba ("Invitación para {guestName}").
           welcomeMessage={event.envelopeSettings.welcomeMessage || ''}
-          onOpen={() => setIntroOpen(true)}
+          hasMusic={Boolean(event.musicSettings?.enabled)}
+          onOpen={(withMusic) => {
+            setMusicConsent(Boolean(withMusic))
+            setIntroOpen(true)
+          }}
         />
       )}
 
@@ -112,7 +123,7 @@ function DigitalCard() {
         <MusicPlayerWidget
           settings={event.musicSettings}
           primaryColor={appearance.primaryColor}
-          autoPlayTrigger={introOpen}
+          autoPlayTrigger={introOpen && musicConsent}
         />
       )}
 

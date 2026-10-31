@@ -257,7 +257,12 @@ function EventEditor() {
 
         <div>
           <h2 className="text-sm uppercase tracking-widest text-neutral-500 mb-3">Pantalla de bienvenida</h2>
-          <EnvelopePanel eventId={eventId} settings={envelopeSettings} onChange={setEnvelopeSettings} />
+          <EnvelopePanel
+            eventId={eventId}
+            settings={envelopeSettings}
+            onChange={setEnvelopeSettings}
+            hasMusic={Boolean(musicSettings?.enabled)}
+          />
         </div>
 
         <div>
