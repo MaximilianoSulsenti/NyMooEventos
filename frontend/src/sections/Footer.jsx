@@ -34,6 +34,7 @@ function parseSocialLinks(raw = '') {
 }
 
 function Footer({ event, config, appearance, styles }) {
+  const title = config.title || event.eventName
   const socialLinks = parseSocialLinks(config.socialLinks)
   const primaryColor = appearance?.primaryColor
   const nameSize = config.fontSizeTitle || 'text-2xl'
@@ -77,7 +78,7 @@ function Footer({ event, config, appearance, styles }) {
         className={`mt-4 ${nameSize} ${styles.heading}`}
         style={{ color: config.textColor || primaryColor }}
       >
-        {event.eventName}
+        {title}
       </motion.p>
 
       {socialLinks.length > 0 && (

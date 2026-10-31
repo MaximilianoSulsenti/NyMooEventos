@@ -592,6 +592,7 @@ export const SECTION_FIELD_DEFS = {
   ],
   Footer: [
     { key: 'text', label: 'Frase de cierre', type: 'text' },
+    { key: 'title', label: 'Título (nombre grande, opcional -- por defecto usa el nombre del evento)', type: 'text' },
     { key: 'fontSizeTitle', label: 'Tamaño del nombre del evento', type: 'select', options: FONT_SIZE_OPTIONS },
     { key: 'fontSizeBody', label: 'Tamaño del texto y la firma', type: 'select', options: FONT_SIZE_OPTIONS },
     { key: 'signature', label: 'Firma', type: 'text' },
