@@ -65,8 +65,13 @@ export function secondaryTextColor(textColor, opacityHex) {
 // exterior oscura suma separación del fondo sin depender del color elegido.
 export function secondaryGlassStyle(secondaryColor) {
   const tint = getContrastTextColor(secondaryColor || '#ffffff')
+  // backgroundColor, no el shorthand "background" -- el título en modo
+  // degradado pinta su relleno con backgroundImage (ver titleTextStyle), y
+  // el shorthand "background" resetea backgroundImage a "none" cuando se
+  // mezcla después en el mismo style, lo que deja el texto invisible
+  // (color ya es transparent ahí). backgroundColor no toca backgroundImage.
   return {
-    background: `${tint}40`,
+    backgroundColor: `${tint}40`,
     border: `1px solid ${tint}4d`,
     boxShadow: `inset 0 1px 0 ${tint}33, inset 0 -1px 0 ${tint}1a, 0 4px 20px -4px rgba(0,0,0,0.35)`,
   }
@@ -87,6 +92,19 @@ export function titleTextStyle(config) {
     }
   }
   return { color: config.textColor || undefined }
+}
+
+// Color de referencia para el contraste del vidrio del TÍTULO (ver
+// secondaryGlassStyle) -- en modo degradado no hay un solo "color de
+// texto" real (el relleno visual es el degradado, color queda
+// transparent), así que se usa el primer color del degradado como
+// referencia. Secciones sin degradado (ej. Footer) ni config.titleColorMode
+// caen directo a config.textColor, sin cambios.
+export function titleGlassColor(config) {
+  if (config.titleColorMode === 'degradado') {
+    return config.titleGradientFrom || config.titleGradientTo || config.textColor
+  }
+  return config.textColor
 }
 
 // Promedia los píxeles de una imagen/video ya cargado (achicado a un canvas

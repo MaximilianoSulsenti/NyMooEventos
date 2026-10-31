@@ -5,7 +5,7 @@ import { cn } from '../utils/cn'
 import { resolveIcon } from './eventIcons'
 import AnimatedIcon from '../components/AnimatedIcon'
 import { glassStyle, glassBlurClass } from '../utils/glass'
-import { secondaryTextColor, titleTextStyle, secondaryGlassStyle } from '../utils/color'
+import { secondaryTextColor, titleTextStyle, secondaryGlassStyle, titleGlassColor } from '../utils/color'
 
 function InfoCard({ item, appearance, styles, config, isOpen, onToggle }) {
   const Icon = resolveIcon(item.icon, `${item.title || ''} ${item.body || ''}`)
@@ -77,14 +77,16 @@ function Info({ config, appearance, styles }) {
   const secondaryColor = config.textColorSecondary || config.textColor
   const glassBg = config.textGlassBg === 'si'
   const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
+  const titleGlassBg = config.titleGlassBg === 'si'
+  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config)) : null
 
   if (items.length === 0) return null
 
   return (
     <section className={`px-6 max-w-2xl mx-auto ${styles.fontClass}`}>
       <h2
-        className={`text-center ${titleSize} ${config.subtitle ? 'mb-1' : 'mb-6'} ${styles.heading}`}
-        style={titleTextStyle(config)}
+        className={cn('text-center', titleSize, config.subtitle ? 'mb-1' : 'mb-6', styles.heading, titleGlassBg && 'w-fit mx-auto backdrop-blur-lg rounded-2xl px-5 py-2')}
+        style={{ ...titleTextStyle(config), ...titleGlassBgStyle }}
       >
         {config.title || 'Información adicional'}
       </h2>

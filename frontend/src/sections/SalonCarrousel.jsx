@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import CarouselArrows from '../components/ui/CarouselArrows'
 import { cn } from '../utils/cn'
-import { secondaryTextColor, titleTextStyle, secondaryGlassStyle } from '../utils/color'
+import { secondaryTextColor, titleTextStyle, secondaryGlassStyle, titleGlassColor } from '../utils/color'
 
 function SalonCarrousel({ config, styles }) {
   const images = [
@@ -18,6 +18,8 @@ function SalonCarrousel({ config, styles }) {
   const secondaryColor = config.textColorSecondary || config.textColor
   const glassBg = config.textGlassBg === 'si'
   const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
+  const titleGlassBg = config.titleGlassBg === 'si'
+  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config)) : null
   const [index, setIndex] = useState(0)
   const [manualNav, setManualNav] = useState(0)
 
@@ -37,7 +39,10 @@ function SalonCarrousel({ config, styles }) {
   return (
     <section className={`text-center px-6 ${styles.fontClass}`}>
       {config.title && (
-        <h2 className={`${titleSize} mb-1 ${styles.heading}`} style={titleTextStyle(config)}>
+        <h2
+          className={cn(titleSize, 'mb-1', styles.heading, titleGlassBg && 'inline-block backdrop-blur-lg rounded-2xl px-5 py-2')}
+          style={{ ...titleTextStyle(config), ...titleGlassBgStyle }}
+        >
           {config.title}
         </h2>
       )}

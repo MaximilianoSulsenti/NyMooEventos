@@ -2,7 +2,7 @@ import { motion } from 'motion/react'
 import { Mail, Phone, Music2, Globe } from 'lucide-react'
 import { InstagramIcon, WhatsappIcon, FacebookIcon, TiktokIcon, SpotifyIcon, YoutubeIcon } from '../components/icons/BrandIcons'
 import { cn } from '../utils/cn'
-import { secondaryTextColor, secondaryGlassStyle } from '../utils/color'
+import { secondaryTextColor, secondaryGlassStyle, titleGlassColor } from '../utils/color'
 
 const ICON_RULES = [
   { keywords: ['whatsapp', 'wsp'], icon: WhatsappIcon },
@@ -42,6 +42,8 @@ function Footer({ event, config, appearance, styles }) {
   const secondaryColor = config.textColorSecondary || config.textColor
   const glassBg = config.textGlassBg === 'si'
   const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
+  const titleGlassBg = config.titleGlassBg === 'si'
+  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config)) : null
 
   return (
     <section className={`relative text-center px-6 pt-14 pb-12 overflow-hidden ${styles.fontClass}`}>
@@ -75,8 +77,8 @@ function Footer({ event, config, appearance, styles }) {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 0.1 }}
-        className={`mt-4 ${nameSize} ${styles.heading}`}
-        style={{ color: config.textColor || primaryColor }}
+        className={cn('mt-4', nameSize, styles.heading, titleGlassBg && 'inline-block backdrop-blur-lg rounded-2xl px-5 py-2')}
+        style={{ color: config.textColor || primaryColor, ...titleGlassBgStyle }}
       >
         {title}
       </motion.p>

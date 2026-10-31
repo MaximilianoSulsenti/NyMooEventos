@@ -6,7 +6,7 @@ import AnimatedIcon from '../components/AnimatedIcon'
 import Button from '../components/ui/Button'
 import RsvpModalShell from '../components/RsvpModalShell'
 import { glassStyle, glassBlurClass } from '../utils/glass'
-import { secondaryTextColor, titleTextStyle, secondaryGlassStyle } from '../utils/color'
+import { secondaryTextColor, titleTextStyle, secondaryGlassStyle, titleGlassColor } from '../utils/color'
 
 function isEmbedUrl(url = '') {
   return url.includes('google.com/maps/embed')
@@ -25,13 +25,18 @@ function Location({ config, appearance, styles }) {
   const secondaryColor = config.textColorSecondary || config.textColor
   const glassBg = config.textGlassBg === 'si'
   const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
+  const titleGlassBg = config.titleGlassBg === 'si'
+  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config)) : null
   const primaryColor = appearance?.primaryColor
 
   if (locations.length === 0) return null
 
   return (
     <section className={`text-center px-6 ${styles.fontClass}`}>
-      <h2 className={`${titleSize} ${config.subtitle ? 'mb-1' : 'mb-6'} ${styles.heading}`} style={titleTextStyle(config)}>
+      <h2
+        className={cn(titleSize, config.subtitle ? 'mb-1' : 'mb-6', styles.heading, titleGlassBg && 'inline-block backdrop-blur-lg rounded-2xl px-5 py-2')}
+        style={{ ...titleTextStyle(config), ...titleGlassBgStyle }}
+      >
         {config.title || 'Ubicación'}
       </h2>
       {config.subtitle && (

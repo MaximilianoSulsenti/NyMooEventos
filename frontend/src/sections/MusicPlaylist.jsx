@@ -5,7 +5,7 @@ import api from '../services/api'
 import Button from '../components/ui/Button'
 import AnimatedIcon from '../components/AnimatedIcon'
 import { glassStyle, glassBlurClass } from '../utils/glass'
-import { secondaryTextColor, titleTextStyle, secondaryGlassStyle } from '../utils/color'
+import { secondaryTextColor, titleTextStyle, secondaryGlassStyle, titleGlassColor } from '../utils/color'
 import { cn } from '../utils/cn'
 import { CARD_REVEAL } from '../utils/motionPresets'
 
@@ -155,6 +155,8 @@ function MusicPlaylist({ event, config, appearance, styles }) {
   const secondaryColor = config.textColorSecondary || config.textColor
   const glassBg = config.textGlassBg === 'si'
   const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
+  const titleGlassBg = config.titleGlassBg === 'si'
+  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config)) : null
   const primaryColor = appearance?.primaryColor
   const canRequestSongs = Boolean(event?.activeModules?.guestControl)
 
@@ -183,7 +185,10 @@ function MusicPlaylist({ event, config, appearance, styles }) {
           iconClassName="w-5 h-5"
         />
 
-        <h2 className={`${titleSize} ${styles.heading}`} style={titleTextStyle(config)}>
+        <h2
+          className={cn(titleSize, styles.heading, titleGlassBg && 'inline-block backdrop-blur-lg rounded-2xl px-5 py-2')}
+          style={{ ...titleTextStyle(config), ...titleGlassBgStyle }}
+        >
           {config.title || 'Playlist del evento'}
         </h2>
         {config.subtitle && (

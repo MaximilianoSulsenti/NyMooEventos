@@ -2,7 +2,7 @@ import { motion } from 'motion/react'
 import { resolveIcon } from './eventIcons'
 import AnimatedIcon from '../components/AnimatedIcon'
 import { cn } from '../utils/cn'
-import { secondaryTextColor, titleTextStyle, secondaryGlassStyle } from '../utils/color'
+import { secondaryTextColor, titleTextStyle, secondaryGlassStyle, titleGlassColor } from '../utils/color'
 
 function Timeline({ config, appearance, styles }) {
   const items = Array.isArray(config.items) ? config.items : []
@@ -12,11 +12,16 @@ function Timeline({ config, appearance, styles }) {
   const secondaryColor = config.textColorSecondary || config.textColor
   const glassBg = config.textGlassBg === 'si'
   const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
+  const titleGlassBg = config.titleGlassBg === 'si'
+  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config)) : null
   if (items.length === 0) return null
 
   return (
     <section className={`text-center px-6 max-w-sm mx-auto ${styles.fontClass}`}>
-      <h2 className={`${titleSize} ${config.subtitle ? 'mb-1' : 'mb-6'} ${styles.heading}`} style={titleTextStyle(config)}>
+      <h2
+        className={cn(titleSize, config.subtitle ? 'mb-1' : 'mb-6', styles.heading, titleGlassBg && 'inline-block backdrop-blur-lg rounded-2xl px-5 py-2')}
+        style={{ ...titleTextStyle(config), ...titleGlassBgStyle }}
+      >
         {config.title || 'Cronograma'}
       </h2>
       {config.subtitle && (

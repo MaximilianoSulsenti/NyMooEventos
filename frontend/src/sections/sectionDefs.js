@@ -233,6 +233,12 @@ export const BACKGROUND_FIELD_DEFS = [
 export const TEXT_FIELD_DEFS = [
   { key: 'textColor', label: 'Color del texto', type: 'color' },
   {
+    key: 'titleGlassBg',
+    label: 'Fondo vidriado detrás del título (útil sobre fondos de video/imagen)',
+    type: 'select',
+    options: YES_NO_OPTIONS,
+  },
+  {
     key: 'textColorSecondary',
     label: 'Color secundario (dedicatoria, descripciones, subtítulos, etc.)',
     type: 'color',

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
 import { cn } from '../utils/cn'
 import { glassStyle, glassBlurClass } from '../utils/glass'
-import { secondaryTextColor, titleTextStyle, secondaryGlassStyle } from '../utils/color'
+import { secondaryTextColor, titleTextStyle, secondaryGlassStyle, titleGlassColor } from '../utils/color'
 
 function getTimeLeft(target) {
   const diff = Math.max(0, new Date(target).getTime() - Date.now())
@@ -34,6 +34,8 @@ function Countdown({ event, config, appearance, styles }) {
   const secondaryColor = config.textColorSecondary || config.textColor
   const glassBg = config.textGlassBg === 'si'
   const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
+  const titleGlassBg = config.titleGlassBg === 'si'
+  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config)) : null
 
   useEffect(() => {
     const interval = setInterval(() => setTimeLeft(getTimeLeft(event.date)), 1000)
@@ -50,8 +52,8 @@ function Countdown({ event, config, appearance, styles }) {
   return (
     <section className={`text-center px-6 ${styles.fontClass}`}>
       <h2
-        className={`${sectionTitleSize} ${config.subtitle ? 'mb-1' : 'mb-6'} ${styles.heading}`}
-        style={titleTextStyle(config)}
+        className={cn(sectionTitleSize, config.subtitle ? 'mb-1' : 'mb-6', styles.heading, titleGlassBg && 'inline-block backdrop-blur-lg rounded-2xl px-5 py-2')}
+        style={{ ...titleTextStyle(config), ...titleGlassBgStyle }}
       >
         {config.title || 'Cuenta regresiva'}
       </h2>

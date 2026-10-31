@@ -5,7 +5,7 @@ import { resolveIcon } from './eventIcons'
 import AnimatedIcon from '../components/AnimatedIcon'
 import { glassStyle, glassBlurClass } from '../utils/glass'
 import { CARD_REVEAL } from '../utils/motionPresets'
-import { secondaryTextColor, titleTextStyle, secondaryGlassStyle } from '../utils/color'
+import { secondaryTextColor, titleTextStyle, secondaryGlassStyle, titleGlassColor } from '../utils/color'
 
 // Un grupo de detalles (ej. "Ceremonia Religiosa" con Fecha/Hora/Lugar) --
 // mismo AnimatedIcon/label/text que el bloque de "detalles" de siempre,
@@ -16,6 +16,8 @@ function DetailGroup({ group, appearance, config, styles, isFirst, titleSize, su
   const secondaryColor = config.textColorSecondary || config.textColor
   const glassBg = config.textGlassBg === 'si'
   const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
+  const titleGlassBg = config.titleGlassBg === 'si'
+  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config)) : null
   const items = Array.isArray(group.items) ? group.items.filter((i) => i.label || i.text) : []
   if (!group.title && !group.subtitle && items.length === 0) return null
   const isHorizontal = (group.layout || 'horizontal') !== 'vertical'
@@ -23,7 +25,10 @@ function DetailGroup({ group, appearance, config, styles, isFirst, titleSize, su
   return (
     <div className={isFirst ? '' : 'mt-10'}>
       {group.title && (
-        <h3 className={`${titleSize} mb-1 ${styles.heading}`} style={{ color: config.textColor || undefined }}>
+        <h3
+          className={cn(titleSize, 'mb-1', styles.heading, titleGlassBg && 'inline-block backdrop-blur-lg rounded-2xl px-5 py-2')}
+          style={{ color: config.textColor || undefined, ...titleGlassBgStyle }}
+        >
           {group.title}
         </h3>
       )}
@@ -121,6 +126,8 @@ function EventDetail({ event, config, appearance, styles }) {
   const secondaryColor = config.textColorSecondary || config.textColor
   const glassBg = config.textGlassBg === 'si'
   const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
+  const titleGlassBg = config.titleGlassBg === 'si'
+  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config)) : null
   const alignment = config.alignment || 'text-center'
   const titleSize = config.fontSizeTitle || 'text-2xl'
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
@@ -144,8 +151,8 @@ function EventDetail({ event, config, appearance, styles }) {
     <section className={`px-6 ${styles.fontClass} ${alignment}`}>
       {config.title && (
         <h2
-          className={`${titleSize} ${config.subtitle ? 'mb-1' : 'mb-5'} ${styles.heading}`}
-          style={titleTextStyle(config)}
+          className={cn(titleSize, config.subtitle ? 'mb-1' : 'mb-5', styles.heading, titleGlassBg && 'inline-block backdrop-blur-lg rounded-2xl px-5 py-2')}
+          style={{ ...titleTextStyle(config), ...titleGlassBgStyle }}
         >
           {config.title}
         </h2>

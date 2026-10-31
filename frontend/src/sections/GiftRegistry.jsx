@@ -7,7 +7,7 @@ import AnimatedIcon from '../components/AnimatedIcon'
 import { glassStyle, glassBlurClass } from '../utils/glass'
 import { cn } from '../utils/cn'
 import { CARD_REVEAL } from '../utils/motionPresets'
-import { secondaryTextColor, titleTextStyle, secondaryGlassStyle } from '../utils/color'
+import { secondaryTextColor, titleTextStyle, secondaryGlassStyle, titleGlassColor } from '../utils/color'
 
 function GiftRegistry({ config, appearance, styles }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -17,6 +17,8 @@ function GiftRegistry({ config, appearance, styles }) {
   const secondaryColor = config.textColorSecondary || config.textColor
   const glassBg = config.textGlassBg === 'si'
   const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor) : null
+  const titleGlassBg = config.titleGlassBg === 'si'
+  const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config)) : null
 
   if (!config.cbuAlias && !config.holderName) return null
 
@@ -43,7 +45,10 @@ function GiftRegistry({ config, appearance, styles }) {
           iconClassName="w-6 h-6"
         />
 
-        <h2 className={`${titleSize} ${styles.heading}`} style={titleTextStyle(config)}>
+        <h2
+          className={cn(titleSize, styles.heading, titleGlassBg && 'inline-block backdrop-blur-lg rounded-2xl px-5 py-2')}
+          style={{ ...titleTextStyle(config), ...titleGlassBgStyle }}
+        >
           {config.title || 'Lista de regalos'}
         </h2>
 
