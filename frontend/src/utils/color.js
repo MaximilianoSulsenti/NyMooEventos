@@ -88,8 +88,12 @@ export function secondaryGlassStyle(secondaryColor, opacityPercent) {
 // { color: config.textColor || undefined } en el <h1>/<h2> de cada sección.
 export function titleTextStyle(config) {
   if (config.titleColorMode === 'degradado' && config.titleGradientFrom && config.titleGradientTo) {
+    // "De izquierda a derecha" por defecto, no "de arriba a abajo" -- un
+    // título normal es una sola línea de ~30px de alto, así que un
+    // degradado vertical ahí casi no se nota (se ve prácticamente sólido);
+    // horizontal sí se aprecia incluso en títulos cortos.
     return {
-      backgroundImage: `linear-gradient(${config.titleGradientDirection || 'to bottom'}, ${config.titleGradientFrom}, ${config.titleGradientTo})`,
+      backgroundImage: `linear-gradient(${config.titleGradientDirection || 'to right'}, ${config.titleGradientFrom}, ${config.titleGradientTo})`,
       WebkitBackgroundClip: 'text',
       backgroundClip: 'text',
       color: 'transparent',

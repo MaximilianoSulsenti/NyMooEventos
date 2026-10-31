@@ -55,6 +55,21 @@ export const GRADIENT_DIRECTION_OPTIONS = [
   { value: 'to bottom left', label: 'Diagonal ↙' },
 ]
 
+// Mismas opciones que arriba pero con "de izquierda a derecha" primera --
+// para el degradado del TÍTULO (texto) en vez de un fondo grande. "De
+// arriba a abajo" (el default de los fondos) queda prácticamente invisible
+// en un título de una sola línea: con solo ~30px de alto, el ojo no
+// alcanza a recorrer el degradado verticalmente y se ve casi como un color
+// sólido. Horizontal sí se nota, incluso en títulos cortos.
+export const TITLE_GRADIENT_DIRECTION_OPTIONS = [
+  { value: 'to right', label: 'De izquierda a derecha' },
+  { value: 'to bottom', label: 'De arriba a abajo' },
+  { value: 'to top', label: 'De abajo a arriba' },
+  { value: 'to left', label: 'De derecha a izquierda' },
+  { value: 'to bottom right', label: 'Diagonal ↘' },
+  { value: 'to bottom left', label: 'Diagonal ↙' },
+]
+
 // Compartido entre AppearancePanel (tipografía del texto/títulos de toda la
 // invitación) y EnvelopePanel (tipografía de la pantalla de bienvenida) --
 // antes estaba duplicado a mano en los dos, y sumar una fuente nueva en uno
@@ -289,7 +304,7 @@ export const TITLE_GRADIENT_FIELD_DEFS = [
     key: 'titleGradientDirection',
     label: 'Dirección del degradado',
     type: 'select',
-    options: GRADIENT_DIRECTION_OPTIONS,
+    options: TITLE_GRADIENT_DIRECTION_OPTIONS,
     showIf: (config) => config.titleColorMode === 'degradado',
   },
 ]
