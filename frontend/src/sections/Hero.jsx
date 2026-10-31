@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { Sparkles, CalendarDays, ChevronDown } from 'lucide-react'
 import usePremiumGuest from '../hooks/usePremiumGuest'
 import { secondaryTextColor, titleTextStyle, secondaryGlassStyle, titleGlassColor } from '../utils/color'
+import { FONT_FAMILY_CLASSES } from './theming'
 import { cn } from '../utils/cn'
 
 function Hero({ event, config, appearance, styles, revealed = true }) {
@@ -39,6 +40,13 @@ function Hero({ event, config, appearance, styles, revealed = true }) {
   const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor, config.textGlassOpacity) : null
   const titleGlassBg = config.titleGlassBg === 'si'
   const titleGlassBgStyle = titleGlassBg ? secondaryGlassStyle(titleGlassColor(config), config.textGlassOpacity) : null
+  // Tipografía del título propia de la Portada, independiente de la general
+  // de la invitación -- se arma desde styles.headingBase (solo peso/tracking,
+  // sin font-family) en vez de styles.heading (que ya trae mezclada la
+  // tipografía general de títulos), así una pisa a la otra sin que ambas
+  // compitan por la misma propiedad CSS en el mismo elemento.
+  const titleFontOverride = config.titleFontFamily && FONT_FAMILY_CLASSES[config.titleFontFamily]
+  const headingClass = titleFontOverride ? cn(styles.headingBase, titleFontOverride) : styles.heading
   const premiumGuest = usePremiumGuest(event)
   // Fecha/hora sofisticada en la portada -- opcional (config.showDate),
   // apagada por defecto para no cambiarle la cara a ninguna invitación ya
@@ -123,7 +131,7 @@ function Hero({ event, config, appearance, styles, revealed = true }) {
         )}
         {dateAbove && <div className="mb-4">{dateLine}</div>}
         <h1
-          className={cn(titleSize, 'mb-3', styles.heading, titleGlassBg && 'inline-block backdrop-blur-lg rounded-2xl px-5 py-2')}
+          className={cn(titleSize, 'mb-3', headingClass, titleGlassBg && 'inline-block backdrop-blur-lg rounded-2xl px-5 py-2')}
           style={{ ...titleTextStyle(config), ...titleGlassBgStyle }}
         >
           {title}

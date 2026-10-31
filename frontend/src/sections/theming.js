@@ -103,6 +103,10 @@ export function getThemeStyles(theme, fontFamily, titleFontFamily) {
   return {
     ...base,
     fontClass: fontOverride || base.fontClass,
+    // Solo peso/tracking, sin ninguna font-family -- para cuando una sección
+    // puntual necesita pisar la tipografía del título (ver Hero.jsx) sin
+    // arrastrar la general ya mezclada en `heading` de abajo.
+    headingBase: base.heading,
     heading: titleFontOverride ? `${base.heading} ${titleFontOverride}` : base.heading,
   }
 }

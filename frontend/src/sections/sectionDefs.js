@@ -360,6 +360,12 @@ export const SECTION_FIELD_DEFS = {
       showIf: (config) => config.showDate === 'si',
     },
     { key: 'title', label: 'Título', type: 'text' },
+    {
+      key: 'titleFontFamily',
+      label: 'Tipografía del título (solo acá en la portada -- el resto de la invitación sigue con la general)',
+      type: 'select',
+      options: [{ value: '', label: 'Igual que la tipografía general' }, ...FONTS],
+    },
     { key: 'subtitle', label: 'Subtítulo', type: 'text' },
     { key: 'dedication', label: 'Dedicatoria o lema (opcional)', type: 'text' },
     { key: 'fontSizeTitle', label: 'Tamaño del título', type: 'select', options: FONT_SIZE_OPTIONS },
