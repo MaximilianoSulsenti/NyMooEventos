@@ -143,6 +143,15 @@ export const COUNTDOWN_SHAPE_OPTIONS = [
   { value: 'none', label: 'Sin contenedor' },
 ]
 
+// Tamaños del botón "Ver valor de la tarjeta" (RSVPSection) -- ver
+// PRICE_BUTTON_SIZE_CLASSES en RSVPSection.jsx para las clases reales de
+// cada uno.
+export const PRICE_BUTTON_SIZE_OPTIONS = [
+  { value: 'sm', label: 'Chico (como ahora)' },
+  { value: 'md', label: 'Mediano' },
+  { value: 'lg', label: 'Grande' },
+]
+
 export const GALLERY_LAYOUT_OPTIONS = [
   { value: 'bento', label: 'Grid animado (Bento)' },
   { value: 'carousel', label: 'Carrusel clásico' },
@@ -531,6 +540,12 @@ export const SECTION_FIELD_DEFS = {
     { key: 'buttonTextForm', label: 'Texto del botón (si confirman por formulario propio)', type: 'text' },
     { key: 'priceButtonText', label: 'Texto del link "Ver valor de la tarjeta" (opcional)', type: 'text' },
     { key: 'priceButtonColor', label: 'Color del botón "Ver valor de la tarjeta" (opcional)', type: 'color' },
+    {
+      key: 'priceButtonSize',
+      label: 'Tamaño del botón "Ver valor de la tarjeta"',
+      type: 'select',
+      options: PRICE_BUTTON_SIZE_OPTIONS,
+    },
     {
       key: 'modalBgColor',
       label: 'Color de fondo del modal de confirmación (opcional)',

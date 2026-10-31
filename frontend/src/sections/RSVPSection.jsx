@@ -14,6 +14,15 @@ import { secondaryTextColor, titleTextStyle, secondaryGlassStyle, titleGlassColo
 
 const WHATSAPP_GREEN = '#25D366'
 
+// Sigue siendo un botón "fantasma" (ver abajo) en los tres tamaños -- lo
+// único que cambia es cuánto espacio ocupa, nunca el peso visual frente al
+// botón principal de confirmar asistencia.
+const PRICE_BUTTON_SIZE_CLASSES = {
+  sm: { button: 'gap-1.5 text-xs px-4 py-2', icon: 'w-3.5 h-3.5' },
+  md: { button: 'gap-2 text-sm px-5 py-2.5', icon: 'w-4 h-4' },
+  lg: { button: 'gap-2 text-base px-7 py-3.5', icon: 'w-5 h-5' },
+}
+
 function RSVPSection({ event, config, appearance, styles }) {
   const [isOpen, setIsOpen] = useState(false)
   const [showPrice, setShowPrice] = useState(false)
@@ -35,6 +44,7 @@ function RSVPSection({ event, config, appearance, styles }) {
 
   const accentColor = isWhatsapp ? WHATSAPP_GREEN : primaryColor
   const priceButtonColor = config.priceButtonColor || config.textColor || '#ffffff'
+  const priceButtonSize = PRICE_BUTTON_SIZE_CLASSES[config.priceButtonSize] || PRICE_BUTTON_SIZE_CLASSES.sm
   const titleSize = config.fontSizeTitle || 'text-base'
   const subtitleSize = config.fontSizeSubtitle || 'text-sm'
   const secondaryColor = config.textColorSecondary || config.textColor
@@ -97,7 +107,7 @@ function RSVPSection({ event, config, appearance, styles }) {
             onClick={() => setShowPrice(true)}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            className="flex items-center gap-1.5 text-xs px-4 py-2 rounded-full border transition-colors"
+            className={cn('flex items-center rounded-full border transition-colors', priceButtonSize.button)}
             style={{
               // Un botón "fantasma" (con contorno, sin relleno sólido) a
               // propósito -- por más color que se elija, nunca compite en
@@ -109,7 +119,7 @@ function RSVPSection({ event, config, appearance, styles }) {
               background: `${priceButtonColor}12`,
             }}
           >
-            <CreditCard className="w-3.5 h-3.5" />
+            <CreditCard className={priceButtonSize.icon} />
             {config.priceButtonText || 'Ver valor de la tarjeta'}
           </motion.button>
         )}
