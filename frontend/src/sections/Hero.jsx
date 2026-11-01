@@ -47,6 +47,21 @@ function Hero({ event, config, appearance, styles, revealed = true }) {
   // compitan por la misma propiedad CSS en el mismo elemento.
   const titleFontOverride = config.titleFontFamily && FONT_FAMILY_CLASSES[config.titleFontFamily]
   const headingClass = titleFontOverride ? cn(styles.headingBase, titleFontOverride) : styles.heading
+  // Con una tipografía propia elegida a mano, también se agranda el alto de
+  // línea (los tamaños de Tailwind traen line-height: 1, pensado para
+  // fuentes normales) -- una cursiva/script como Mea Culpa tiene colas y
+  // lazos (la "y", la "g") que bajan bastante más que el descendente de una
+  // fuente común, y con line-height:1 esa cola terminaba asomando justo por
+  // el borde inferior del recuadro vidriado (que se calcula a partir de esa
+  // misma altura de línea), como si la letra estuviera cortada.
+  const headingLineHeight = titleFontOverride ? 1.35 : undefined
+  // Con una tipografía propia elegida a mano, no forzar el "uppercase" que
+  // trae el tema (base.heading) -- tiene sentido para la fuente por
+  // defecto, pero en una cursiva/script (Mea Culpa, Pinyon Script, etc.)
+  // pasar todo a mayúsculas rompe el trazo conectado y se ve como letras
+  // sueltas en vez de una firma fluida. Se respeta el texto tal cual se
+  // escribió.
+  const headingStyle = titleFontOverride ? { textTransform: 'none', lineHeight: headingLineHeight } : null
   const premiumGuest = usePremiumGuest(event)
   // Fecha/hora sofisticada en la portada -- opcional (config.showDate),
   // apagada por defecto para no cambiarle la cara a ninguna invitación ya
@@ -131,8 +146,13 @@ function Hero({ event, config, appearance, styles, revealed = true }) {
         )}
         {dateAbove && <div className="mb-4">{dateLine}</div>}
         <h1
-          className={cn(titleSize, 'mb-3', headingClass, titleGlassBg && 'inline-block backdrop-blur-lg rounded-2xl px-5 py-2')}
-          style={{ ...titleTextStyle(config), ...titleGlassBgStyle }}
+          className={cn(
+            titleSize,
+            'mb-3',
+            headingClass,
+            titleGlassBg && cn('inline-block backdrop-blur-lg rounded-2xl px-5', titleFontOverride ? 'py-3' : 'py-2')
+          )}
+          style={{ ...titleTextStyle(config), ...headingStyle, ...titleGlassBgStyle }}
         >
           {title}
         </h1>
