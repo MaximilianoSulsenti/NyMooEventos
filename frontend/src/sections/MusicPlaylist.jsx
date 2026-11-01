@@ -58,6 +58,7 @@ function SongRequestForm({ eventSlug, primaryColor, config }) {
   const inputStyle = { color: textColor, background: `${textColor}0d`, borderColor: `${textColor}26` }
   const bodySize = config?.fontSizeBody || 'text-sm'
   const secondaryColor = config?.textColorSecondary || textColor
+  const secondaryColorExplicit = Boolean(config?.textColorSecondary)
   const glassBg = config?.textGlassBg === 'si'
   const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor, config?.textGlassOpacity) : null
 
@@ -85,7 +86,7 @@ function SongRequestForm({ eventSlug, primaryColor, config }) {
     <div className="w-full pt-5 mt-5 border-t border-white/10" style={{ '--accent': primaryColor }}>
       <p
         className={cn(bodySize, 'mb-3', glassBg && 'w-fit mx-auto backdrop-blur-lg rounded-2xl px-4 py-1.5')}
-        style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+        style={{ color: secondaryTextColor(secondaryColor, 'b3', secondaryColorExplicit), ...glassBgStyle }}
       >
         ¿Qué canción no puede faltar en la fiesta? 🎶
       </p>
@@ -153,6 +154,7 @@ function MusicPlaylist({ event, config, appearance, styles }) {
   const titleSize = config.fontSizeTitle || 'text-lg'
   const subtitleSize = config.fontSizeSubtitle || 'text-sm'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const secondaryColorExplicit = Boolean(config.textColorSecondary)
   const glassBg = config.textGlassBg === 'si'
   const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor, config.textGlassOpacity) : null
   const titleGlassBg = config.titleGlassBg === 'si'
@@ -186,15 +188,15 @@ function MusicPlaylist({ event, config, appearance, styles }) {
         />
 
         <h2
-          className={cn(titleSize, styles.heading, titleGlassBg && 'inline-block backdrop-blur-lg rounded-2xl px-5 py-2')}
+          className={cn(titleSize, styles.heading, titleGlassBg && 'block w-fit mx-auto backdrop-blur-lg rounded-2xl px-5 py-2')}
           style={{ ...titleTextStyle(config), ...titleGlassBgStyle }}
         >
           {config.title || 'Playlist del evento'}
         </h2>
         {config.subtitle && (
           <p
-            className={cn(subtitleSize, '-mt-2', glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5')}
-            style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+            className={cn(subtitleSize, '-mt-2', glassBg && 'block w-fit mx-auto backdrop-blur-lg rounded-2xl px-4 py-1.5')}
+            style={{ color: secondaryTextColor(secondaryColor, 'b3', secondaryColorExplicit), ...glassBgStyle }}
           >
             {config.subtitle}
           </p>

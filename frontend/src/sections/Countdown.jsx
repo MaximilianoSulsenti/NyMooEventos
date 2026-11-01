@@ -32,6 +32,7 @@ function Countdown({ event, config, appearance, styles }) {
   const sectionTitleSize = config.fontSizeSectionTitle || 'text-lg'
   const sectionSubtitleSize = config.fontSizeSectionSubtitle || 'text-base'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const secondaryColorExplicit = Boolean(config.textColorSecondary)
   const glassBg = config.textGlassBg === 'si'
   const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor, config.textGlassOpacity) : null
   const titleGlassBg = config.titleGlassBg === 'si'
@@ -52,15 +53,15 @@ function Countdown({ event, config, appearance, styles }) {
   return (
     <section className={`text-center px-6 ${styles.fontClass}`}>
       <h2
-        className={cn(sectionTitleSize, config.subtitle ? 'mb-1' : 'mb-6', styles.heading, titleGlassBg && 'inline-block backdrop-blur-lg rounded-2xl px-5 py-2')}
+        className={cn(sectionTitleSize, config.subtitle ? 'mb-1' : 'mb-6', styles.heading, titleGlassBg && 'block w-fit mx-auto backdrop-blur-lg rounded-2xl px-5 py-2')}
         style={{ ...titleTextStyle(config), ...titleGlassBgStyle }}
       >
         {config.title || 'Cuenta regresiva'}
       </h2>
       {config.subtitle && (
         <p
-          className={cn('mb-6', sectionSubtitleSize, glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5')}
-          style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+          className={cn('mb-6', sectionSubtitleSize, glassBg && 'block w-fit mx-auto backdrop-blur-lg rounded-2xl px-4 py-1.5')}
+          style={{ color: secondaryTextColor(secondaryColor, 'b3', secondaryColorExplicit), ...glassBgStyle }}
         >
           {config.subtitle}
         </p>

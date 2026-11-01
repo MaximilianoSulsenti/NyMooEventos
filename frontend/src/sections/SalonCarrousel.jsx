@@ -16,6 +16,7 @@ function SalonCarrousel({ config, styles }) {
   const subtitleSize = config.fontSizeSubtitle || 'text-sm'
   const bodySize = config.fontSizeBody || 'text-sm'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const secondaryColorExplicit = Boolean(config.textColorSecondary)
   const glassBg = config.textGlassBg === 'si'
   const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor, config.textGlassOpacity) : null
   const titleGlassBg = config.titleGlassBg === 'si'
@@ -40,7 +41,7 @@ function SalonCarrousel({ config, styles }) {
     <section className={`text-center px-6 ${styles.fontClass}`}>
       {config.title && (
         <h2
-          className={cn(titleSize, 'mb-1', styles.heading, titleGlassBg && 'inline-block backdrop-blur-lg rounded-2xl px-5 py-2')}
+          className={cn(titleSize, 'mb-1', styles.heading, titleGlassBg && 'block w-fit mx-auto backdrop-blur-lg rounded-2xl px-5 py-2')}
           style={{ ...titleTextStyle(config), ...titleGlassBgStyle }}
         >
           {config.title}
@@ -48,8 +49,8 @@ function SalonCarrousel({ config, styles }) {
       )}
       {config.subtitle && (
         <p
-          className={cn(subtitleSize, 'mb-4', glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5')}
-          style={{ color: secondaryTextColor(secondaryColor, '99'), ...glassBgStyle }}
+          className={cn(subtitleSize, 'mb-4', glassBg && 'block w-fit mx-auto backdrop-blur-lg rounded-2xl px-4 py-1.5')}
+          style={{ color: secondaryTextColor(secondaryColor, '99', secondaryColorExplicit), ...glassBgStyle }}
         >
           {config.subtitle}
         </p>
@@ -73,8 +74,8 @@ function SalonCarrousel({ config, styles }) {
 
       {config.caption && (
         <p
-          className={cn(bodySize, 'mt-3 italic', glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5')}
-          style={{ color: secondaryTextColor(secondaryColor, '80'), ...glassBgStyle }}
+          className={cn(bodySize, 'mt-3 italic', glassBg && 'block w-fit mx-auto backdrop-blur-lg rounded-2xl px-4 py-1.5')}
+          style={{ color: secondaryTextColor(secondaryColor, '80', secondaryColorExplicit), ...glassBgStyle }}
         >
           {config.caption}
         </p>

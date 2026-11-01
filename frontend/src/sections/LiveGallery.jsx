@@ -29,6 +29,7 @@ function LiveGallery({ event, config, appearance, styles }) {
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const bodySize = config.fontSizeBody || 'text-sm'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const secondaryColorExplicit = Boolean(config.textColorSecondary)
   const glassBg = config.textGlassBg === 'si'
   const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor, config.textGlassOpacity) : null
   const titleGlassBg = config.titleGlassBg === 'si'
@@ -39,22 +40,22 @@ function LiveGallery({ event, config, appearance, styles }) {
     <section className={`text-center px-6 ${styles.fontClass}`}>
       <motion.div {...CARD_REVEAL}>
         <h2
-          className={cn(titleSize, 'mb-2', styles.heading, titleGlassBg && 'inline-block backdrop-blur-lg rounded-2xl px-5 py-2')}
+          className={cn(titleSize, 'mb-2', styles.heading, titleGlassBg && 'block w-fit mx-auto backdrop-blur-lg rounded-2xl px-5 py-2')}
           style={{ ...titleTextStyle(config), ...titleGlassBgStyle }}
         >
           {config.title || 'Galería en vivo'}
         </h2>
         {config.subtitle && (
           <p
-            className={cn('mb-2', subtitleSize, glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5')}
-            style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+            className={cn('mb-2', subtitleSize, glassBg && 'block w-fit mx-auto backdrop-blur-lg rounded-2xl px-4 py-1.5')}
+            style={{ color: secondaryTextColor(secondaryColor, 'b3', secondaryColorExplicit), ...glassBgStyle }}
           >
             {config.subtitle}
           </p>
         )}
         <p
-          className={cn(bodySize, 'mb-6 max-w-sm mx-auto break-words', glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5')}
-          style={{ color: secondaryTextColor(secondaryColor, '99'), ...glassBgStyle }}
+          className={cn(bodySize, 'mb-6 max-w-sm mx-auto break-words', glassBg && 'block w-fit mx-auto backdrop-blur-lg rounded-2xl px-4 py-1.5')}
+          style={{ color: secondaryTextColor(secondaryColor, '99', secondaryColorExplicit), ...glassBgStyle }}
         >
           {config.description || 'Compartí tus fotos del evento y miralas en vivo en la pantalla del salón el día de la fiesta.'}
         </p>

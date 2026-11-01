@@ -48,6 +48,7 @@ function RSVPSection({ event, config, appearance, styles }) {
   const titleSize = config.fontSizeTitle || 'text-base'
   const subtitleSize = config.fontSizeSubtitle || 'text-sm'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const secondaryColorExplicit = Boolean(config.textColorSecondary)
   const glassBg = config.textGlassBg === 'si'
   const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor, config.textGlassOpacity) : null
   const titleGlassBg = config.titleGlassBg === 'si'
@@ -78,7 +79,7 @@ function RSVPSection({ event, config, appearance, styles }) {
 
         <div className="max-w-sm">
           <p
-            className={cn(titleSize, titleGlassBg && 'inline-block backdrop-blur-lg rounded-2xl px-5 py-2')}
+            className={cn(titleSize, titleGlassBg && 'block w-fit mx-auto backdrop-blur-lg rounded-2xl px-5 py-2')}
             style={{ ...titleTextStyle(config), ...titleGlassBgStyle }}
           >
             {config.title ||
@@ -88,8 +89,8 @@ function RSVPSection({ event, config, appearance, styles }) {
           </p>
           {config.subtitle && (
             <p
-              className={cn(subtitleSize, 'mt-1', glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5')}
-              style={{ color: secondaryTextColor(secondaryColor, '99'), ...glassBgStyle }}
+              className={cn(subtitleSize, 'mt-1', glassBg && 'block w-fit mx-auto backdrop-blur-lg rounded-2xl px-4 py-1.5')}
+              style={{ color: secondaryTextColor(secondaryColor, '99', secondaryColorExplicit), ...glassBgStyle }}
             >
               {config.subtitle}
             </p>

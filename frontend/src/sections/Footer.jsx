@@ -40,6 +40,7 @@ function Footer({ event, config, appearance, styles }) {
   const nameSize = config.fontSizeTitle || 'text-2xl'
   const bodySize = config.fontSizeBody || 'text-sm'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const secondaryColorExplicit = Boolean(config.textColorSecondary)
   const glassBg = config.textGlassBg === 'si'
   const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor, config.textGlassOpacity) : null
   const titleGlassBg = config.titleGlassBg === 'si'
@@ -67,7 +68,7 @@ function Footer({ event, config, appearance, styles }) {
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
         className={cn(bodySize, 'italic max-w-md mx-auto', glassBg && 'w-fit backdrop-blur-lg rounded-2xl px-4 py-1.5')}
-        style={{ color: secondaryTextColor(secondaryColor, '99'), ...glassBgStyle }}
+        style={{ color: secondaryTextColor(secondaryColor, '99', secondaryColorExplicit), ...glassBgStyle }}
       >
         {config.text || `Con cariño, esperamos verte en ${event.eventName}.`}
       </motion.p>
@@ -77,7 +78,7 @@ function Footer({ event, config, appearance, styles }) {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 0.1 }}
-        className={cn('mt-4', nameSize, styles.heading, titleGlassBg && 'inline-block backdrop-blur-lg rounded-2xl px-5 py-2')}
+        className={cn('mt-4', nameSize, styles.heading, titleGlassBg && 'block w-fit mx-auto backdrop-blur-lg rounded-2xl px-5 py-2')}
         style={{ color: config.textColor || primaryColor, ...titleGlassBgStyle }}
       >
         {title}
@@ -117,7 +118,7 @@ function Footer({ event, config, appearance, styles }) {
           viewport={{ once: true }}
           transition={{ delay: 0.2, duration: 0.6 }}
           className={cn(bodySize, 'mt-8 uppercase tracking-[0.15em]', glassBg && 'w-fit mx-auto backdrop-blur-lg rounded-2xl px-4 py-1.5')}
-          style={{ color: secondaryTextColor(secondaryColor, '4d'), ...glassBgStyle }}
+          style={{ color: secondaryTextColor(secondaryColor, '4d', secondaryColorExplicit), ...glassBgStyle }}
         >
           {config.signature}
         </motion.p>

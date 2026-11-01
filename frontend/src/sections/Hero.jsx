@@ -36,6 +36,7 @@ function Hero({ event, config, appearance, styles, revealed = true }) {
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const bodySize = config.fontSizeBody || 'text-sm'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const secondaryColorExplicit = Boolean(config.textColorSecondary)
   const glassBg = config.textGlassBg === 'si'
   const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor, config.textGlassOpacity) : null
   const titleGlassBg = config.titleGlassBg === 'si'
@@ -92,7 +93,7 @@ function Hero({ event, config, appearance, styles, revealed = true }) {
         'tracking-wide',
         glassBg && 'backdrop-blur-lg rounded-2xl px-4 py-1.5'
       )}
-      style={{ color: secondaryTextColor(secondaryColor, '99'), ...glassBgStyle }}
+      style={{ color: secondaryTextColor(secondaryColor, '99', secondaryColorExplicit), ...glassBgStyle }}
     >
       <CalendarDays className="w-3.5 h-3.5 shrink-0" style={{ color: appearance.primaryColor }} />
       {dateText}
@@ -150,7 +151,7 @@ function Hero({ event, config, appearance, styles, revealed = true }) {
             titleSize,
             'mb-3',
             headingClass,
-            titleGlassBg && cn('inline-block backdrop-blur-lg rounded-2xl px-5', titleFontOverride ? 'py-3' : 'py-2')
+            titleGlassBg && cn('block w-fit mx-auto backdrop-blur-lg rounded-2xl px-5', titleFontOverride ? 'py-3' : 'py-2')
           )}
           style={{ ...titleTextStyle(config), ...headingStyle, ...titleGlassBgStyle }}
         >
@@ -158,8 +159,8 @@ function Hero({ event, config, appearance, styles, revealed = true }) {
         </h1>
         {subtitle && (
           <p
-            className={cn('mt-2', subtitleSize, glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5')}
-            style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+            className={cn('mt-2', subtitleSize, glassBg && 'block w-fit mx-auto backdrop-blur-lg rounded-2xl px-4 py-1.5')}
+            style={{ color: secondaryTextColor(secondaryColor, 'b3', secondaryColorExplicit), ...glassBgStyle }}
           >
             {subtitle}
           </p>
@@ -171,9 +172,9 @@ function Hero({ event, config, appearance, styles, revealed = true }) {
             className={cn(
               bodySize,
               'italic mt-2 max-w-sm mx-auto',
-              glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5'
+              glassBg && 'block w-fit mx-auto backdrop-blur-lg rounded-2xl px-4 py-1.5'
             )}
-            style={{ color: secondaryTextColor(secondaryColor, '80'), ...glassBgStyle }}
+            style={{ color: secondaryTextColor(secondaryColor, '80', secondaryColorExplicit), ...glassBgStyle }}
           >
             {config.dedication}
           </p>

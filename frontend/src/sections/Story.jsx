@@ -10,6 +10,7 @@ function Story({ config, appearance, styles }) {
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const bodySize = config.fontSizeBody || 'text-base'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const secondaryColorExplicit = Boolean(config.textColorSecondary)
   const glassBg = config.textGlassBg === 'si'
   const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor, config.textGlassOpacity) : null
   const titleGlassBg = config.titleGlassBg === 'si'
@@ -21,7 +22,7 @@ function Story({ config, appearance, styles }) {
     <section className={`text-center px-6 max-w-2xl mx-auto ${styles.fontClass}`}>
       {config.title && (
         <h2
-          className={cn(titleSize, config.subtitle ? 'mb-1' : 'mb-4', styles.heading, titleGlassBg && 'inline-block backdrop-blur-lg rounded-2xl px-5 py-2')}
+          className={cn(titleSize, config.subtitle ? 'mb-1' : 'mb-4', styles.heading, titleGlassBg && 'block w-fit mx-auto backdrop-blur-lg rounded-2xl px-5 py-2')}
           style={{ ...titleTextStyle(config), ...titleGlassBgStyle }}
         >
           {config.title}
@@ -29,8 +30,8 @@ function Story({ config, appearance, styles }) {
       )}
       {config.subtitle && (
         <p
-          className={cn('mb-4', subtitleSize, glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5')}
-          style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+          className={cn('mb-4', subtitleSize, glassBg && 'block w-fit mx-auto backdrop-blur-lg rounded-2xl px-4 py-1.5')}
+          style={{ color: secondaryTextColor(secondaryColor, 'b3', secondaryColorExplicit), ...glassBgStyle }}
         >
           {config.subtitle}
         </p>
@@ -38,8 +39,8 @@ function Story({ config, appearance, styles }) {
       <div className={`${styles.divider} mx-auto mb-4`} style={{ background: appearance.primaryColor }} />
       {config.body && (
         <p
-          className={cn('whitespace-pre-line mb-8', bodySize, glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5')}
-          style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+          className={cn('whitespace-pre-line mb-8', bodySize, glassBg && 'block w-fit mx-auto backdrop-blur-lg rounded-2xl px-4 py-1.5')}
+          style={{ color: secondaryTextColor(secondaryColor, 'b3', secondaryColorExplicit), ...glassBgStyle }}
         >
           {config.body}
         </p>
@@ -83,8 +84,8 @@ function Story({ config, appearance, styles }) {
               )}
               {milestone.subtitle && (
                 <p
-                  className={cn('mt-1', bodySize, glassBg && 'inline-block backdrop-blur-lg rounded-2xl px-4 py-1.5')}
-                  style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+                  className={cn('mt-1', bodySize, glassBg && 'block w-fit mx-auto backdrop-blur-lg rounded-2xl px-4 py-1.5')}
+                  style={{ color: secondaryTextColor(secondaryColor, 'b3', secondaryColorExplicit), ...glassBgStyle }}
                 >
                   {milestone.subtitle}
                 </p>

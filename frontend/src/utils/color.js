@@ -44,14 +44,19 @@ export function getContrastTextColor(hex) {
 }
 
 // Color de un texto secundario (subtítulo, cuerpo, dedicatoria/lema) dentro
-// de una sección -- toma el MISMO color elegido para el título de esa
-// sección (textColor, ver TEXT_FIELD_DEFS en sectionDefs.js) con menos
-// opacidad para la jerarquía visual, en vez de quedar pegado en blanco fijo
-// sin importar el fondo. Sin textColor elegido, cae al blanco de siempre
-// (mismo comportamiento que había antes de este helper). opacityHex es el
-// sufijo alfa de dos dígitos en hex (ej. "b3" ~70%, "99" ~60%, "80" ~50%).
-export function secondaryTextColor(textColor, opacityHex) {
-  return `${textColor || '#ffffff'}${opacityHex}`
+// de una sección. Sin un color propio elegido (textColorSecondary vacío),
+// hereda el MISMO color del título (textColor) con menos opacidad para la
+// jerarquía visual, en vez de quedar pegado en blanco fijo sin importar el
+// fondo -- esa es la única situación donde tiene sentido apagarlo, porque
+// ahí el color "pertenece" al título y el subtítulo solo lo toma prestado.
+// Con un color PROPIO elegido a mano (isExplicit=true), se respeta tal
+// cual -- apagarlo ahí no tiene sentido: el usuario ya eligió a propósito
+// ese tono exacto para el subtítulo, no una versión atenuada de otra cosa.
+// opacityHex es el sufijo alfa de dos dígitos en hex (ej. "b3" ~70%, "99"
+// ~60%, "80" ~50%), ignorado cuando isExplicit es true.
+export function secondaryTextColor(textColor, opacityHex, isExplicit = false) {
+  if (!textColor) return `#ffffff${opacityHex}`
+  return isExplicit ? textColor : `${textColor}${opacityHex}`
 }
 
 // Fondo "vidriado" opcional detrás de un texto secundario -- pensado para

@@ -11,6 +11,7 @@ function InfoCard({ item, appearance, styles, config, isOpen, onToggle }) {
   const Icon = resolveIcon(item.icon, `${item.title || ''} ${item.body || ''}`)
   const bodySize = config.fontSizeBody || 'text-base'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const secondaryColorExplicit = Boolean(config.textColorSecondary)
   const glassBg = config.textGlassBg === 'si'
   const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor, config.textGlassOpacity) : null
 
@@ -36,7 +37,7 @@ function InfoCard({ item, appearance, styles, config, isOpen, onToggle }) {
           {item.title}
         </span>
         <motion.span animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
-          <ChevronDown className="w-4 h-4" style={{ color: secondaryTextColor(secondaryColor, '80') }} />
+          <ChevronDown className="w-4 h-4" style={{ color: secondaryTextColor(secondaryColor, '80', secondaryColorExplicit) }} />
         </motion.span>
       </button>
       <AnimatePresence initial={false}>
@@ -58,7 +59,7 @@ function InfoCard({ item, appearance, styles, config, isOpen, onToggle }) {
                 bodySize,
                 glassBg && 'rounded-2xl backdrop-blur-lg py-1.5'
               )}
-              style={{ color: secondaryTextColor(secondaryColor, '99'), ...glassBgStyle }}
+              style={{ color: secondaryTextColor(secondaryColor, '99', secondaryColorExplicit), ...glassBgStyle }}
             >
               {item.body}
             </motion.p>
@@ -75,6 +76,7 @@ function Info({ config, appearance, styles }) {
   const titleSize = config.fontSizeTitle || 'text-lg'
   const subtitleSize = config.fontSizeSubtitle || 'text-base'
   const secondaryColor = config.textColorSecondary || config.textColor
+  const secondaryColorExplicit = Boolean(config.textColorSecondary)
   const glassBg = config.textGlassBg === 'si'
   const glassBgStyle = glassBg ? secondaryGlassStyle(secondaryColor, config.textGlassOpacity) : null
   const titleGlassBg = config.titleGlassBg === 'si'
@@ -93,7 +95,7 @@ function Info({ config, appearance, styles }) {
       {config.subtitle && (
         <p
           className={cn('text-center mb-6', subtitleSize, glassBg && 'w-fit mx-auto backdrop-blur-lg rounded-2xl px-4 py-1.5')}
-          style={{ color: secondaryTextColor(secondaryColor, 'b3'), ...glassBgStyle }}
+          style={{ color: secondaryTextColor(secondaryColor, 'b3', secondaryColorExplicit), ...glassBgStyle }}
         >
           {config.subtitle}
         </p>
