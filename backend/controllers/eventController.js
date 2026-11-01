@@ -112,6 +112,39 @@ async function getEventById(req, res) {
   res.json(event);
 }
 
+// Nombre y slug desde el panel de eventos (lista), sin tener que entrar al
+// editor completo -- separado de updateEventModules/updateAppearance
+// porque estos dos campos viven directo en el Event, no en un sub-objeto.
+async function updateBasicInfo(req, res) {
+  const event = req.event;
+  const { eventName, eventSlug } = req.body;
+
+  if (eventName !== undefined) {
+    const trimmed = eventName.trim();
+    if (!trimmed) {
+      return res.status(400).json({ message: 'El nombre del evento no puede quedar vacío' });
+    }
+    event.eventName = trimmed;
+  }
+
+  if (eventSlug !== undefined) {
+    const normalized = slugify(eventSlug);
+    if (!normalized) {
+      return res.status(400).json({ message: 'El slug ingresado no es válido' });
+    }
+    if (normalized !== event.eventSlug) {
+      const existing = await Event.findOne({ eventSlug: normalized, _id: { $ne: event._id } });
+      if (existing) {
+        return res.status(409).json({ message: 'Ya existe un evento con ese slug' });
+      }
+      event.eventSlug = normalized;
+    }
+  }
+
+  await event.save();
+  res.json(event);
+}
+
 async function updateEventModules(req, res) {
   const { eventId } = req.params;
   const {
@@ -812,6 +845,7 @@ module.exports = {
   listMyEvents,
   createEvent,
   getEventById,
+  updateBasicInfo,
   updateEventModules,
   updateAppearance,
   updateEnvelopeSettings,

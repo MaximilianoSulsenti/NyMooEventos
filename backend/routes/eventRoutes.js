@@ -4,6 +4,7 @@ const {
   listMyEvents,
   createEvent,
   getEventById,
+  updateBasicInfo,
   updateEventModules,
   updateAppearance,
   updateEnvelopeSettings,
@@ -42,6 +43,7 @@ router.get('/slug/:eventSlug', getEventBySlug);
 router.get('/', requireAuth, listMyEvents);
 router.post('/', requireAuth, createEvent);
 router.get('/:eventId', requireAuth, requireEventOwnership, getEventById);
+router.patch('/:eventId/basic-info', requireAuth, requireEventOwnership, updateBasicInfo);
 router.patch('/:eventId/modules', requireAuth, requireAdmin, updateEventModules);
 router.patch('/:eventId/appearance', requireAuth, requireEventOwnership, updateAppearance);
 router.patch('/:eventId/envelope', requireAuth, requireEventOwnership, updateEnvelopeSettings);

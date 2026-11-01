@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
-import { LogOut, Plus, Calendar, Pencil, Trash2, Receipt, DatabaseBackup, Loader2 } from 'lucide-react'
+import { LogOut, Plus, Calendar, Pencil, SquarePen, Check, X, Trash2, Receipt, DatabaseBackup, Loader2 } from 'lucide-react'
 import api from '../services/api'
 import { clearSession, getStoredUser } from '../services/auth'
 import BrandBackground from '../components/BrandBackground'
@@ -22,6 +22,11 @@ function EventsList() {
   const [createError, setCreateError] = useState('')
   const [confirmDeleteId, setConfirmDeleteId] = useState(null)
   const [backupLoading, setBackupLoading] = useState(false)
+  const [editingId, setEditingId] = useState(null)
+  const [editName, setEditName] = useState('')
+  const [editSlug, setEditSlug] = useState('')
+  const [editError, setEditError] = useState('')
+  const [editSaving, setEditSaving] = useState(false)
 
   function loadEvents() {
     setLoadState('loading')
@@ -67,6 +72,35 @@ function EventsList() {
       await api.delete(`/events/${eventId}`)
     } catch {
       setEvents(previousEvents)
+    }
+  }
+
+  function startEdit(event) {
+    setEditingId(event._id)
+    setEditName(event.eventName)
+    setEditSlug(event.eventSlug)
+    setEditError('')
+  }
+
+  function cancelEdit() {
+    setEditingId(null)
+    setEditError('')
+  }
+
+  async function saveEdit(eventId) {
+    setEditError('')
+    setEditSaving(true)
+    try {
+      const { data } = await api.patch(`/events/${eventId}/basic-info`, {
+        eventName: editName,
+        eventSlug: editSlug,
+      })
+      setEvents((prev) => prev.map((e) => (e._id === eventId ? { ...e, eventName: data.eventName, eventSlug: data.eventSlug } : e)))
+      setEditingId(null)
+    } catch (err) {
+      setEditError(err.response?.data?.message || 'No se pudo guardar')
+    } finally {
+      setEditSaving(false)
     }
   }
 
@@ -174,47 +208,120 @@ function EventsList() {
                       className="absolute left-0 top-0 bottom-0 w-1"
                       style={{ background: CARD_ACCENTS[index % CARD_ACCENTS.length] }}
                     />
-                    <Link to={`/dashboard/${event._id}`} className="flex items-center gap-4 min-w-0 flex-1">
-                      <span
-                        className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-                        style={{
-                          background: `${CARD_ACCENTS[index % CARD_ACCENTS.length]}22`,
-                          color: CARD_ACCENTS[index % CARD_ACCENTS.length],
-                        }}
-                      >
-                        <Calendar className="w-5 h-5" />
-                      </span>
-                      <div className="min-w-0">
-                        <p className="font-medium truncate">{event.eventName}</p>
-                        <p className="text-white/40 text-sm">
-                          {new Date(event.date).toLocaleDateString('es-ES')} · /{event.eventSlug}
-                        </p>
+
+                    {editingId === event._id ? (
+                      <div className="flex items-center gap-4 min-w-0 flex-1">
+                        <span
+                          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+                          style={{
+                            background: `${CARD_ACCENTS[index % CARD_ACCENTS.length]}22`,
+                            color: CARD_ACCENTS[index % CARD_ACCENTS.length],
+                          }}
+                        >
+                          <Calendar className="w-5 h-5" />
+                        </span>
+                        <div className="min-w-0 flex-1 space-y-1.5">
+                          <input
+                            type="text"
+                            value={editName}
+                            onChange={(e) => setEditName(e.target.value)}
+                            placeholder="Nombre del evento"
+                            className="w-full rounded-lg bg-white/5 border border-white/10 px-2.5 py-1.5 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30"
+                            style={{ '--accent': BRAND.blue }}
+                          />
+                          <div className="flex items-center gap-1 text-white/30 text-sm">
+                            <span>/evento/</span>
+                            <input
+                              type="text"
+                              value={editSlug}
+                              onChange={(e) => setEditSlug(e.target.value)}
+                              placeholder="slug-del-evento"
+                              className="flex-1 rounded-lg bg-white/5 border border-white/10 px-2.5 py-1.5 text-sm text-white outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30"
+                              style={{ '--accent': BRAND.blue }}
+                            />
+                          </div>
+                          {editError && <p className="text-red-400 text-xs">{editError}</p>}
+                        </div>
                       </div>
-                    </Link>
+                    ) : (
+                      <Link to={`/dashboard/${event._id}`} className="flex items-center gap-4 min-w-0 flex-1">
+                        <span
+                          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+                          style={{
+                            background: `${CARD_ACCENTS[index % CARD_ACCENTS.length]}22`,
+                            color: CARD_ACCENTS[index % CARD_ACCENTS.length],
+                          }}
+                        >
+                          <Calendar className="w-5 h-5" />
+                        </span>
+                        <div className="min-w-0">
+                          <p className="font-medium truncate">{event.eventName}</p>
+                          <p className="text-white/40 text-sm">
+                            {new Date(event.date).toLocaleDateString('es-ES')} · /{event.eventSlug}
+                          </p>
+                        </div>
+                      </Link>
+                    )}
 
                     <div className="flex items-center gap-1 shrink-0">
-                      <Link
-                        to={`/dashboard/${event._id}/editor`}
-                        aria-label="Editar evento"
-                        title="Editar"
-                        className="p-2 rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition"
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(event._id)}
-                        aria-label="Eliminar evento"
-                        title="Eliminar"
-                        className={`flex items-center gap-1 p-2 rounded-lg transition ${
-                          confirmDeleteId === event._id
-                            ? 'bg-red-600 text-white px-2.5'
-                            : 'text-white/40 hover:text-red-400 hover:bg-red-500/10'
-                        }`}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                        {confirmDeleteId === event._id && <span className="text-xs whitespace-nowrap">¿Seguro?</span>}
-                      </button>
+                      {editingId === event._id ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => saveEdit(event._id)}
+                            disabled={editSaving}
+                            aria-label="Guardar"
+                            title="Guardar"
+                            className="p-2 rounded-lg text-emerald-400 hover:bg-emerald-500/10 transition disabled:opacity-50"
+                          >
+                            {editSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={cancelEdit}
+                            disabled={editSaving}
+                            aria-label="Cancelar"
+                            title="Cancelar"
+                            className="p-2 rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition disabled:opacity-50"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => startEdit(event)}
+                            aria-label="Renombrar / cambiar slug"
+                            title="Renombrar / cambiar slug"
+                            className="p-2 rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition"
+                          >
+                            <SquarePen className="w-4 h-4" />
+                          </button>
+                          <Link
+                            to={`/dashboard/${event._id}/editor`}
+                            aria-label="Editar evento"
+                            title="Editar"
+                            className="p-2 rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Link>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(event._id)}
+                            aria-label="Eliminar evento"
+                            title="Eliminar"
+                            className={`flex items-center gap-1 p-2 rounded-lg transition ${
+                              confirmDeleteId === event._id
+                                ? 'bg-red-600 text-white px-2.5'
+                                : 'text-white/40 hover:text-red-400 hover:bg-red-500/10'
+                            }`}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            {confirmDeleteId === event._id && <span className="text-xs whitespace-nowrap">¿Seguro?</span>}
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 </motion.div>
