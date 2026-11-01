@@ -43,6 +43,28 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;')
 }
 
+// WhatsApp (mucho más que Facebook/Twitter) falla en silencio -- directamente
+// no muestra ninguna imagen, sin avisar del error -- cuando la imagen de
+// vista previa pesa demasiado o tarda en cargar. El organizador puede subir
+// cualquier foto tal cual la sacó (varios MB, cualquier resolución), así que
+// acá se fuerza SIEMPRE un recorte 1200x630 (el tamaño que ya declaran los
+// og:image:width/height de abajo -- antes no coincidía con el tamaño real
+// de la imagen) y compresión automática vía una transformación de URL de
+// Cloudinary, en vez de mandar el archivo original tal cual. g_auto elige la
+// zona más relevante para recortar en vez de cortar el centro a lo bruto;
+// f_jpg en vez de f_auto es a propósito -- JPEG universal es más confiable
+// frente a un crawler que no sabe negociar WebP/AVIF que ahorrar unos KB
+// extra arriesgando que falle. Si la URL no es de Cloudinary (ej. el
+// fallback estático de abajo), se usa tal cual -- ya es liviana de por sí.
+function optimizeShareImage(url) {
+  if (!url) return url
+  const marker = '/upload/'
+  const idx = url.indexOf(marker)
+  if (!url.startsWith('https://res.cloudinary.com/') || idx === -1) return url
+  const insertAt = idx + marker.length
+  return `${url.slice(0, insertAt)}w_1200,h_630,c_fill,g_auto,q_auto,f_jpg/${url.slice(insertAt)}`
+}
+
 async function fetchNormalPage(origin) {
   const res = await fetch(`${origin}/index.html`)
   if (!res.ok) throw new Error(`index.html respondió ${res.status}`)
@@ -84,7 +106,7 @@ export default async function handler(req, res) {
     }
 
     const eventName = event.eventName || 'Invitación digital'
-    const shareImage = event.appearance?.shareImageUrl || `${origin}/img/og-image.png`
+    const shareImage = optimizeShareImage(event.appearance?.shareImageUrl) || `${origin}/img/og-image.png`
     const shareDescription =
       event.appearance?.shareDescription?.trim() ||
       'Los invitamos a celebrar con nosotros -- mirá todos los detalles acá.'
