@@ -209,6 +209,10 @@ async function updateEnvelopeSettings(req, res) {
     fontSizeSubtitle,
     textColor,
     textGlassBg,
+    musicChoice,
+    musicPromptText,
+    buttonTextWithMusic,
+    buttonTextNoMusic,
   } = req.body;
 
   if (enabled !== undefined) event.envelopeSettings.enabled = enabled;
@@ -227,6 +231,10 @@ async function updateEnvelopeSettings(req, res) {
   if (fontSizeSubtitle !== undefined) event.envelopeSettings.fontSizeSubtitle = fontSizeSubtitle;
   if (textColor !== undefined) event.envelopeSettings.textColor = textColor;
   if (textGlassBg !== undefined) event.envelopeSettings.textGlassBg = textGlassBg;
+  if (musicChoice !== undefined) event.envelopeSettings.musicChoice = musicChoice;
+  if (musicPromptText !== undefined) event.envelopeSettings.musicPromptText = musicPromptText;
+  if (buttonTextWithMusic !== undefined) event.envelopeSettings.buttonTextWithMusic = buttonTextWithMusic;
+  if (buttonTextNoMusic !== undefined) event.envelopeSettings.buttonTextNoMusic = buttonTextNoMusic;
 
   await event.save();
   res.json(event);

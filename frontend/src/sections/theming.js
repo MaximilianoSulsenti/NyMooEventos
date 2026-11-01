@@ -88,6 +88,7 @@ export const FONT_FAMILY_CLASSES = {
   rougescript: 'font-rougescript',
   petitformalscript: 'font-petitformalscript',
   meaculpa: 'font-meaculpa',
+  pinyonscript: 'font-pinyonscript',
 }
 
 // titleFontFamily es opcional -- vacío/no elegido usa la misma tipografía

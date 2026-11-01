@@ -112,6 +112,7 @@ export const FONTS = [
   { value: 'rougescript', label: 'Caligrafía romántica (Rouge Script)' },
   { value: 'petitformalscript', label: 'Formal delicada (Petit Formal Script)' },
   { value: 'meaculpa', label: 'Manuscrita casual (Mea Culpa)' },
+  { value: 'pinyonscript', label: 'Firma elegante con lazos largos (Pinyon Script)' },
 ]
 
 export const BG_TYPE_OPTIONS = [
@@ -150,6 +151,16 @@ export const PRICE_BUTTON_SIZE_OPTIONS = [
   { value: 'sm', label: 'Chico (como ahora)' },
   { value: 'md', label: 'Mediano' },
   { value: 'lg', label: 'Grande' },
+]
+
+// "Sí" primero a propósito -- a diferencia de YES_NO_OPTIONS (que arranca
+// en "No"), acompañantes siempre estuvo permitido sin que nadie lo
+// configure, así que el default visual del selector tiene que coincidir
+// con el comportamiento real sin tocar nada (RsvpForm lo lee como
+// config.allowCompanions !== 'no', nunca === 'si').
+export const ALLOW_COMPANIONS_OPTIONS = [
+  { value: 'si', label: 'Sí (por defecto)' },
+  { value: 'no', label: 'No' },
 ]
 
 export const GALLERY_LAYOUT_OPTIONS = [
@@ -538,6 +549,12 @@ export const SECTION_FIELD_DEFS = {
     { key: 'fontSizeSubtitle', label: 'Tamaño del subtítulo', type: 'select', options: FONT_SIZE_OPTIONS },
     { key: 'buttonTextWhatsapp', label: 'Texto del botón (si confirman por WhatsApp)', type: 'text' },
     { key: 'buttonTextForm', label: 'Texto del botón (si confirman por formulario propio)', type: 'text' },
+    {
+      key: 'allowCompanions',
+      label: '¿Permitir agregar acompañantes al confirmar? (no aplica a invitaciones VIP, esas usan su propio cupo)',
+      type: 'select',
+      options: ALLOW_COMPANIONS_OPTIONS,
+    },
     { key: 'priceButtonText', label: 'Texto del link "Ver valor de la tarjeta" (opcional)', type: 'text' },
     { key: 'priceButtonColor', label: 'Color del botón "Ver valor de la tarjeta" (opcional)', type: 'color' },
     {

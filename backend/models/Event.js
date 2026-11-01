@@ -199,6 +199,14 @@ const eventSchema = new mongoose.Schema(
       fontSizeTitle: { type: String, default: 'text-2xl' },
       fontSizeSubtitle: { type: String, default: 'text-base' },
       textColor: { type: String, default: '' },
+      // Con música de fondo activada (musicSettings.enabled), por defecto
+      // entra directo con el único botón de siempre y la música arranca
+      // sola. Prendiendo esto aparecen dos botones ("con música"/"sin
+      // música") para que decida cada invitado -- ver WelcomeScreen.jsx.
+      musicChoice: { type: String, default: '' },
+      musicPromptText: { type: String, default: '' },
+      buttonTextWithMusic: { type: String, default: '' },
+      buttonTextNoMusic: { type: String, default: '' },
     },
     brandingSettings: {
       myBrand: { type: brandSchema, default: () => ({}) },

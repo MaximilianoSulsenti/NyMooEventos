@@ -163,6 +163,11 @@ const QUADRANTS = [
 ]
 
 function WelcomeScreen({ settings, appearance, guestName, welcomeMessage, hasMusic = false, onOpen }) {
+  // Los dos botones ("con música" / "sin música") son opcionales -- por
+  // defecto, con música activada pero esto apagado, entra directo con el
+  // único botón de siempre y la música arranca sola (ver handleOpen del
+  // botón único más abajo, que pasa hasMusic en vez de false).
+  const showMusicChoice = hasMusic && settings.musicChoice === 'si'
   const [opening, setOpening] = useState(false)
   const [mediaColor, setMediaColor] = useState(null)
   const fontClass = FONT_FAMILY_CLASSES[settings.fontFamily] || 'font-sans'
@@ -340,7 +345,7 @@ function WelcomeScreen({ settings, appearance, guestName, welcomeMessage, hasMus
           </motion.p>
         )}
 
-        {hasMusic ? (
+        {showMusicChoice ? (
           <motion.div
             className="mt-4 flex flex-col items-center gap-3"
             initial={{ opacity: 0, y: 10 }}
@@ -389,7 +394,7 @@ function WelcomeScreen({ settings, appearance, guestName, welcomeMessage, hasMus
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.55 }}>
               <Button
                 type="button"
-                onClick={() => handleOpen(false)}
+                onClick={() => handleOpen(hasMusic)}
                 primaryColor={appearance.primaryColor}
                 className={cn('px-10 sm:px-12 py-3.5 sm:py-4 tracking-wide text-base', fontClass)}
               >

@@ -108,40 +108,63 @@ function EnvelopePanel({ eventId, settings, onChange, hasMusic = false }) {
 
           {hasMusic && (
             <div className="space-y-3 p-3 rounded-xl bg-white/5 border border-white/10">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Dejar elegir entrar con o sin música</span>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={settings.musicChoice === 'si'}
+                  onClick={() => update({ musicChoice: settings.musicChoice === 'si' ? '' : 'si' })}
+                  className="relative w-10 h-6 rounded-full transition-colors shrink-0"
+                  style={{ background: settings.musicChoice === 'si' ? BRAND.blue : 'rgba(255,255,255,0.12)' }}
+                >
+                  <span
+                    className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                      settings.musicChoice === 'si' ? 'translate-x-4' : ''
+                    }`}
+                  />
+                </button>
+              </div>
               <p className="text-xs text-neutral-400">
-                Esta invitación tiene música de fondo activada (sección Música), así que acá aparecen dos botones en
-                vez de uno, para que cada invitado elija si quiere entrar con música o sin ella.
+                {settings.musicChoice === 'si'
+                  ? 'Activado: en vez de un solo botón, aparecen dos ("Ingresar con música" / "Ingresar sin música") para que cada invitado elija.'
+                  : 'Apagado (por defecto): un solo botón "Abrir invitación", y la música arranca sola apenas se abre.'}
               </p>
-              <div>
-                <label className="block text-sm text-neutral-400 mb-1">Texto arriba de los botones</label>
-                <input
-                  type="text"
-                  value={settings.musicPromptText || ''}
-                  onChange={(e) => update({ musicPromptText: e.target.value })}
-                  placeholder="La música de fondo es parte de la experiencia"
-                  className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-neutral-400 mb-1">Texto del botón "con música"</label>
-                <input
-                  type="text"
-                  value={settings.buttonTextWithMusic || ''}
-                  onChange={(e) => update({ buttonTextWithMusic: e.target.value })}
-                  placeholder="Ingresar con música"
-                  className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-neutral-400 mb-1">Texto del botón "sin música"</label>
-                <input
-                  type="text"
-                  value={settings.buttonTextNoMusic || ''}
-                  onChange={(e) => update({ buttonTextNoMusic: e.target.value })}
-                  placeholder="Ingresar sin música"
-                  className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
-                />
-              </div>
+
+              {settings.musicChoice === 'si' && (
+                <>
+                  <div>
+                    <label className="block text-sm text-neutral-400 mb-1">Texto arriba de los botones</label>
+                    <input
+                      type="text"
+                      value={settings.musicPromptText || ''}
+                      onChange={(e) => update({ musicPromptText: e.target.value })}
+                      placeholder="La música de fondo es parte de la experiencia"
+                      className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-neutral-400 mb-1">Texto del botón "con música"</label>
+                    <input
+                      type="text"
+                      value={settings.buttonTextWithMusic || ''}
+                      onChange={(e) => update({ buttonTextWithMusic: e.target.value })}
+                      placeholder="Ingresar con música"
+                      className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-neutral-400 mb-1">Texto del botón "sin música"</label>
+                    <input
+                      type="text"
+                      value={settings.buttonTextNoMusic || ''}
+                      onChange={(e) => update({ buttonTextNoMusic: e.target.value })}
+                      placeholder="Ingresar sin música"
+                      className="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+                    />
+                  </div>
+                </>
+              )}
             </div>
           )}
 

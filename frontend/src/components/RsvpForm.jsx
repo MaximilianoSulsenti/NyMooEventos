@@ -57,6 +57,7 @@ function RsvpForm({
   guestId,
   lockedName,
   maxCompanions,
+  allowCompanions = true,
   initialCompanionNames,
   mode = 'save', // 'save' (plan intermedio/premium) | 'whatsapp' (plan básico)
   eventName,
@@ -277,7 +278,7 @@ function RsvpForm({
             )}
           </div>
 
-          {(maxCompanions == null || maxCompanions > 0) && (
+          {allowCompanions && (maxCompanions == null || maxCompanions > 0) && (
             <div>
               <label className="block text-sm mb-1" style={{ color: mutedColor }}>
                 Acompañantes

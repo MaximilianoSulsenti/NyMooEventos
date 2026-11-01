@@ -167,6 +167,10 @@ body {
   font-family: 'Mea Culpa', cursive;
 }
 
+.font-pinyonscript {
+  font-family: 'Pinyon Script', cursive;
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;

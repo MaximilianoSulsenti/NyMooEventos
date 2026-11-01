@@ -157,6 +157,7 @@ function RSVPSection({ event, config, appearance, styles }) {
           modalTextColor={config.modalTextColor}
           dietaryOptions={config.dietaryOptions}
           extraQuestions={config.extraQuestions}
+          allowCompanions={config.allowCompanions !== 'no'}
           onClose={() => setIsOpen(false)}
           mode={isWhatsapp ? 'whatsapp' : 'save'}
           eventName={event.eventName}
