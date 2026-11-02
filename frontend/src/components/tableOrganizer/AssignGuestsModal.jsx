@@ -61,7 +61,8 @@ function AssignGuestsModal({ table, pendingGuests, onConfirm, onClose }) {
 
           <h2 className="text-lg font-semibold pr-8 truncate">{table.tableName}</h2>
           <p className="text-white/40 text-xs mb-4">
-            Mesa {table.tableNumber} · {table.assignedGuests.length + selected.length}/{table.maxSeats} ocupados
+            {table.hideNumber ? '' : `Mesa ${table.tableNumber} · `}
+            {table.assignedGuests.length + selected.length}/{table.maxSeats} ocupados
           </p>
 
           <div className="flex-1 overflow-y-auto space-y-1.5 mb-4 pr-1">

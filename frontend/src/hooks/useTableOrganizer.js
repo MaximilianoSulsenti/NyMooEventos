@@ -49,10 +49,13 @@ function useTableOrganizer(initialGuests = [], initialTables = []) {
     setTables((prev) => prev.map((t) => (t.assignedGuests.includes(name) ? { ...t, assignedGuests: t.assignedGuests.filter((g) => g !== name) } : t)))
   }
 
-  function addTable({ tableName, maxSeats }) {
+  function addTable({ tableName, maxSeats, hideNumber = false }) {
     setTables((prev) => {
       const nextNumber = prev.reduce((max, t) => Math.max(max, t.tableNumber), 0) + 1
-      return [...prev, { tableNumber: nextNumber, tableName: tableName.trim() || `Mesa ${nextNumber}`, maxSeats, assignedGuests: [] }]
+      return [
+        ...prev,
+        { tableNumber: nextNumber, tableName: tableName.trim() || `Mesa ${nextNumber}`, maxSeats, assignedGuests: [], hideNumber },
+      ]
     })
   }
 
@@ -62,6 +65,14 @@ function useTableOrganizer(initialGuests = [], initialTables = []) {
 
   function renameTable(tableNumber, tableName) {
     setTables((prev) => prev.map((t) => (t.tableNumber === tableNumber ? { ...t, tableName } : t)))
+  }
+
+  // tableNumber sigue existiendo siempre (es la clave con la que se
+  // identifica la mesa acá y en el backend) -- esto solo prende/apaga si se
+  // MUESTRA o no en la tarjeta, el modal de asignar, la impresión y el
+  // Excel (ver TableCard/AssignGuestsModal/TablesPrintView/tableOrganizer.js).
+  function toggleTableHideNumber(tableNumber) {
+    setTables((prev) => prev.map((t) => (t.tableNumber === tableNumber ? { ...t, hideNumber: !t.hideNumber } : t)))
   }
 
   function assignGuestsToTable(tableNumber, names) {
@@ -90,6 +101,7 @@ function useTableOrganizer(initialGuests = [], initialTables = []) {
     addTable,
     deleteTable,
     renameTable,
+    toggleTableHideNumber,
     assignGuestsToTable,
     unassignGuest,
   }

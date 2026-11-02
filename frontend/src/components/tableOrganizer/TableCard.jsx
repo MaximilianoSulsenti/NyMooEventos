@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'motion/react'
-import { UserPlus, Trash2, X, Armchair } from 'lucide-react'
+import { UserPlus, Trash2, X, Armchair, Hash } from 'lucide-react'
 import { occupancyColor, sortNamesEs } from '../../utils/tableOrganizer'
 
 // El color acá SIEMPRE sale de la ocupación real (occupancyColor), nunca de
@@ -10,7 +10,7 @@ import { occupancyColor, sortNamesEs } from '../../utils/tableOrganizer'
 // rojo al límite. El "plus" visual acá es que ese mismo color ahora también
 // tiñe el borde de la card y el modal de asignación (ver
 // AssignGuestsModal.jsx), reforzando la señal en vez de competir con ella.
-function TableCard({ table, index, onAssign, onUnassign, onDelete }) {
+function TableCard({ table, index, onAssign, onUnassign, onDelete, onToggleHideNumber }) {
   const occupied = table.assignedGuests.length
   const color = occupancyColor(occupied, table.maxSeats)
   const percent = Math.min(100, Math.round((occupied / table.maxSeats) * 100))
@@ -26,14 +26,25 @@ function TableCard({ table, index, onAssign, onUnassign, onDelete }) {
       style={{ borderColor: `${color}33` }}
     >
       <div className="flex items-center justify-between gap-2 mb-3">
-        <button
-          type="button"
-          onClick={() => onDelete(table.tableNumber)}
-          aria-label={`Eliminar ${table.tableName}`}
-          className="text-white/25 hover:text-red-400 transition"
-        >
-          <Trash2 className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => onDelete(table.tableNumber)}
+            aria-label={`Eliminar ${table.tableName}`}
+            className="text-white/25 hover:text-red-400 transition"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => onToggleHideNumber(table.tableNumber)}
+            aria-label={table.hideNumber ? 'Mostrar el número de mesa' : 'Mostrar solo el nombre, sin número'}
+            title={table.hideNumber ? 'Mostrar el número de mesa' : 'Mostrar solo el nombre, sin número'}
+            className={`transition ${table.hideNumber ? 'text-white/50 hover:text-white' : 'text-white/25 hover:text-white/60'}`}
+          >
+            <Hash className="w-4 h-4" />
+          </button>
+        </div>
         <button
           type="button"
           onClick={() => onAssign(table)}
@@ -51,11 +62,20 @@ function TableCard({ table, index, onAssign, onUnassign, onDelete }) {
           boxShadow: `inset 0 2px 6px rgba(0,0,0,0.4), inset 0 -1px 0 rgba(255,255,255,0.05), 0 0 0 1px ${color}22`,
         }}
       >
-        <p className="font-modern tracking-tight text-4xl font-extrabold leading-none">{table.tableNumber}</p>
-        <p className="font-modern tracking-tight text-sm text-white/60 mt-1 truncate flex items-center justify-center gap-1.5">
-          <Armchair className="w-3 h-3 shrink-0" style={{ color }} />
-          <span className="truncate">{table.tableName}</span>
-        </p>
+        {table.hideNumber ? (
+          <p className="font-modern tracking-tight text-2xl font-extrabold leading-tight flex items-center justify-center gap-2 py-1.5">
+            <Armchair className="w-5 h-5 shrink-0" style={{ color }} />
+            <span className="truncate">{table.tableName}</span>
+          </p>
+        ) : (
+          <>
+            <p className="font-modern tracking-tight text-4xl font-extrabold leading-none">{table.tableNumber}</p>
+            <p className="font-modern tracking-tight text-sm text-white/60 mt-1 truncate flex items-center justify-center gap-1.5">
+              <Armchair className="w-3 h-3 shrink-0" style={{ color }} />
+              <span className="truncate">{table.tableName}</span>
+            </p>
+          </>
+        )}
       </div>
 
       <div className="mb-4">

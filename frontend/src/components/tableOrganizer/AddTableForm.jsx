@@ -8,12 +8,14 @@ const SEAT_OPTIONS = Array.from({ length: 11 }, (_, i) => i + 2) // 2..12
 function AddTableForm({ nextTableNumber, onAddTable }) {
   const [tableName, setTableName] = useState('')
   const [maxSeats, setMaxSeats] = useState(8)
+  const [hideNumber, setHideNumber] = useState(false)
 
   function handleSubmit(e) {
     e.preventDefault()
-    onAddTable({ tableName: tableName.trim(), maxSeats })
+    onAddTable({ tableName: tableName.trim(), maxSeats, hideNumber })
     setTableName('')
     setMaxSeats(8)
+    setHideNumber(false)
   }
 
   return (
@@ -24,7 +26,7 @@ function AddTableForm({ nextTableNumber, onAddTable }) {
           type="text"
           value={tableName}
           onChange={(e) => setTableName(e.target.value)}
-          placeholder={`Mesa ${nextTableNumber} (opcional)`}
+          placeholder={hideNumber ? 'Ej: Mesa principal' : `Mesa ${nextTableNumber} (opcional)`}
           style={{ '--accent': BRAND.blue }}
           className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/30 transition"
         />
@@ -40,6 +42,16 @@ function AddTableForm({ nextTableNumber, onAddTable }) {
           ))}
         </select>
       </div>
+      <label className="flex items-center gap-2 text-sm text-white/60 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={hideNumber}
+          onChange={(e) => setHideNumber(e.target.checked)}
+          className="rounded accent-[var(--accent)]"
+          style={{ '--accent': BRAND.blue }}
+        />
+        Mostrar solo el nombre (sin número de mesa)
+      </label>
       <Button type="submit" primaryColor={BRAND.blue} className="w-full py-2.5 text-sm">
         <Plus className="w-4 h-4" />
         Agregar mesa

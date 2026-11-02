@@ -466,7 +466,13 @@ function buildTablesUpdate(body) {
       return { error: `"${unknownGuest}" no está en la lista de invitados` };
     }
 
-    cleanTables.push({ tableNumber, tableName: tableName.slice(0, 80), maxSeats, assignedGuests });
+    cleanTables.push({
+      tableNumber,
+      tableName: tableName.slice(0, 80),
+      maxSeats,
+      assignedGuests,
+      hideNumber: Boolean(table?.hideNumber),
+    });
   }
 
   return { tableOrganizerGuests: cleanGuests, tables: cleanTables };

@@ -63,6 +63,11 @@ const tableSchema = new mongoose.Schema(
     tableName: { type: String, required: true, trim: true },
     maxSeats: { type: Number, required: true, min: 1, max: 100 },
     assignedGuests: { type: [String], default: [] },
+    // tableNumber sigue existiendo siempre (es la clave con la que se
+    // identifica la mesa en todo el organizador -- asignar, borrar, etc.),
+    // pero con esto en true se oculta de la vista: tarjeta, modal de
+    // asignar, impresión y Excel muestran solo tableName.
+    hideNumber: { type: Boolean, default: false },
   },
   { _id: false }
 );

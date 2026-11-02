@@ -428,6 +428,7 @@ function TableOrganizer() {
                   onAssign={setAssigningTable}
                   onUnassign={organizer.unassignGuest}
                   onDelete={organizer.deleteTable}
+                  onToggleHideNumber={organizer.toggleTableHideNumber}
                 />
               ))}
             </div>

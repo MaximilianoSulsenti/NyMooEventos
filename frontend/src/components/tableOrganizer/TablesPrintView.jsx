@@ -57,7 +57,8 @@ function TablesPrintView({ eventName, tables, onClose }) {
                 >
                   <p className="font-semibold text-lg mb-0.5">{table.tableName}</p>
                   <p className="text-neutral-400 text-xs mb-3">
-                    Mesa {table.tableNumber} · {table.assignedGuests.length}/{table.maxSeats}
+                    {table.hideNumber ? '' : `Mesa ${table.tableNumber} · `}
+                    {table.assignedGuests.length}/{table.maxSeats}
                   </p>
                   {sortedGuests.length === 0 ? (
                     <p className="text-neutral-400 text-sm">Sin invitados asignados</p>

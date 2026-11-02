@@ -48,7 +48,8 @@ export function downloadTablesExcel(eventName, tables) {
 
   sortedTables.forEach((table, index) => {
     if (index > 0) rows.push([])
-    rows.push([`${table.tableName} (Mesa ${table.tableNumber}) · ${table.assignedGuests.length}/${table.maxSeats}`])
+    const label = table.hideNumber ? table.tableName : `${table.tableName} (Mesa ${table.tableNumber})`
+    rows.push([`${label} · ${table.assignedGuests.length}/${table.maxSeats}`])
     const sortedGuests = sortNamesEs(table.assignedGuests)
     if (sortedGuests.length === 0) {
       rows.push(['(sin invitados asignados)'])
