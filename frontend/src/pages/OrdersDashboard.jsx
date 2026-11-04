@@ -403,14 +403,18 @@ function InvoiceModal({ order, onClose }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+      className="print-overlay fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
     >
       <style>{`
         @media print {
           body * { visibility: hidden; }
           .invoice-print-area, .invoice-print-area * { visibility: visible; }
+          /* position:fixed en el fondo del modal repite la misma porción
+             visible en cada hoja con una factura larga -- en print pasan a
+             estático/visible para que fluya con su alto real. */
+          .print-overlay { position: static; display: block; overflow: visible; height: auto; }
           .invoice-print-area {
-            position: fixed; inset: 0; margin: 0; max-height: none; overflow: visible;
+            position: static; inset: auto; margin: 0; max-height: none; overflow: visible;
             box-shadow: none; border-radius: 0;
           }
           .no-print { display: none !important; }

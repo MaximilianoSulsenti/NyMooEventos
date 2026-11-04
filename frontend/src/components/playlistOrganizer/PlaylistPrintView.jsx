@@ -6,12 +6,16 @@ import { X, Printer } from 'lucide-react'
 // resultado limpio listo para el DJ o el salón.
 function PlaylistPrintView({ eventName, moments, onClose }) {
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto" style={{ background: '#f7f3ec' }}>
+    <div className="print-overlay fixed inset-0 z-50 overflow-y-auto" style={{ background: '#f7f3ec' }}>
       <style>{`
         @media print {
           body * { visibility: hidden; }
           .playlist-print-area, .playlist-print-area * { visibility: visible; }
-          .playlist-print-area { position: absolute; inset: 0; margin: 0; }
+          /* position:fixed + overflow-y-auto repiten la misma porción
+             visible en cada hoja en vez de recorrer el resto -- en print
+             pasan a estático/visible para que fluya con su alto real. */
+          .print-overlay { position: static; overflow: visible; height: auto; }
+          .playlist-print-area { position: static; inset: auto; margin: 0; }
           .no-print { display: none !important; }
           @page { margin: 1.6cm; }
         }

@@ -8,12 +8,20 @@ function TablesPrintView({ eventName, tables, onClose }) {
   const sortedTables = [...tables].sort((a, b) => a.tableNumber - b.tableNumber)
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto" style={{ background: '#f7f3ec' }}>
+    <div className="print-overlay fixed inset-0 z-50 overflow-y-auto" style={{ background: '#f7f3ec' }}>
       <style>{`
         @media print {
           body * { visibility: hidden; }
           .tables-print-area, .tables-print-area * { visibility: visible; }
-          .tables-print-area { position: absolute; inset: 0; margin: 0; }
+          /* position:fixed + overflow-y-auto en el contenedor de arriba
+             acotan el contenido a "lo que entra en una pantalla" -- al
+             imprimir, el navegador repite esa misma porción visible en
+             cada hoja en vez de recorrer el resto (con muchas mesas, solo
+             se veían las primeras y el resto quedaba repetido). En print
+             pasan a estático/visible para que el documento fluya con su
+             alto real y se reparta en tantas hojas como haga falta. */
+          .print-overlay { position: static; overflow: visible; height: auto; }
+          .tables-print-area { position: static; inset: auto; margin: 0; }
           .no-print { display: none !important; }
           @page { margin: 1.6cm; }
         }
