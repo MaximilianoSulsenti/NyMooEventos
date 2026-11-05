@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom'
 import { X, Printer } from 'lucide-react'
 import { groupTasksByBucket, formatTaskDateLong } from '../../utils/smartAgenda'
 
@@ -9,24 +10,23 @@ const BUCKET_LABELS = {
 }
 const BUCKET_ORDER = ['overdue', 'today', 'thisWeek', 'later']
 
-// Mismo truco que TablesPrintView.jsx/PlaylistPrintView.jsx: fondo claro
-// tipo papel, y en @media print se oculta todo el documento salvo
-// .agenda-print-area, para que "Guardar como PDF" del navegador dé un
-// resultado limpio.
+// Portal a document.body (mismo motivo que RsvpModalShell.jsx) -- sin esto
+// la página de atrás (que sigue en el DOM, solo tapada visualmente) queda
+// oculta con visibility:hidden al imprimir pero sigue ocupando su alto
+// normal, empujando el contenido real varias hojas en blanco hacia abajo.
+// Con el portal alcanza con ocultar #root entero para imprimir.
 function AgendaPrintView({ eventName, tasks, onClose }) {
   const buckets = groupTasksByBucket(tasks)
 
-  return (
+  return createPortal(
     <div className="print-overlay fixed inset-0 z-50 overflow-y-auto" style={{ background: '#f7f3ec' }}>
       <style>{`
         @media print {
-          body * { visibility: hidden; }
-          .agenda-print-area, .agenda-print-area * { visibility: visible; }
-          /* position:fixed + overflow-y-auto repiten la misma porción
-             visible en cada hoja en vez de recorrer el resto -- en print
-             pasan a estático/visible para que fluya con su alto real. */
+          #root { display: none !important; }
+          /* El div sigue siendo fixed+overflow-y-auto para la pantalla --
+             eso solo clava el contenido a una sola hoja en vez de repartirse
+             en tantas como haga falta. */
           .print-overlay { position: static; overflow: visible; height: auto; }
-          .agenda-print-area { position: static; inset: auto; margin: 0; }
           .no-print { display: none !important; }
           @page { margin: 1.6cm; }
         }
@@ -92,7 +92,8 @@ function AgendaPrintView({ eventName, tasks, onClose }) {
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
 

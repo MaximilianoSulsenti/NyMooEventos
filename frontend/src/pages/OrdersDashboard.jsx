@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Navigate, Link } from 'react-router-dom'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import {
   Plus,
@@ -395,10 +396,16 @@ function OrderRow({ order, onStatusChange, onArchiveToggle, onInvoice }) {
 // navegador -- mismo truco que MessageBookPrint.jsx, pero recortado a este
 // modal en vez de a la página entera: en @media print se ocultan todos los
 // elementos del documento salvo .invoice-print-area (ver <style> abajo).
+//
+// Portal a document.body (mismo motivo que RsvpModalShell.jsx) -- sin esto
+// el resto del dashboard de pedidos (que sigue en el DOM, solo tapado
+// visualmente) queda oculto con visibility:hidden al imprimir pero sigue
+// ocupando su alto normal, empujando el comprobante varias hojas en blanco
+// hacia abajo si es largo. Con el portal alcanza con ocultar #root entero.
 function InvoiceModal({ order, onClose }) {
   useLockBodyScroll()
 
-  return (
+  return createPortal(
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -407,15 +414,14 @@ function InvoiceModal({ order, onClose }) {
     >
       <style>{`
         @media print {
-          body * { visibility: hidden; }
-          .invoice-print-area, .invoice-print-area * { visibility: visible; }
-          /* position:fixed en el fondo del modal repite la misma porción
-             visible en cada hoja con una factura larga -- en print pasan a
-             estático/visible para que fluya con su alto real. */
-          .print-overlay { position: static; display: block; overflow: visible; height: auto; }
+          #root { display: none !important; }
+          /* El fondo sigue siendo fixed+flex-centrado para la pantalla, y
+             la caja interna max-h-[90vh]+overflow-y-auto para su scroll --
+             ambos clavan el contenido a una sola hoja con un comprobante
+             largo en vez de repartirse en tantas como haga falta. */
+          .print-overlay { position: static; display: block; }
           .invoice-print-area {
-            position: static; inset: auto; margin: 0; max-height: none; overflow: visible;
-            box-shadow: none; border-radius: 0;
+            max-height: none; overflow: visible; box-shadow: none; border-radius: 0;
           }
           .no-print { display: none !important; }
           @page { margin: 1.6cm; }
@@ -517,7 +523,8 @@ function InvoiceModal({ order, onClose }) {
           </p>
         </div>
       </motion.div>
-    </motion.div>
+    </motion.div>,
+    document.body
   )
 }
 

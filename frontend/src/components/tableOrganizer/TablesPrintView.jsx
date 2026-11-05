@@ -1,27 +1,31 @@
+import { createPortal } from 'react-dom'
 import { X, Printer } from 'lucide-react'
 import { sortNamesEs } from '../../utils/tableOrganizer'
 
-// Mismo truco que MessageBookPrint.jsx/InvoiceModal: fondo claro tipo papel,
-// y en @media print se oculta todo el documento salvo .tables-print-area,
-// para que "Guardar como PDF" del navegador dé un resultado limpio.
+// Portal a document.body (mismo motivo que RsvpModalShell.jsx) -- sin esto
+// esta vista queda anidada DENTRO de la página del organizador, que sigue
+// ahí en el DOM (solo tapada visualmente por el fixed+z-50 de acá arriba).
+// En @media print eso importa de verdad: aunque se la oculte con
+// visibility:hidden, un elemento oculto así sigue ocupando su alto normal
+// -- toda esa página de atrás (banco de invitados, formulario de mesas,
+// etc.) empujaba el contenido real varias hojas en blanco hacia abajo
+// antes de que empezara a imprimirse algo. Con el portal, esta vista es
+// hermana de #root (no está adentro), así que alcanza con ocultar #root
+// entero para imprimir y acá no queda nada invisible ocupando lugar.
 function TablesPrintView({ eventName, tables, onClose }) {
   const sortedTables = [...tables].sort((a, b) => a.tableNumber - b.tableNumber)
 
-  return (
+  return createPortal(
     <div className="print-overlay fixed inset-0 z-50 overflow-y-auto" style={{ background: '#f7f3ec' }}>
       <style>{`
         @media print {
-          body * { visibility: hidden; }
-          .tables-print-area, .tables-print-area * { visibility: visible; }
-          /* position:fixed + overflow-y-auto en el contenedor de arriba
-             acotan el contenido a "lo que entra en una pantalla" -- al
-             imprimir, el navegador repite esa misma porción visible en
-             cada hoja en vez de recorrer el resto (con muchas mesas, solo
-             se veían las primeras y el resto quedaba repetido). En print
-             pasan a estático/visible para que el documento fluya con su
-             alto real y se reparta en tantas hojas como haga falta. */
+          #root { display: none !important; }
+          /* El portal ya saca esta vista de la página de atrás, pero el
+             div sigue siendo fixed+overflow-y-auto para la pantalla -- eso
+             solo, sin esto, clava el contenido a una sola hoja (lo que
+             entra en un viewport) en vez de dejarlo fluir y repartirse en
+             tantas hojas como haga falta. */
           .print-overlay { position: static; overflow: visible; height: auto; }
-          .tables-print-area { position: static; inset: auto; margin: 0; }
           .no-print { display: none !important; }
           @page { margin: 1.6cm; }
         }
@@ -83,7 +87,8 @@ function TablesPrintView({ eventName, tables, onClose }) {
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
 
