@@ -78,7 +78,7 @@ const SwipeCard = forwardRef(function SwipeCard({ profile, primaryColor, active,
           </p>
           {profile.vibes?.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-1.5">
-              {profile.vibes.slice(0, 3).map((v) => (
+              {profile.vibes.map((v) => (
                 <span key={v} className="px-2 py-0.5 rounded-full bg-white/15 text-white/80 text-[11px]">
                   {v}
                 </span>

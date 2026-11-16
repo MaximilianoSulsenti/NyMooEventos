@@ -46,17 +46,29 @@ function MatchGrid({ grid, loading, primaryColor, onLike, onPass }) {
             <p className="text-white text-sm font-semibold truncate">
               {profile.name}, {profile.age}
             </p>
-            {profile.vibes?.length > 0 && <p className="text-white/70 text-[11px] truncate">{profile.vibes[0]}</p>}
+            {profile.vibes?.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-1">
+                {profile.vibes.map((v) => (
+                  <span key={v} className="px-1.5 py-0.5 rounded-full bg-white/15 text-white/80 text-[10px] leading-none">
+                    {v}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           {!profile.matched && (
             <div className="absolute top-2 left-2 flex items-center gap-1.5">
-              {profile.myAction ? (
+              {profile.myAction === 'like' ? (
                 <span className="px-2 py-1 rounded-full text-[10px] font-medium bg-black/50 backdrop-blur-sm text-white/70">
-                  {profile.myAction === 'like' ? 'Te gusta' : 'Pasaste'}
+                  Te gusta
                 </span>
               ) : (
                 <>
+                  {/* Pasar queda siempre reversible -- aunque ya la hayas
+                      pasado antes, los botones siguen ahí para que puedas
+                      cambiar de opinión y darle "me gusta" más tarde, en
+                      vez de quedar descartada para siempre. */}
                   <button
                     type="button"
                     onClick={() => onPass(profile.id)}
