@@ -1,9 +1,10 @@
 import { useRef, useState } from 'react'
 import imageCompression from 'browser-image-compression'
 import { motion, AnimatePresence } from 'motion/react'
-import { Camera, X, CheckCircle2, XCircle, Video } from 'lucide-react'
+import { Camera, ImagePlus, X, CheckCircle2, XCircle, Video } from 'lucide-react'
 import api from '../services/api'
 import Button from './ui/Button'
+import { shadeColor, getContrastTextColor } from '../utils/color'
 
 const MAX_FILES = 5
 const MAX_IMAGE_SIZE_MB = 4
@@ -227,26 +228,61 @@ function UploadPhotosForm({ eventSlug, primaryColor = '#a855f7', allowVideos = f
         className="hidden"
       />
 
-      <div className="flex flex-col gap-2">
-        <Button
-          type="button"
-          as="button"
-          onClick={() => cameraInputRef.current?.click()}
-          primaryColor={items.length === 0 ? primaryColor : undefined}
-          className={items.length > 0 ? 'bg-white/10' : ''}
-        >
-          <Camera className="w-4 h-4" />
-          {allowVideos ? 'Tomar foto o video' : 'Tomar foto'}
-        </Button>
-        <Button
-          type="button"
-          as="button"
-          onClick={() => fileInputRef.current?.click()}
-          className="bg-white/10"
-        >
-          {items.length > 0 ? 'Elegir otros archivos de la galería' : 'Elegir de la galería'}
-        </Button>
-      </div>
+      {items.length === 0 ? (
+        // Botón hero: circular, con un halo pulsante (mismo recurso que
+        // FloatingWhatsappButton.jsx) para que destaque como la acción
+        // principal de la pantalla -- es lo primero que ve cualquier
+        // invitado al escanear el QR, tiene que invitar a tocarlo.
+        <div className="flex flex-col items-center gap-3 py-1">
+          <motion.button
+            type="button"
+            onClick={() => cameraInputRef.current?.click()}
+            aria-label={allowVideos ? 'Tomar foto o video' : 'Tomar foto'}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.93 }}
+            className="relative w-24 h-24 rounded-full flex items-center justify-center"
+            style={{
+              background: `linear-gradient(180deg, ${shadeColor(primaryColor, 20)}, ${primaryColor} 45%, ${shadeColor(primaryColor, -22)})`,
+              boxShadow: `inset 0 1px 0 ${shadeColor(primaryColor, 20)}aa, inset 0 -2px 4px ${shadeColor(primaryColor, -22)}90, 0 10px 28px -8px ${primaryColor}80`,
+            }}
+          >
+            <motion.span
+              className="absolute inset-0 rounded-full"
+              style={{ background: primaryColor }}
+              animate={{ scale: [1, 1.5, 1.5], opacity: [0.5, 0, 0] }}
+              transition={{ duration: 2.2, repeat: Infinity, ease: 'easeOut' }}
+            />
+            <Camera className="w-9 h-9 relative" style={{ color: getContrastTextColor(primaryColor) }} />
+          </motion.button>
+          <p className="text-white/70 text-sm font-medium">{allowVideos ? 'Tomar foto o video' : 'Tomar foto'}</p>
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center gap-1.5 text-white/40 text-xs underline underline-offset-2 hover:text-white/70 transition"
+          >
+            <ImagePlus className="w-3.5 h-3.5" />o elegí de la galería
+          </button>
+        </div>
+      ) : (
+        <div className="flex items-center justify-center gap-2.5">
+          <button
+            type="button"
+            onClick={() => cameraInputRef.current?.click()}
+            aria-label={allowVideos ? 'Tomar otra foto o video' : 'Tomar otra foto'}
+            className="w-10 h-10 rounded-full flex items-center justify-center bg-white/10 border border-white/15 text-white/70 hover:text-white hover:bg-white/15 transition shrink-0"
+          >
+            <Camera className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-white/10 border border-white/15 text-white/80 text-sm font-medium hover:bg-white/15 hover:text-white transition"
+          >
+            <ImagePlus className="w-4 h-4" />
+            Agregar más de la galería
+          </button>
+        </div>
+      )}
       {warning && <p className="text-yellow-400 text-xs text-center">{warning}</p>}
 
       <input
