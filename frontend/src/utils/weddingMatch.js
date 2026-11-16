@@ -32,16 +32,19 @@ export const INTERESTED_IN_OPTIONS = [
   { value: 'varones', label: 'Varones' },
 ]
 
-// Acento romántico LOCAL de este módulo -- a propósito no se agrega a
-// utils/brand.js (esa paleta es solo para pantallas propias de la
-// plataforma, ver el comentario en ese archivo). Dorado/rosa champán para
-// la identidad "dating app de casamiento", sin pisar el tema que haya
-// elegido el evento (que sigue siendo quien manda en fondo/tipografía,
-// ver WeddingMatch.jsx).
+// Identidad FIJA de este módulo -- a propósito no se agrega a utils/brand.js
+// (esa paleta es solo para pantallas propias de la plataforma, ver el
+// comentario en ese archivo). A diferencia del resto de las páginas
+// públicas (UploadPage, DigitalCard, etc.), que siguen el tema del evento,
+// Wedding Match tiene que leerse igual de bien pase lo que pase con la
+// temática elegida -- así que NO hereda ni el fondo ni el color del evento:
+// siempre negro con violeta y rosa, la estética "app de citas" que pidió
+// el cliente, nunca condicionada a si el evento es clarito/oscuro/pastel.
 export const MATCH_ACCENT = {
-  gold: '#e8b34f',
-  blush: '#f2a6c6',
-  deepRose: '#c23f72',
+  violet: '#8b5cf6',
+  pink: '#ec4899',
+  gradient: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
+  bg: '#0a0a0f',
 }
 
 function storageKey(eventSlug) {

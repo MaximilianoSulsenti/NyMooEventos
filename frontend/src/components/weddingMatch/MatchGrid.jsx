@@ -1,5 +1,6 @@
 import { motion } from 'motion/react'
 import { Heart, X, HeartHandshake } from 'lucide-react'
+import { MATCH_ACCENT } from '../../utils/weddingMatch'
 
 function MatchGrid({ grid, loading, primaryColor, onLike, onPass }) {
   if (loading && grid.length === 0) {
@@ -82,7 +83,7 @@ function MatchGrid({ grid, loading, primaryColor, onLike, onPass }) {
                     onClick={() => onLike(profile.id)}
                     aria-label="Me gusta"
                     className="w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-sm transition"
-                    style={{ background: `${primaryColor}cc`, color: '#fff' }}
+                    style={{ background: MATCH_ACCENT.gradient, color: '#fff' }}
                   >
                     <Heart className="w-3.5 h-3.5" />
                   </button>

@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Heart, Sparkles, Grid3x3, Layers } from 'lucide-react'
-import PageBackground from '../components/PageBackground'
 import GlassPanel from '../components/ui/GlassPanel'
 import useWeddingMatch from '../hooks/useWeddingMatch'
 import MatchOnboarding from '../components/weddingMatch/MatchOnboarding'
@@ -12,13 +11,31 @@ import MyProfilePanel from '../components/weddingMatch/MyProfilePanel'
 import MatchTabBar from '../components/weddingMatch/MatchTabBar'
 import MatchCelebration from '../components/weddingMatch/MatchCelebration'
 import { MatchLoading, MatchModuleOff, MatchBlocked, MatchError } from '../components/weddingMatch/MatchStateScreens'
-import { getThemeStyles } from '../sections/theming'
+import { MATCH_ACCENT } from '../utils/weddingMatch'
 
-// Mismo híbrido de tema que UploadPage.jsx: el fondo/tipografía siguen al
-// evento real (para que se sienta parte DE esa boda, no una herramienta
-// genérica de Nymoo), pero todo el contenido vive dentro del GlassPanel
-// oscuro de siempre -- así no hace falta que cada componente nuevo sea
-// theme-aware por su cuenta.
+const primaryColor = MATCH_ACCENT.violet
+
+// A diferencia de UploadPage.jsx/DigitalCard.jsx (que siguen el tema del
+// evento a propósito), acá el fondo/color NUNCA depende del evento: es la
+// identidad propia de Wedding Match -- negro con violeta y rosa, como
+// cualquier app de citas -- así se lee igual de bien pase lo que pase con
+// la temática/paleta que haya elegido la boda (clara, oscura, pastel...).
+function MatchBackground() {
+  return (
+    <>
+      <div className="fixed inset-0 -z-20" style={{ background: MATCH_ACCENT.bg }} />
+      <div
+        className="fixed -top-24 -left-24 w-80 h-80 rounded-full blur-[90px] -z-10"
+        style={{ background: MATCH_ACCENT.violet, opacity: 0.22 }}
+      />
+      <div
+        className="fixed -bottom-24 -right-16 w-96 h-96 rounded-full blur-[100px] -z-10"
+        style={{ background: MATCH_ACCENT.pink, opacity: 0.2 }}
+      />
+    </>
+  )
+}
+
 function WeddingMatch() {
   const { eventSlug } = useParams()
   const [tab, setTab] = useState('grid')
@@ -29,14 +46,12 @@ function WeddingMatch() {
   if (match.phase === 'module-off') return <MatchModuleOff />
   if (match.phase === 'error') return <MatchError />
 
-  const styles = getThemeStyles(match.event?.uploadPageSettings?.theme)
-  const primaryColor = match.event?.appearance?.primaryColor || '#e8b34f'
   const eventName = match.event?.eventName || 'la boda'
 
   if (match.phase === 'blocked') {
     return (
-      <div className={`relative min-h-screen w-full overflow-x-hidden ${styles.fontClass}`}>
-        <PageBackground settings={match.event?.uploadPageSettings} />
+      <div className="relative min-h-screen w-full overflow-x-hidden font-sans">
+        <MatchBackground />
         <MatchBlocked />
       </div>
     )
@@ -44,11 +59,9 @@ function WeddingMatch() {
 
   if (match.phase === 'onboarding') {
     return (
-      <div
-        className={`relative min-h-screen w-full overflow-x-hidden flex items-center justify-center px-4 sm:px-6 py-10 ${styles.fontClass}`}
-      >
-        <PageBackground settings={match.event?.uploadPageSettings} />
-        <GlassPanel accentColor={primaryColor} className="w-full max-w-md px-6 py-8 sm:px-8 sm:py-9">
+      <div className="relative min-h-screen w-full overflow-x-hidden flex items-center justify-center px-4 sm:px-6 py-10 font-sans">
+        <MatchBackground />
+        <GlassPanel accentColor={MATCH_ACCENT.gradient} className="w-full max-w-md px-6 py-8 sm:px-8 sm:py-9 !bg-neutral-950">
           <MatchOnboarding
             eventName={eventName}
             participants={match.stats.participants}
@@ -62,12 +75,12 @@ function WeddingMatch() {
 
   // phase === 'ready'
   return (
-    <div className={`relative min-h-screen w-full overflow-x-hidden flex flex-col ${styles.fontClass}`}>
-      <PageBackground settings={match.event?.uploadPageSettings} />
+    <div className="relative min-h-screen w-full overflow-x-hidden flex flex-col font-sans">
+      <MatchBackground />
 
-      <div className="relative z-10 flex items-center justify-between gap-3 px-4 sm:px-6 py-3 border-b border-white/10 bg-black/20 backdrop-blur-sm">
+      <div className="relative z-10 flex items-center justify-between gap-3 px-4 sm:px-6 py-3 border-b border-white/10 bg-black/70 backdrop-blur-md">
         <div className="flex items-center gap-2">
-          <Heart className="w-4 h-4" style={{ color: primaryColor }} />
+          <Heart className="w-4 h-4" style={{ color: MATCH_ACCENT.pink }} />
           <p className="text-white font-semibold text-sm">Wedding Match</p>
         </div>
         <p className="flex items-center gap-1 text-white/40 text-xs">
@@ -84,7 +97,7 @@ function WeddingMatch() {
                 type="button"
                 onClick={() => setDiscoverMode('swipe')}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition"
-                style={discoverMode === 'swipe' ? { background: primaryColor, color: '#111' } : { color: 'rgba(255,255,255,0.5)' }}
+                style={discoverMode === 'swipe' ? { background: MATCH_ACCENT.gradient, color: '#fff' } : { color: 'rgba(255,255,255,0.5)' }}
               >
                 <Layers className="w-3.5 h-3.5" />
                 Swipe
@@ -93,7 +106,7 @@ function WeddingMatch() {
                 type="button"
                 onClick={() => setDiscoverMode('grid')}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition"
-                style={discoverMode === 'grid' ? { background: primaryColor, color: '#111' } : { color: 'rgba(255,255,255,0.5)' }}
+                style={discoverMode === 'grid' ? { background: MATCH_ACCENT.gradient, color: '#fff' } : { color: 'rgba(255,255,255,0.5)' }}
               >
                 <Grid3x3 className="w-3.5 h-3.5" />
                 Grilla
@@ -124,7 +137,6 @@ function WeddingMatch() {
         myPhotoUrl={match.profile?.photoUrl}
         eventName={eventName}
         match={match.celebration}
-        primaryColor={primaryColor}
         onClose={match.dismissCelebration}
       />
     </div>

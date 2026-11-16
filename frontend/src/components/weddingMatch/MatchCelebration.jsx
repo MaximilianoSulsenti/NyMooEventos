@@ -4,14 +4,14 @@ import { Heart, MessageCircle, PartyPopper } from 'lucide-react'
 import Confetti from '../Confetti'
 import Button from '../ui/Button'
 import useLockBodyScroll from '../../hooks/useLockBodyScroll'
-import { buildWaLink } from '../../utils/weddingMatch'
+import { buildWaLink, MATCH_ACCENT } from '../../utils/weddingMatch'
 
 // createPortal envuelve a AnimatePresence desde AFUERA, nunca al revés --
 // AnimatePresence filtra sus hijos con isValidElement, que da false para
 // un ReactPortal, así que si el portal queda ADENTRO el contenido
 // desaparece en silencio (mismo gotcha documentado en
 // ThreeDPhotoCarousel.jsx y RsvpModalShell.jsx).
-function MatchCelebration({ myName, myPhotoUrl, eventName, match, primaryColor, onClose }) {
+function MatchCelebration({ myName, myPhotoUrl, eventName, match, onClose }) {
   useLockBodyScroll()
 
   return createPortal(
@@ -37,9 +37,9 @@ function MatchCelebration({ myName, myPhotoUrl, eventName, match, primaryColor, 
               animate={{ scale: [0.6, 1.15, 1] }}
               transition={{ duration: 0.6 }}
               className="text-2xl font-bold flex items-center gap-2"
-              style={{ color: primaryColor }}
+              style={{ color: MATCH_ACCENT.pink }}
             >
-              <PartyPopper className="w-6 h-6" />
+              <PartyPopper className="w-6 h-6" style={{ color: MATCH_ACCENT.violet }} />
               ¡Es un Match!
             </motion.p>
 
@@ -49,7 +49,7 @@ function MatchCelebration({ myName, myPhotoUrl, eventName, match, primaryColor, 
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 1, repeat: Infinity }}
                 className="z-10 w-9 h-9 rounded-full flex items-center justify-center shadow-lg"
-                style={{ background: primaryColor }}
+                style={{ background: MATCH_ACCENT.gradient }}
               >
                 <Heart className="w-4 h-4 text-white fill-white" />
               </motion.span>
@@ -70,7 +70,7 @@ function MatchCelebration({ myName, myPhotoUrl, eventName, match, primaryColor, 
                 href={buildWaLink(match.whatsapp, myName, eventName)}
                 target="_blank"
                 rel="noreferrer"
-                primaryColor={primaryColor}
+                gradient={MATCH_ACCENT.gradient}
                 className="w-full"
               >
                 <MessageCircle className="w-4 h-4" />

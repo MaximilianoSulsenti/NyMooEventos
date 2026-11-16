@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Trash2 } from 'lucide-react'
 import SelfieCapture from './SelfieCapture'
 import Button from '../ui/Button'
-import { VIBES } from '../../utils/weddingMatch'
+import { VIBES, MATCH_ACCENT } from '../../utils/weddingMatch'
 
 // Edad y nombre quedan fuera de lo editable a propósito -- la edad es el
 // campo que se valida (18+) al crear el perfil, dejarla editable abriría
@@ -116,7 +116,7 @@ function MyProfilePanel({ profile, primaryColor, onUpdate, onDelete }) {
 
       {status === 'error' && <p className="text-red-400 text-sm text-center">{errorMessage}</p>}
 
-      <Button type="submit" primaryColor={primaryColor} disabled={status === 'saving'} className="w-full disabled:opacity-60">
+      <Button type="submit" gradient={MATCH_ACCENT.gradient} disabled={status === 'saving'} className="w-full disabled:opacity-60">
         {status === 'saving' ? 'Guardando...' : status === 'saved' ? '¡Guardado!' : 'Guardar cambios'}
       </Button>
 

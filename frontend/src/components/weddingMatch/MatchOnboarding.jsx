@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Heart, Sparkles } from 'lucide-react'
 import SelfieCapture from './SelfieCapture'
 import Button from '../ui/Button'
-import { VIBES, isValidAge } from '../../utils/weddingMatch'
+import { VIBES, isValidAge, MATCH_ACCENT } from '../../utils/weddingMatch'
 
 function MatchOnboarding({ eventName, participants, primaryColor, onSubmit }) {
   const [photoFile, setPhotoFile] = useState(null)
@@ -138,7 +138,7 @@ function MatchOnboarding({ eventName, participants, primaryColor, onSubmit }) {
 
       {status === 'error' && <p className="text-red-400 text-sm text-center">{errorMessage}</p>}
 
-      <Button type="submit" primaryColor={primaryColor} disabled={!canSubmit} className="w-full disabled:opacity-40">
+      <Button type="submit" gradient={MATCH_ACCENT.gradient} disabled={!canSubmit} className="w-full disabled:opacity-40">
         {status === 'saving' ? 'Creando tu perfil...' : 'Empezar a conocer gente'}
       </Button>
     </form>

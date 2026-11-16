@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import { Heart, X, RotateCcw } from 'lucide-react'
 import SwipeCard from './SwipeCard'
+import { MATCH_ACCENT } from '../../utils/weddingMatch'
 
 function SwipeDeck({ grid, loading, primaryColor, onLike, onPass }) {
   // "Pasar" no descarta a nadie para siempre -- solo la saca del mazo
@@ -93,7 +94,7 @@ function SwipeDeck({ grid, loading, primaryColor, onLike, onPass }) {
           onClick={() => triggerButton('like')}
           aria-label="Me gusta"
           className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg transition"
-          style={{ background: primaryColor, color: '#fff' }}
+          style={{ background: MATCH_ACCENT.gradient, color: '#fff' }}
         >
           <Heart className="w-7 h-7" />
         </button>
