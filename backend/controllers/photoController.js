@@ -2,7 +2,7 @@ const cloudinary = require('../config/cloudinary');
 const Event = require('../models/Event');
 const Photo = require('../models/Photo');
 const { containsBannedWord } = require('../utils/moderationFilter');
-const { extractPublicIdFromUrl } = require('../utils/cloudinary');
+const { extractPublicIdFromUrl, isTrustedCloudinaryUrl } = require('../utils/cloudinary');
 
 const MAX_VIDEO_BYTES = 20 * 1024 * 1024;
 const MAX_VIDEO_SECONDS = 15.5; // pequeño margen sobre el límite de 15s del frontend
@@ -34,29 +34,11 @@ async function isOverUploadCap(eventId, assetType) {
   return count >= max;
 }
 
-function escapeRegex(value) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
 // Las imágenes y videos de un evento se separan en subcarpetas propias dentro
 // de Cloudinary (eventos/{slug}/images vs eventos/{slug}/videos).
 function getGalleryFolder(event, assetType) {
   const base = event.gallerySettings?.cloudinaryFolder || `eventos/${event.eventSlug}`;
   return `${base}/${assetType === 'video' ? 'videos' : 'images'}`;
-}
-
-function isTrustedCloudinaryUrl(url, folder, resourceType = 'image') {
-  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-  let decodedUrl;
-  try {
-    decodedUrl = decodeURIComponent(url);
-  } catch {
-    return false;
-  }
-  const pattern = new RegExp(
-    `^https://res\\.cloudinary\\.com/${escapeRegex(cloudName)}/${resourceType}/upload/.+/${escapeRegex(folder)}/[^/]+$`
-  );
-  return pattern.test(decodedUrl);
 }
 
 // Fallback para fotos viejas que no guardaron publicId: lo deduce de la URL.

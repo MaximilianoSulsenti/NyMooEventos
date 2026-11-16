@@ -28,6 +28,8 @@ const OrdersDashboard = lazy(() => import('./pages/OrdersDashboard'))
 const TableOrganizer = lazy(() => import('./pages/TableOrganizer'))
 const PlaylistOrganizer = lazy(() => import('./pages/PlaylistOrganizer'))
 const SmartAgenda = lazy(() => import('./pages/SmartAgenda'))
+const WeddingMatch = lazy(() => import('./pages/WeddingMatch'))
+const MatchAdmin = lazy(() => import('./pages/MatchAdmin'))
 
 function NotFound() {
   return (
@@ -101,6 +103,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/dashboard/:eventId/match"
+          element={
+            <ProtectedRoute>
+              <MatchAdmin />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/evento/:eventSlug" element={<DigitalCard />} />
         <Route path="/evento/:eventSlug/upload" element={<UploadPage />} />
         <Route path="/evento/:eventSlug/live-feed" element={<LiveScreen />} />
@@ -111,6 +121,8 @@ function App() {
         <Route path="/evento/:eventSlug/mesas" element={<TableOrganizer />} />
         <Route path="/evento/:eventSlug/playlist" element={<PlaylistOrganizer />} />
         <Route path="/evento/:eventSlug/agenda" element={<SmartAgenda />} />
+        <Route path="/evento/:eventSlug/match" element={<WeddingMatch />} />
+        <Route path="/evento/:eventSlug/match-panel" element={<MatchAdmin />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/checkout/success" element={<CheckoutSuccess />} />
         <Route path="/completar-pedido" element={<SharedOrderForm />} />

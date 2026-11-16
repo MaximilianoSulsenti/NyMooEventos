@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'motion/react'
-import { LayoutDashboard, ToggleLeft, Link2, Pencil, ChevronLeft, Users, UserCheck, UserX, Clock, Armchair, Music4, CalendarClock } from 'lucide-react'
+import { LayoutDashboard, ToggleLeft, Link2, Pencil, ChevronLeft, Users, UserCheck, UserX, Clock, Armchair, Music4, CalendarClock, Heart } from 'lucide-react'
 import api from '../services/api'
 import { getStoredUser } from '../services/auth'
 import PageBackground from '../components/PageBackground'
@@ -68,6 +68,12 @@ const MODULE_FIELDS = [
     label: 'Agenda inteligente',
     description:
       'Calendario de tareas y pendientes del evento (pruebas, pagos, proveedores) con recordatorios automáticos por WhatsApp.',
+  },
+  {
+    key: 'weddingMatch',
+    label: 'Wedding Match',
+    description:
+      'Mini-app de citas por QR para los invitados solteros: perfil rápido con selfie, descubrimiento por swipe/grilla y match con contacto por WhatsApp. Incluye panel de moderación para el organizador.',
   },
 ]
 
@@ -243,6 +249,24 @@ function Dashboard() {
                 Agenda inteligente
               </motion.a>
             )}
+            {event.activeModules.weddingMatch && (
+              <motion.a
+                href={`/dashboard/${eventId}/match`}
+                target="_blank"
+                rel="noreferrer"
+                whileHover={{ scale: 1.02, translateY: -1 }}
+                whileTap={{ scale: 0.97 }}
+                className="flex items-center gap-1.5 mt-2 px-3 py-2 rounded-xl text-xs font-medium border border-white/10 backdrop-blur-sm transition w-fit"
+                style={{
+                  background: `linear-gradient(135deg, ${BRAND.pink}22, ${BRAND.violet}14)`,
+                  color: '#ffffff',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)',
+                }}
+              >
+                <Heart className="w-3.5 h-3.5" style={{ color: BRAND.pink }} />
+                Wedding Match
+              </motion.a>
+            )}
           </div>
           <nav className="flex flex-col gap-1">
             {NAV_SECTIONS.map((section) => {
@@ -331,6 +355,7 @@ function Dashboard() {
                 tableOrganizerEnabled={event.activeModules.tableOrganizer}
                 playlistOrganizerEnabled={event.activeModules.playlistOrganizer}
                 smartAgendaEnabled={event.activeModules.smartAgenda}
+                weddingMatchEnabled={event.activeModules.weddingMatch}
                 onTokenRegenerated={(newToken) =>
                   setEvent((prev) => ({ ...prev, clientAccessToken: newToken }))
                 }

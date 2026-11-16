@@ -19,6 +19,9 @@ const backupRoutes = require('./routes/backupRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 const systemRoutes = require('./routes/systemRoutes');
+const matchRoutes = require('./routes/matchRoutes');
+const Event = require('./models/Event');
+const MatchProfile = require('./models/MatchProfile');
 const { startReminderCron } = require('./jobs/reminderCron');
 
 validateEnv();
@@ -40,6 +43,11 @@ const io = new Server(server, {
 });
 
 app.set('io', io);
+// Detrás de un proxy (Render), sin esto req.ip es siempre la IP del proxy --
+// TODOS los limiters por IP existentes terminarían compartiendo un único
+// balde entre absolutamente todos los visitantes. "1" confía en un solo
+// salto de proxy, que es el caso real acá.
+app.set('trust proxy', 1);
 
 app.use(helmet());
 app.use(compression());
@@ -58,6 +66,7 @@ app.use('/api/backup', backupRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/system', systemRoutes);
+app.use('/api/match', matchRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Ruta no encontrada' });
@@ -115,6 +124,25 @@ io.on('connection', (socket) => {
       position: ['top', 'center', 'bottom'].includes(position) ? position : 'bottom',
       fontSize: fontSize || 'text-xl',
     });
+  });
+
+  // Wedding Match: valida el token opaco del invitado contra la DB antes de
+  // unirlo a sus rooms privados -- a diferencia de los handlers de arriba,
+  // esto hace una consulta async, y express-async-errors no cubre sockets,
+  // así que el try/catch es manual. Falla en silencio ante un token
+  // inválido (nunca manda un error al cliente por esto).
+  socket.on('join-match', async ({ eventSlug, token }) => {
+    try {
+      if (!eventSlug || !token) return;
+      const event = await Event.findOne({ eventSlug });
+      if (!event?.activeModules?.weddingMatch) return;
+      const profile = await MatchProfile.findOne({ eventId: event._id, deviceToken: token });
+      if (!profile) return;
+      socket.join(`match:${eventSlug}`);
+      socket.join(`match-profile:${profile._id}`);
+    } catch (err) {
+      console.error('[Socket.io] Error en join-match:', err);
+    }
   });
 
   socket.on('disconnect', () => {

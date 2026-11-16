@@ -2,6 +2,9 @@ const crypto = require('crypto');
 const Event = require('../models/Event');
 const Guest = require('../models/Guest');
 const Photo = require('../models/Photo');
+const MatchProfile = require('../models/MatchProfile');
+const MatchLike = require('../models/MatchLike');
+const MatchPair = require('../models/MatchPair');
 const cloudinary = require('../config/cloudinary');
 const { isAdminEmail } = require('../middleware/admin');
 const { extractPublicIdFromUrl } = require('../utils/cloudinary');
@@ -157,6 +160,7 @@ async function updateEventModules(req, res) {
     tableOrganizer,
     playlistOrganizer,
     smartAgenda,
+    weddingMatch,
   } = req.body;
 
   const event = await Event.findById(eventId);
@@ -173,6 +177,7 @@ async function updateEventModules(req, res) {
   if (tableOrganizer !== undefined) event.activeModules.tableOrganizer = Boolean(tableOrganizer);
   if (playlistOrganizer !== undefined) event.activeModules.playlistOrganizer = Boolean(playlistOrganizer);
   if (smartAgenda !== undefined) event.activeModules.smartAgenda = Boolean(smartAgenda);
+  if (weddingMatch !== undefined) event.activeModules.weddingMatch = Boolean(weddingMatch);
 
   await event.save();
 
@@ -794,7 +799,13 @@ async function deleteEvent(req, res) {
     console.error('[Cloudinary] No se pudieron borrar los archivos del evento:', err.message);
   }
 
-  await Promise.all([Guest.deleteMany({ eventId: event._id }), Photo.deleteMany({ eventId: event._id })]);
+  await Promise.all([
+    Guest.deleteMany({ eventId: event._id }),
+    Photo.deleteMany({ eventId: event._id }),
+    MatchProfile.deleteMany({ eventId: event._id }),
+    MatchLike.deleteMany({ eventId: event._id }),
+    MatchPair.deleteMany({ eventId: event._id }),
+  ]);
   await event.deleteOne();
 
   res.json({ message: 'Evento eliminado' });

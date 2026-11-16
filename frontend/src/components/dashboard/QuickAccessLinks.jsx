@@ -1,60 +1,8 @@
 import { useState } from 'react'
-import { ExternalLink, RefreshCw } from 'lucide-react'
+import { RefreshCw } from 'lucide-react'
 import QrCode from './QrCode'
+import CopyField from './CopyField'
 import api from '../../services/api'
-import { BRAND } from '../../utils/brand'
-import { getContrastTextColor } from '../../utils/color'
-
-function CopyField({ label, url }) {
-  const [copied, setCopied] = useState(false)
-
-  async function handleCopy() {
-    try {
-      await navigator.clipboard.writeText(url)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1500)
-    } catch {
-      setCopied(false)
-    }
-  }
-
-  return (
-    <div className="min-w-0">
-      <p className="text-white/40 text-sm mb-1">{label}</p>
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-        <input
-          type="text"
-          readOnly
-          value={url}
-          className="w-full min-w-0 truncate rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm text-white/70 outline-none"
-        />
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={handleCopy}
-            className="flex-1 sm:flex-none px-4 py-2 rounded-xl transition text-sm font-medium hover:brightness-110"
-            style={{
-              background: copied ? BRAND.lime : `linear-gradient(135deg, ${BRAND.blue}, ${BRAND.violet})`,
-              color: copied ? getContrastTextColor(BRAND.lime) : '#ffffff',
-            }}
-          >
-            {copied ? 'Copiado' : 'Copiar'}
-          </button>
-          <a
-            href={url}
-            target="_blank"
-            rel="noreferrer"
-            aria-label={`Abrir ${label} en una pestaña nueva`}
-            title="Abrir en una pestaña nueva"
-            className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:text-white hover:bg-white/10 transition shrink-0"
-          >
-            <ExternalLink className="w-4 h-4" />
-          </a>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 function RegenerateTokenButton({ eventId, onTokenRegenerated }) {
   const [confirming, setConfirming] = useState(false)
@@ -100,6 +48,7 @@ function QuickAccessLinks({
   tableOrganizerEnabled,
   playlistOrganizerEnabled,
   smartAgendaEnabled,
+  weddingMatchEnabled,
   onTokenRegenerated,
 }) {
   const origin = window.location.origin
@@ -116,6 +65,11 @@ function QuickAccessLinks({
   const tablesUrl = `${origin}/evento/${slug}/mesas?token=${token}`
   const playlistUrl = `${origin}/evento/${slug}/playlist?token=${token}`
   const agendaUrl = `${origin}/evento/${slug}/agenda?token=${token}`
+  // Sin token -- a diferencia de los otros módulos, este link lo escanean
+  // decenas de invitados distintos (es el target del QR), no un solo
+  // cliente con su link exclusivo.
+  const matchUrl = `${origin}/evento/${slug}/match`
+  const matchPanelUrl = `${origin}/evento/${slug}/match-panel?token=${token}`
 
   return (
     <div className="space-y-6">
@@ -143,6 +97,18 @@ function QuickAccessLinks({
         {playlistOrganizerEnabled && <CopyField label="Planificador de playlist" url={playlistUrl} />}
         {smartAgendaEnabled && <CopyField label="Agenda inteligente" url={agendaUrl} />}
       </div>
+
+      {weddingMatchEnabled && (
+        <div className="rounded-2xl bg-white/5 border border-white/10 p-5 flex flex-col md:flex-row gap-6">
+          <div className="flex-1 min-w-0 flex flex-col gap-4">
+            <CopyField label="Wedding Match (QR para los invitados solteros)" url={matchUrl} />
+            <CopyField label="Panel de moderación de Wedding Match" url={matchPanelUrl} />
+          </div>
+          <div className="flex justify-center md:justify-end">
+            <QrCode value={matchUrl} filename="qr-wedding-match.png" />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

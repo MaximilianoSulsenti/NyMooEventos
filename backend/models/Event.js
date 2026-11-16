@@ -126,6 +126,7 @@ const eventSchema = new mongoose.Schema(
       tableOrganizer: { type: Boolean, default: false },
       playlistOrganizer: { type: Boolean, default: false },
       smartAgenda: { type: Boolean, default: false },
+      weddingMatch: { type: Boolean, default: false },
     },
     gallerySettings: {
       cloudinaryFolder: { type: String },
