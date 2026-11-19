@@ -117,12 +117,16 @@ io.on('connection', (socket) => {
     io.to(eventSlug).emit('pause-changed', Boolean(paused));
   });
 
-  socket.on('set-announcement', ({ eventSlug, text, position, fontSize }) => {
+  socket.on('set-announcement', ({ eventSlug, text, position, fontSize, color, emoji }) => {
     if (!eventSlug) return;
     io.to(eventSlug).emit('announcement-changed', {
       text: String(text || '').slice(0, 140),
       position: ['top', 'center', 'bottom'].includes(position) ? position : 'bottom',
       fontSize: fontSize || 'text-xl',
+      // color: null si no es un hex válido (de 6 dígitos) -- el cartel cae
+      // a su acento neutro por defecto en vez de arrastrar basura al style.
+      color: /^#[0-9a-fA-F]{6}$/.test(color || '') ? color : null,
+      emoji: String(emoji || '').slice(0, 4),
     });
   });
 

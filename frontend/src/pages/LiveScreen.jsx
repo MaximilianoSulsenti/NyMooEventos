@@ -160,16 +160,31 @@ function LiveCommentFeed({ items }) {
 function AnnouncementBanner({ announcement }) {
   if (!announcement?.text) return null
 
+  // `color`: acento opcional elegido en el panel del organizador -- el
+  // fondo sigue siendo vidrio oscuro siempre (así se lee bien encima de
+  // cualquier foto), el color solo se nota en el borde/resplandor/línea de
+  // arriba, nunca pisa el contraste del texto.
+  const accent = announcement.color
+
   return (
     <div
       className={`fixed inset-x-0 z-40 flex justify-center px-6 pointer-events-none ${ANNOUNCEMENT_POSITION_CLASSES[announcement.position] || ANNOUNCEMENT_POSITION_CLASSES.bottom}`}
     >
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-[90vw] sm:max-w-3xl rounded-2xl backdrop-blur-md bg-black/50 border border-white/10 px-4 sm:px-8 py-3 sm:py-4 shadow-2xl"
+        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ type: 'spring', stiffness: 260, damping: 22 }}
+        className="relative max-w-[90vw] sm:max-w-3xl rounded-2xl backdrop-blur-md bg-black/60 border px-4 sm:px-8 py-3 sm:py-4 shadow-2xl overflow-hidden"
+        style={{
+          borderColor: accent ? `${accent}99` : 'rgba(255,255,255,0.1)',
+          boxShadow: accent ? `0 0 50px -10px ${accent}aa, 0 25px 50px -12px rgba(0,0,0,0.6)` : undefined,
+        }}
       >
-        <p className={`text-white font-semibold text-center drop-shadow-lg break-words ${announcement.fontSize || 'text-xl'}`}>
+        {accent && <div className="absolute top-0 inset-x-0 h-[3px]" style={{ background: accent }} />}
+        <p
+          className={`relative text-white font-semibold text-center drop-shadow-lg break-words flex items-center justify-center gap-2.5 ${announcement.fontSize || 'text-xl'}`}
+        >
+          {announcement.emoji && <span>{announcement.emoji}</span>}
           {announcement.text}
         </p>
       </motion.div>
@@ -344,6 +359,11 @@ function LiveScreen() {
         {event && <SalonBackground branding={event.brandingSettings} />}
         {event && <BrandLogos branding={event.brandingSettings} />}
         {event?.activeModules?.photoCollection && <LiveQrPanel eventSlug={eventSlug} eventName={event.eventName} />}
+        {/* Antes el anuncio solo podía mostrarse una vez que ya hubiera
+            fotos subidas -- este return temprano cortaba antes de llegar
+            al banner, así que un "¡Bienvenidos!" mandado apenas arranca el
+            evento (todavía sin fotos) nunca llegaba a verse. */}
+        <AnimatePresence>{announcement && <AnnouncementBanner announcement={announcement} />}</AnimatePresence>
       </div>
     )
   }

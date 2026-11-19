@@ -26,6 +26,31 @@ const ANNOUNCEMENT_SIZES = [
   { value: 'text-3xl', label: 'Muy grande' },
 ]
 
+// Acentos curados para el cartel -- no un selector de color libre, para que
+// el panel de "mandar un aviso rápido" siga siendo rápido. "" = sin acento
+// (el borde/resplandor neutro de siempre).
+const ANNOUNCEMENT_COLORS = [
+  { value: '', label: 'Sin color' },
+  { value: '#E8B34F', label: 'Dorado' },
+  { value: '#FF4FA3', label: 'Rosa' },
+  { value: '#7B4DFF', label: 'Violeta' },
+  { value: '#3155FF', label: 'Azul' },
+  { value: '#B8F500', label: 'Lima' },
+  { value: '#EF4444', label: 'Rojo' },
+]
+
+// Plantillas de los anuncios más típicos de una recepción -- un clic carga
+// texto+emoji+color listos para tocar "Enviar" (no se auto-envían: el
+// organizador siempre confirma antes de que algo salga a la pantalla).
+const ANNOUNCEMENT_TEMPLATES = [
+  { emoji: '🥂', text: '¡Brindis en unos minutos!', color: '#E8B34F' },
+  { emoji: '🍽️', text: '¡La cena está servida!', color: '#E8B34F' },
+  { emoji: '💃', text: '¡Se abre la pista de baile!', color: '#FF4FA3' },
+  { emoji: '🎉', text: '¡Arranca el show!', color: '#7B4DFF' },
+  { emoji: '📸', text: '¡No se olviden de subir sus fotos!', color: '#3155FF' },
+  { emoji: '💐', text: '¡Hora del ramo!', color: '#FF4FA3' },
+]
+
 const TABS = [
   { key: 'pendiente', label: 'Pendientes' },
   { key: 'aprobada', label: 'Aprobadas' },
@@ -75,6 +100,8 @@ function GalleryControl() {
   const [announcementText, setAnnouncementText] = useState('')
   const [announcementPosition, setAnnouncementPosition] = useState('bottom')
   const [announcementFontSize, setAnnouncementFontSize] = useState('text-xl')
+  const [announcementColor, setAnnouncementColor] = useState('')
+  const [announcementEmoji, setAnnouncementEmoji] = useState('')
   const [announcementSent, setAnnouncementSent] = useState(false)
   const [albumState, setAlbumState] = useState('idle') // idle | 'loading:image' | 'loading:video'
   const [albumResult, setAlbumResult] = useState(null) // { type, parts, count } | null
@@ -229,14 +256,29 @@ function GalleryControl() {
   }
 
   function sendAnnouncement(text) {
-    socket.emit('set-announcement', { eventSlug, text, position: announcementPosition, fontSize: announcementFontSize })
+    socket.emit('set-announcement', {
+      eventSlug,
+      text,
+      position: announcementPosition,
+      fontSize: announcementFontSize,
+      color: announcementColor,
+      emoji: announcementEmoji,
+    })
     setAnnouncementSent(true)
     setTimeout(() => setAnnouncementSent(false), 1200)
   }
 
   function handleClearAnnouncement() {
     setAnnouncementText('')
+    setAnnouncementEmoji('')
+    setAnnouncementColor('')
     sendAnnouncement('')
+  }
+
+  function applyAnnouncementTemplate(template) {
+    setAnnouncementText(template.text)
+    setAnnouncementEmoji(template.emoji)
+    setAnnouncementColor(template.color)
   }
 
   async function handleGenerateAlbum(type) {
@@ -525,14 +567,62 @@ function GalleryControl() {
               <Megaphone className="w-3.5 h-3.5" />
               Anuncio en pantalla
             </p>
+
+            <div className="flex flex-wrap gap-1.5">
+              {ANNOUNCEMENT_TEMPLATES.map((tpl) => (
+                <button
+                  key={tpl.text}
+                  type="button"
+                  onClick={() => applyAnnouncementTemplate(tpl)}
+                  className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-neutral-300 hover:bg-white/10 hover:text-white transition"
+                >
+                  <span>{tpl.emoji}</span>
+                  {tpl.text}
+                </button>
+              ))}
+            </div>
+
             <div className="space-y-2">
-              <input
-                type="text"
-                value={announcementText}
-                onChange={(e) => setAnnouncementText(e.target.value.slice(0, 140))}
-                placeholder="Ej: ¡En 5 minutos abre la barra!"
-                className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
-              />
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={announcementEmoji}
+                  onChange={(e) => setAnnouncementEmoji(e.target.value.slice(0, 4))}
+                  placeholder="🎉"
+                  aria-label="Emoji del anuncio (opcional)"
+                  className="w-14 shrink-0 rounded-lg bg-white/5 border border-white/10 px-2 py-2 text-center text-lg outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+                />
+                <input
+                  type="text"
+                  value={announcementText}
+                  onChange={(e) => setAnnouncementText(e.target.value.slice(0, 140))}
+                  placeholder="Ej: ¡En 5 minutos abre la barra!"
+                  className="flex-1 min-w-0 rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent)] transition"
+                />
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                {ANNOUNCEMENT_COLORS.map((c) => {
+                  const isActive = announcementColor === c.value
+                  return (
+                    <button
+                      key={c.value || 'none'}
+                      type="button"
+                      title={c.label}
+                      aria-label={c.label}
+                      onClick={() => setAnnouncementColor(c.value)}
+                      className="w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center shrink-0"
+                      style={{
+                        background: c.value || 'transparent',
+                        borderColor: isActive ? '#ffffff' : 'rgba(255,255,255,0.2)',
+                      }}
+                    >
+                      {!c.value && <X className="w-3 h-3 text-neutral-500" />}
+                    </button>
+                  )
+                })}
+              </div>
+
               <div className="flex flex-col sm:flex-row gap-2">
                 <div className="flex gap-2">
                   <select
