@@ -9,12 +9,12 @@ const {
   getAlbumZipUrl,
 } = require('../controllers/photoController');
 const { requireClientToken } = require('../middleware/clientAccess');
-const { publicWriteLimiter } = require('../middleware/rateLimiters');
+const { photoUploadLimiter } = require('../middleware/rateLimiters');
 
 const router = express.Router();
 
-router.get('/sign/:eventSlug', publicWriteLimiter, signUpload);
-router.post('/register', publicWriteLimiter, registerPhoto);
+router.get('/sign/:eventSlug', photoUploadLimiter, signUpload);
+router.post('/register', photoUploadLimiter, registerPhoto);
 router.get('/slug/:eventSlug', getApprovedPhotosBySlug);
 router.get('/client/:eventSlug', requireClientToken, getPhotosForClient);
 router.patch('/client/:eventSlug/:photoId/status', requireClientToken, updatePhotoStatus);

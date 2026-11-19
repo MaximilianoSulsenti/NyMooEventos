@@ -73,6 +73,23 @@ const matchActionLimiter = rateLimit({
   message: { message: 'Demasiados intentos, probá de nuevo en unos minutos' },
 });
 
+// Subida de fotos del álbum en vivo -- a diferencia de un RSVP o un pedido
+// (publicWriteLimiter, 60/15min), acá UNA sola foto ya son 2 requests (firma
+// + registro), y decenas de invitados reales suben varias fotos cada uno
+// durante horas, casi siempre desde la MISMA wifi del salón -- una sola IP
+// pública para todos ellos. Con el límite genérico, el salón entero se
+// quedaría sin poder subir nada después de ~30 fotos cada 15 minutos. Este
+// límite es generoso a propósito (pensado para cientos de fotos en una
+// noche) y sigue siendo IP, no hay un token de invitado persistente acá
+// como en Wedding Match.
+const photoUploadLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 2000,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Demasiadas solicitudes, probá de nuevo en unos minutos' },
+});
+
 module.exports = {
   authLimiter,
   publicWriteLimiter,
@@ -80,4 +97,5 @@ module.exports = {
   matchOnboardingLimiter,
   matchReadLimiter,
   matchActionLimiter,
+  photoUploadLimiter,
 };
