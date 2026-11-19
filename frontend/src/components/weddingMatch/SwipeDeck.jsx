@@ -8,7 +8,8 @@ function SwipeDeck({ grid, loading, primaryColor, onLike, onPass }) {
   // ACTUAL (dismissedIds) para no verla de nuevo al toque tras deslizarla.
   // Un "me gusta" previo sí queda firme (se excluye por myAction, no entra
   // en dismissedIds), pero a quien ya pasaste podés volver a verla con el
-  // botón de abajo una vez que termines el mazo.
+  // botón de arriba cuando quieras, las veces que quieras -- no es un
+  // "revive" de una sola vez.
   const [dismissedIds, setDismissedIds] = useState(() => new Set())
   const deck = useMemo(
     () => grid.filter((p) => p.myAction !== 'like' && !dismissedIds.has(p.id)),
@@ -39,25 +40,35 @@ function SwipeDeck({ grid, loading, primaryColor, onLike, onPass }) {
     return <div className="aspect-[3/4.2] rounded-3xl bg-white/5 animate-pulse" />
   }
 
+  // El botón de revisitar vive SIEMPRE arriba del mazo (no solo cuando se
+  // vacía) -- así se puede volver a ver a quienes pasaste las veces que
+  // haga falta, no una sola vez cuando se agota la pila. revisitPassed()
+  // vacía dismissedIds; si ninguno está dismissed todavía (ej. los
+  // volviste a ver y los volviste a pasar sin que se vaciara el mazo), es
+  // un no-op inofensivo.
+  const revisitButton = passedCount > 0 && (
+    <button
+      type="button"
+      onClick={revisitPassed}
+      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition mx-auto"
+      style={{ borderColor: `${primaryColor}80`, color: primaryColor, background: `${primaryColor}15` }}
+    >
+      <RotateCcw className="w-3.5 h-3.5" />
+      Ver a quienes pasaste ({passedCount})
+    </button>
+  )
+
   if (deck.length === 0) {
     return (
-      <div className="text-center py-14 px-4 flex flex-col items-center gap-4">
-        <p className="text-white/40 text-sm">
-          {passedCount > 0
-            ? 'Ya viste a todos los solteros disponibles por ahora.'
-            : 'Ya viste a todos los solteros disponibles por ahora -- volvé más tarde, seguro se suma alguien más durante la fiesta.'}
-        </p>
-        {passedCount > 0 && (
-          <button
-            type="button"
-            onClick={revisitPassed}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border transition"
-            style={{ borderColor: `${primaryColor}80`, color: primaryColor, background: `${primaryColor}15` }}
-          >
-            <RotateCcw className="w-4 h-4" />
-            Volver a ver a quienes pasaste
-          </button>
-        )}
+      <div className="flex flex-col gap-4">
+        {revisitButton}
+        <div className="text-center py-14 px-4">
+          <p className="text-white/40 text-sm">
+            {passedCount > 0
+              ? 'Ya viste a todos los solteros disponibles por ahora.'
+              : 'Ya viste a todos los solteros disponibles por ahora -- volvé más tarde, seguro se suma alguien más durante la fiesta.'}
+          </p>
+        </div>
       </div>
     )
   }
@@ -65,7 +76,8 @@ function SwipeDeck({ grid, loading, primaryColor, onLike, onPass }) {
   const visible = deck.slice(0, 3)
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4">
+      {revisitButton}
       <div className="relative aspect-[3/4.2] w-full">
         {visible.map((profile, i) => (
           <SwipeCard
