@@ -243,12 +243,20 @@ async function deletePhoto(req, res) {
   res.json({ message: 'Foto eliminada' });
 }
 
-// Cloudinary arma el ZIP al vuelo firmando una URL con todos los public_ids en
-// la query string. Pasadas ~210-215 fotos esa URL se vuelve tan larga que
-// Cloudinary la rechaza (414 Request-URI Too Large) -- se probó en vivo contra
-// la cuenta real. Por eso se divide en partes de a lo sumo 150 para que un
-// álbum grande nunca falle, solo se descargue en más de un archivo.
-const MAX_PHOTOS_PER_ZIP = 150;
+// Cloudinary arma el ZIP al vuelo (no es un archivo ya generado, lo arma y lo
+// va transmitiendo mientras se descarga) firmando una URL con todos los
+// public_ids en la query string. Dos límites distintos, probados en vivo
+// contra la cuenta real:
+// 1) Pasadas ~210-215 fotos la URL se vuelve tan larga que Cloudinary la
+//    rechaza directo (414 Request-URI Too Large).
+// 2) Mucho antes de eso, un armado "al vuelo" de 100+ fotos puede tardar
+//    tanto en generarse que la conexión se corta a mitad de camino
+//    (ECONNRESET) y el ZIP queda incompleto -- no es un límite fijo, es
+//    intermitente, así que a veces funciona con 128 y otras no. Achicar el
+//    tamaño de cada parte reduce cuánto tiene que durar esa única conexión
+//    larga, bajando la chance de que se corte, y si igual se corta, alcanza
+//    con reintentar esa parte chica en vez de perder el álbum entero.
+const MAX_PHOTOS_PER_ZIP = 25;
 
 function chunk(array, size) {
   const chunks = [];
